@@ -12,7 +12,14 @@
 
     millimeter: 1.0,
     mm:         self["millimeter"],
+    centimeter: 10.0*self["millimeter"],
+    cm:         self["centimeter"],
     meter:      1000.0*self["millimeter"],
+
+    radian: 1.0,
+    rad:    self["radian"],
+    degree: std.pi/180.0,
+    deg:    self["degree"],
 
     // vectors
     point(x,y,z,u) :: {x:x*u, y:y*u, z:z*u},
