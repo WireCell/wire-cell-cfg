@@ -21,6 +21,9 @@
     degree: std.pi/180.0,
     deg:    self["degree"],
 
+    // values
+    nominal_drift_velocity: 1.6*self["mm"]/self["us"],
+
     // vectors
     point(x,y,z,u) :: {x:x*u, y:y*u, z:z*u},
     ray(p1,p2) :: {tail:p1, head:p2},

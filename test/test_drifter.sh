@@ -10,4 +10,4 @@ cfg="$testdir/test_drifter.cfg"
 
 jsonnet -J $jpath $input > $cfg
 
-wire-cell -p WireCellGen -p WireCellApps -c $cfg -a ConfigDumper
+wire-cell -p WireCellGen -p WireCellTbb -c $cfg -a TbbFlow

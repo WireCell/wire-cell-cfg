@@ -1,9 +1,42 @@
-local Drifter = {type: "Drifter", name: "", data:{drift_velocity:4}};
 local wc = import "wirecell.jsonnet";
+
+(import "cfg_wire_cell.jsonnet") + 
+(import "cfg_trackdepos.jsonnet") +
+(import "cfg_drifter.jsonnet") + 
 [
-    Drifter { name: "drifterU", data: {location: 15*wc.mm} },
-    Drifter { name: "drifterV", data: {location: 10*wc.mm} },
-    Drifter { name: "drifterW", data: {location:  5*wc.mm} },
+    {
+	type:"TbbFlow",
+	data: {
+	    graph:[
+		{
+		    tail: wc.Node {type:"TrackDepos"},
+		    head: wc.Node {type:"Drifter", name:"drifterU"}
+		},
+		{
+		    tail: wc.Node {type:"TrackDepos"},
+		    head: wc.Node {type:"Drifter", name:"drifterV"}
+		},
+		{
+		    tail: wc.Node {type:"TrackDepos"},
+		    head: wc.Node {type:"Drifter", name:"drifterW"}
+		},
+		{
+		    tail: wc.Node {type:"Drifter", name:"drifterU"},
+		    head: wc.Node {type:"DumpDepos"}
+		},
+		{
+		    tail: wc.Node {type:"Drifter", name:"drifterV"},
+		    head: wc.Node {type:"DumpDepos"}
+		},
+		{
+		    tail: wc.Node {type:"Drifter", name:"drifterW"},
+		    head: wc.Node {type:"DumpDepos"}
+		},
+
+	    ]
+	}
+    },
     
 ]
+
 

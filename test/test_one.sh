@@ -13,3 +13,4 @@ cfg="$testdir/test_${what}.cfg"
 jsonnet -J $jpath $input > $cfg
 
 wire-cell -c $cfg
+
