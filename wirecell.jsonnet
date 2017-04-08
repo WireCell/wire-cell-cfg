@@ -15,11 +15,15 @@
     centimeter: 10.0*self["millimeter"],
     cm:         self["centimeter"],
     meter:      1000.0*self["millimeter"],
+    cm2:        self["cm"]*self["cm"],
 
     radian: 1.0,
     rad:    self["radian"],
     degree: std.pi/180.0,
     deg:    self["degree"],
+
+    // fixme: make this match WCT system of units
+    volt: 1.0,
 
     // values
     nominal_drift_velocity: 1.6*self["mm"]/self["us"],
