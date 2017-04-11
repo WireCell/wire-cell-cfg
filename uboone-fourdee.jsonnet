@@ -6,37 +6,22 @@ local gen = import "gen.jsonnet";
 	type: "wire-cell",
 	data: {
 	    plugins: ["WireCellGen"],
-	    apps: ["FourDee"]
+//	    apps: ["FourDee"]
 	}
     },
 
     gen.FourDee,
 
-    // order matters.  AnodePlane is instantiated by Drifter and Ductor
-    gen.AnodePlane {
-        name : "uboone anode plane",
-        data : super.data {
-            wires:"wires.json.bz2",
-            fields:"fields.json.bz2",
-            ident: 42,
-        }
-    },
+    // anode needed by drifter and ductor, so put first
+    det.anode,
 
-    gen.Drifter {
-        data : super.data {
-            anode: "uboone anode plane"
-        }
-    },
+    det.drifter,
         
     gen.TrackDepos,
 
     gen.SilentNoise,
 
-    gen.Ductor {
-        data : super.data {
-            anode: "uboone anode plane",
-        }
-    },        
+    det.ductor,
 
     gen.Digitizer,
 
