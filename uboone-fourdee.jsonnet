@@ -5,7 +5,7 @@ local gen = import "gen.jsonnet";
     {                           // main CLI
 	type: "wire-cell",
 	data: {
-	    plugins: ["WireCellGen","WireCellApps", "WireCellTbb"],
+	    plugins: ["WireCellGen"],
 	    apps: ["FourDee"]
 	}
     },
