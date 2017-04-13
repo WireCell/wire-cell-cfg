@@ -55,23 +55,27 @@ produces:
   ]
 #+END_SRC
 
-The ultimate schema for a =wire-cell= configuration file is JSON formatted list of objects.  This list is iterated and objects are instantiated and configured in the order encountered.  Three object keys are recognized:
+In the WCT code the object schema for a configuration set is a list of objects.  This same schema is used for the JSON configuration file.  Three object keys are recognized:
 
-- type :: this used to instantiate an instance of the C++ class that implements the component.  In this example =TrackDepos= names the =WireCell::Gen::TrackDepos= class.
-- name :: this is an optional key which can be used to differentiate between multiple instances of the *type*
+- type :: identify the component "type name" associated with a C++ class that implements the component.  The *type* is typically, but need not be, the C++ class name with any C++ namespaces removed.  In this example =TrackDepos= names the =WireCell::Gen::TrackDepos= class.
+- name :: specifies an /instance name/ which is used to differentiate between multiple instances of the *type*
 - data :: the value of this key is a data structure following a schema specific to *type*
 
-In this example, =TrackDepos= produces depositions (=IDepo=) objects using a simple linear source model.  The =tracks= array is empty and so would produce a rather boring set of depositions and so likely the user should specify this value.  This can be done either by editing the JSON and feeding it back to =wire-cell=.  
+When a configuration is consumed, it instantiates components and configures them in the order given by this list.  This is important if one component requires another.  If general, configuration for a component must be placed *after* any others that it requires.
+
+In this example, =TrackDepos= produces deposition (=IDepo=) objects using a simple linear source model.  The =tracks= array is empty by default and so would produce an empty set of depositions.  The user most certainly should specify a nonempty set of tracks.  This can be done by editing the JSON and feeding it back to =wire-cell= or writing a program to generate a complex set of tracks.  A third option exists as described next.
 
 ** Jsonnet
 
-As the complexity of the =wire-cell= job grows, so will its configuration.  Simply adding more instances of components will require larger configuration files.  Some configuration information must be coordinated between multiple components.  Some configuration should be crafted by experts while still allowing novices to modify certain values.  A user is free to produce suitable JSON configuration in any desired manner.  However, WCT also provides support for a second format:  the [[http://jsonnet.org/][Jsonnet]] /data templating language/ which provides many features to organize configuration information and which evaluates to JSON.  This support is a compile-time option which allows Jsonnet files to be read directly by =wire-cell=.  If a build of WCT lacks this support a user may build Jsonnet themselves and use the =jsonnet= command line to produce JSON for ultimate use.
+As the complexity of the =wire-cell= job grows, so will its configuration.  Simply adding more instances of components will require larger configuration files.  Some configuration information must be coordinated between multiple components.  Some configuration should be crafted by experts while still allowing novices to modify certain values.  A user is free to produce suitable JSON configuration in any desired manner.  However, WCT  provides support for a second format:  the [[http://jsonnet.org/][Jsonnet data templating language]] which provides many features to organize configuration information and which evaluates to JSON.  This support is a compile-time option which allows Jsonnet files to be read directly by =wire-cell=.  If a build of WCT lacks this support a user may build the Jsonnet package and run the =jsonnet= command line to produce JSON for use by their version of WCT.
 
-To learn to write Jsonnet the user should refer to its documentation.  There is no one right way to do it, however, the [[https://github.com/wirecell/wire-cell-cfg][wire-cell-cfg]] package provides a number of examples and support files that can help.  In particular the WCT system of units and some common data structures used are exported to Jsonnet as [[./wirecell.jsonnet]].  Some of this exported functionality is illustrated.   To locate Jsonnet (or JSON) files the WCT makes use of an environment variable =WIRECELL_PATH=.  If using the =jsonnet= command line program the user may specify directories in which to search for files with =jsonnet -J <directory> [...]=.
+To learn to write Jsonnet the user should refer to its documentation which is excellent.  There is no one right way to write Jsonnet, however, the [[https://github.com/wirecell/wire-cell-cfg][wire-cell-cfg]] package provides a number of examples and support files that can help the user.  In particular the WCT system of units and some common data structures used by WCT are exported to Jsonnet in [[./wirecell.jsonnet]].  Some of this exported functionality is illustrated below.  
+
+To locate Jsonnet (or JSON) files the WCT makes use of an environment variable =WIRECELL_PATH=.  If using the =jsonnet= command line program the user may specify directories in which to search for files with =jsonnet -J <directory> [...]=.
 
 *** System of units
 
-Wire Cell provides an internal system of units. It's important to note that JSON configuration files must implicitly express quantities in the Wire Cell Toolkit system of units.  That is the user must know this system in order to write JSON.  When writing Jsonnet units are stated explicitly such as in this example:
+Wire Cell provides an internal system of units. It's important to note that JSON configuration files must implicitly express quantities in the Wire Cell Toolkit system of units.  That is the user must know this system in order to write JSON.  When writing Jsonnet this is much easier as units can be stated explicitly such as in this example:
 
 #+BEGIN_SRC js
   local wc = import "wirecell.jsonnet";
@@ -93,7 +97,7 @@ A number of functions are defined to assist in representing common data types. F
 #+BEGIN_EXAMPLE
   {
     // ...
-    ray : wc.ray(wc.point(10,0,0,wc.cm), wc.point(100,10,10,wc.cm))
+    tracks : [ wc.ray(wc.point(10,0,0,wc.cm), wc.point(100,10,10,wc.cm)) ]
   },
 #+END_EXAMPLE
 
@@ -110,6 +114,10 @@ Some common structures are defined with default objects so that they may be exte
   //...
   ]
 #+END_EXAMPLE
+
+*** Commas
+
+One of the most irritating aspect of crafting JSON files by hand is that any array or object must not have a internal trailing command.  Jsonnet allows this.  For this reason alone and if no other features are used, writing Jsonnet is worth the added dependency!
 
 ** Specific detector support
 
