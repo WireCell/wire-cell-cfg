@@ -3,8 +3,14 @@
 # This script dumps a Wire Cell Toolkit configuration (JSON) file
 # which hold all defaults that are hard-coded by the C++ component.
 
+outdir="$1"
+if [ -z "$outdir" ] ; then
+    outdir="."
+fi
+outdir=$(readlink -f $outdir)
+mkdir -p $outdir
 
-mydir=$(dirname $(dirname $BASH_SOURCE))
+mydir=$(dirname $(dirname $(readlink -f $BASH_SOURCE)))
 top=$(dirname $mydir)
 cd $top
 
@@ -20,7 +26,7 @@ do
         echo -e "\t$class"
         cmdline="$cmdline -D $class"
     done
-    dumpfile="cfg/defaults/${pkg}-defaults.cfg"
+    dumpfile="${outdir}/${pkg}-defaults.cfg"
     $cmdline --dump-file "$dumpfile"
     echo
 done
