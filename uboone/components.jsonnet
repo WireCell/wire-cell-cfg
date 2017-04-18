@@ -42,7 +42,7 @@ local wc = import "wirecell.jsonnet";
             fluctuate : params.fluctuate,
             start_time: params.start_time,
             readout_time: params.readout,
-            drfit_speed : params.drift_speed,
+            drift_speed : params.drift_speed,
             first_frame_number: params.start_frame_number,
             anode: $.anode_tn,
         }
