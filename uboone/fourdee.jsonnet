@@ -13,11 +13,13 @@ local wc = import "wirecell.jsonnet";
     {
         type: 'TrackDepos',
         data : {
-            step_size : 0.1*wc.mm,
+            step_size : 0.05*wc.mm,
             tracks : [{
-                time: 1.0*wc.ms,
-                charge: -1000.0,
-                ray: wc.ray(wc.point(1,0,0,wc.m), wc.point(1.1,0.1,0.1,wc.m))
+                time: 0.0*wc.ms,
+                // if negative, then #electrons charge per depo
+                // o.w. it's total #electrons made by track.
+                charge: -10000.0,
+                ray: wc.ray(wc.point(1000,0,0,wc.mm), wc.point(1001,0.0,0.0,wc.mm))
             }]
         }
     },
@@ -46,6 +48,11 @@ local wc = import "wirecell.jsonnet";
     // The "app" component
     uboone.fourdee {
         data : super.data {
+
+            // write out just voltage
+            Dissonance: "",
+            Digitizer: "",
+            
             FrameSink: "HistFrameSink",            
         }
     },

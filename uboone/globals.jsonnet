@@ -26,7 +26,7 @@ local wc = import "wirecell.jsonnet";
     nsigma_diffusion_truncation : 3.0,
 
     // True if simulation should do fluctuations
-    fluctuate: true,
+    fluctuate: false,
     
     // Starting time of the simulation
     start_time: 0*wc.s,
