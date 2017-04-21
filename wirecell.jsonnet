@@ -106,6 +106,7 @@
     eplus : 1.0,// positron charge
     e_SI  : 1.602176487e-19,// positron charge in coulomb
     coulomb : self.eplus/self.e_SI,// coulomb : 6.24150 e+18 * eplus
+    fC : 1.0e-15*self.coulomb,     // femtocoulomb
 
     //
     // Energy [E]
@@ -171,6 +172,7 @@
     kilovolt : 1.0e-3*self.megavolt,
     volt : 1.0e-6*self.megavolt,
     millivolt : 1.0e-3*self.volt,
+    mV : self.millivolt,
 
     //
     // Electric resistance [E][T][Q^-2]

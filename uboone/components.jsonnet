@@ -16,6 +16,7 @@ local wc = import "wirecell.jsonnet";
             ident : 0,
             gain : params.gain,
             shaping : params.shaping,
+            postgain: params.postgain,
             readout_time : params.readout,
             tick : params.tick,
         }
