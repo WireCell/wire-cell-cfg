@@ -12,7 +12,7 @@ local wc = import "wirecell.jsonnet";
         data : {
             // WIRECELL_PATH will be searched for these files
             wires:"microboone-celltree-wires-v2.json.bz2",
-            fields:"garfield-1d-3planes-21wires-6impacts-v4.json.bz2",
+            fields:"garfield-1d-3planes-21wires-6impacts-v6.json.bz2",
             ident : 0,
             gain : params.gain,
             shaping : params.shaping,

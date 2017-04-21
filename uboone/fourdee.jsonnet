@@ -34,7 +34,7 @@ local wc = import "wirecell.jsonnet";
 
     uboone.ductor,
 
-    uboone.digitizer,
+    //uboone.digitizer,
 
     // output to simple histogram frame sink from sio.
     {
@@ -42,7 +42,7 @@ local wc = import "wirecell.jsonnet";
         data: {
             filename: "uboone.root",
             anode: uboone.anode_tn,
-            units: wc.mV,
+            units: wc.mV,       // mV if no digitizer, 1.0 otherwise
         }
     },
 
