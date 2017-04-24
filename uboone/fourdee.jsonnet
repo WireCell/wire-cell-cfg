@@ -24,6 +24,12 @@ local wc = import "wirecell.jsonnet";
         }
     },
 
+    {
+        type: 'JsonDepoSource',
+        data : {
+            filename: "g4tuple.json",
+        }
+    },
 
     // anode needed by drifter and ductor, so put first
     uboone.anode,
@@ -49,6 +55,9 @@ local wc = import "wirecell.jsonnet";
     // The "app" component
     uboone.fourdee {
         data : super.data {
+
+            //DepoSource: "TrackDepos",
+            DepoSource: "JsonDepoSource",
 
             // write out just voltage
             Dissonance: "",
