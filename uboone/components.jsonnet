@@ -58,10 +58,13 @@ local wc = import "wirecell.jsonnet";
 
     digitizer : {
         type: "Digitizer",
-        // fixme: ditch CamelCase
-        MaxSample: 4095,
-        Baseline: 0*wc.volt,
-        VperADC: 2.0*wc.volt/4096,
+        data : {
+            gain: -1.0,
+            baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
+            resolution: 12,
+            fullscale: [0*wc.volt, 2.0*wc.volt],
+            anode: $.anode_tn,
+        }
     },
 
     fourdee : {

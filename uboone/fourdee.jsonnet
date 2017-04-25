@@ -27,11 +27,12 @@ local wc = import "wirecell.jsonnet";
     {
         type: 'JsonDepoSource',
         data : {
-            filename: "g4tuple.json",
+            //filename: "g4tuple.json",
+            filename: "onehit.jsonnet",
         }
     },
 
-    // anode needed by drifter and ductor, so put first
+    // anode needed by drifter, ductor and digitzer, so put first
     uboone.anode,
 
     uboone.drifter,
@@ -40,7 +41,7 @@ local wc = import "wirecell.jsonnet";
 
     uboone.ductor,
 
-    //uboone.digitizer,
+    uboone.digitizer,
 
     // output to simple histogram frame sink from sio.
     {
@@ -48,7 +49,8 @@ local wc = import "wirecell.jsonnet";
         data: {
             filename: "uboone.root",
             anode: uboone.anode_tn,
-            units: wc.mV,       // mV if no digitizer, 1.0 otherwise
+            //units: wc.uV,       // mV if no digitizer, 1.0 otherwise
+            units: 1.0,
         }
     },
 
@@ -59,9 +61,11 @@ local wc = import "wirecell.jsonnet";
             //DepoSource: "TrackDepos",
             DepoSource: "JsonDepoSource",
 
-            // write out just voltage
             Dissonance: "",
-            Digitizer: "",
+
+            /// Turning off digitizer saves frame as voltage.  Must
+            // configure HistFrameSink's units to match!
+            // Digitizer:"",
             
             FrameSink: "HistFrameSink",            
         }

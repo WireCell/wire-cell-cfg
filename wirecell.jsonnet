@@ -172,7 +172,9 @@
     kilovolt : 1.0e-3*self.megavolt,
     volt : 1.0e-6*self.megavolt,
     millivolt : 1.0e-3*self.volt,
+    microvolt : 1.0e-6*self.volt,
     mV : self.millivolt,
+    uV : self.microvolt,
 
     //
     // Electric resistance [E][T][Q^-2]
