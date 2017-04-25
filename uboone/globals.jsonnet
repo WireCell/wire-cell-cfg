@@ -34,4 +34,8 @@ local wc = import "wirecell.jsonnet";
     start_time: 0*wc.s,
     // The "event" number
     start_frame_number: 100,
+
+    // Output ADC or Volts
+    digitize: true,
+    
 }

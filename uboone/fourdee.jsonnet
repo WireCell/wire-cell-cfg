@@ -1,4 +1,5 @@
 local uboone = import "uboone/components.jsonnet";
+local params = import "uboone/globals.jsonnet";
 local wc = import "wirecell.jsonnet";
 [
     {                           // main CLI
@@ -27,8 +28,13 @@ local wc = import "wirecell.jsonnet";
     {
         type: 'JsonDepoSource',
         data : {
-            //filename: "g4tuple.json",
-            filename: "onehit.jsonnet",
+            //filename: "onehit.jsonnet",
+
+            filename: "g4tuple.json",
+            // the g4tuple.json file is in qunits of MeV.  Multiply by
+            // ioniztion "W-value" and a mean 0.7 recombination from
+            // http://lar.bnl.gov/properties/#particle-pass
+            qunit: wc.MeV*0.7/(23.6*wc.eV)
         }
     },
 
@@ -41,7 +47,7 @@ local wc = import "wirecell.jsonnet";
 
     uboone.ductor,
 
-    uboone.digitizer,
+    if params.digitize then uboone.digitizer,
 
     // output to simple histogram frame sink from sio.
     {
@@ -49,8 +55,7 @@ local wc = import "wirecell.jsonnet";
         data: {
             filename: "uboone.root",
             anode: uboone.anode_tn,
-            //units: wc.uV,       // mV if no digitizer, 1.0 otherwise
-            units: 1.0,
+            units: if params.digitize then 1.0 else wc.uV,
         }
     },
 
@@ -65,7 +70,7 @@ local wc = import "wirecell.jsonnet";
 
             /// Turning off digitizer saves frame as voltage.  Must
             // configure HistFrameSink's units to match!
-            // Digitizer:"",
+            Digitizer: if params.digitize then "Digitizer" else "",
             
             FrameSink: "HistFrameSink",            
         }
