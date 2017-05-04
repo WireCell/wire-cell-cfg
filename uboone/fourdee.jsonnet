@@ -25,25 +25,23 @@ local wc = import "wirecell.jsonnet";
         }
     },
 
-    {
-        type: 'JsonDepoSource',
-        data : {
-            //filename: "onehit.jsonnet",
-
-            filename: "g4tuple.json",
-            // the g4tuple.json file is in qunits of MeV.  Multiply by
-            // ioniztion "W-value" and a mean 0.7 recombination from
-            // http://lar.bnl.gov/properties/#particle-pass
-            qunit: wc.MeV*0.7/(23.6*wc.eV)
-        }
-    },
+    uboone.depos,
 
     // anode needed by drifter, ductor and digitzer, so put first
     uboone.anode,
 
     uboone.drifter,
         
-    uboone.noise,
+    {
+        type: "NoiseSource",
+        data: {
+            start_time: params.start_time,
+            readout_time: params.readout,
+            sample_period: params.tick,
+            first_frame_number: params.start_frame_number,
+            anode: uboone.anode_tn,
+        }
+    },
 
     uboone.ductor,
 
@@ -64,8 +62,9 @@ local wc = import "wirecell.jsonnet";
         data : super.data {
 
             //DepoSource: "TrackDepos",
-            DepoSource: "JsonDepoSource",
+            DepoSource: uboone.depos_tn,
 
+            //Dissonance: "NoiseSource",
             Dissonance: "",
 
             /// Turning off digitizer saves frame as voltage.  Must
