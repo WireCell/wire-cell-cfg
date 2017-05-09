@@ -26,6 +26,7 @@ local wc = import "wirecell.jsonnet";
     },
 
     dune.depos,
+    dune.recombination,
 
     // anode needed by drifter, ductor and digitzer, so put first
     dune.anode,

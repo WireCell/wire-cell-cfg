@@ -25,49 +25,14 @@ local wc = import "wirecell.jsonnet";
     // shortcut type+name for below
     anode_tn: self.anode.type + ":" + self.anode.name,
 
-    // Several different depoosition sources based on a dumped set of g4hits
-    onehitdep : {
-        type: 'JsonDepoSource',
-        name: "onehitdep",
-        data : {
-            filename: "onehit.jsonnet",
-            model: "scaled",    // take "q" as dQ directly.
-        }
-    },
-    energydeps: {
-        type: 'JsonDepoSource',
-        name: 'energydeps',
-        data: {
-            // the g4tuple.json file "q" is in units of MeV.  Multiply by
-            // ioniztion "W-value" and a mean 0.7 recombination from
-            // http://lar.bnl.gov/properties/#particle-pass
-            filename: "g4tuple.json.bz2",
-            scale: wc.MeV*0.7/(23.6*wc.eV),
-            model: "scaled",    // take "q" as dE, no dX given
-        }
-    },
     electrondeps: {
         type: 'JsonDepoSource',
         name: "electrondeps",
         data : {
             filename: "g4tuple-qsn.json.bz2",
             model: "electrons",  // take "n" from depo as already in number of electrons
-        }
-    },
-    birksdeps: {
-        type: 'JsonDepoSource',
-        name: 'birksdeps',
-        data : {
-            filename: "g4tuple-qsn.json.bz2",
-            model: "birks",     // q is dE, s is dX, apply Birks model.
-        }
-    },
-    boxdeps: {
-        type: 'JsonDepoSource',
-        name: 'boxdeps',
-        data : {
-            filename: "g4tuple-qsn.json.bz2",
-            model: "box",      // q is dE, s is dX, apply Modified Box model.
+            scale: -1.0,           // multiply by "n"
+            // fixme: this really shouldn't be needed.  There is another -1 on the charge lurking somewhere
         }
     },
     depos: self.electrondeps,

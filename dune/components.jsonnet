@@ -25,15 +25,21 @@ local wc = import "wirecell.jsonnet";
     // shortcut type+name for below
     anode_tn: self.anode.type + ":" + self.anode.name,
 
-    // Several different depoosition sources based on a dumped set of g4hits
+    // Several different depoosition sources based on a dumped set of g4hits.
+    // JsonDepoSource treats model "electrons" special as there is no recombination.
     onehitdep : {
         type: 'JsonDepoSource',
         name: "onehitdep",
         data : {
             filename: "onehit.jsonnet",
-            model: "scaled",    // take "q" as dQ directly.
+            model: "electrons",    // take "n" as number of electrons directly.
+            scale: -1.0,           // multiply by "n"
+            // fixme: this really shouldn't be needed.  There is another -1 on the charge lurking somewhere
         }
     },
+    // All other models should use the type of some recombination
+    // component and also configure that component.  First, we just
+    // list some possible ones and below we select them
     energydeps: {
         type: 'JsonDepoSource',
         name: 'energydeps',
@@ -42,18 +48,28 @@ local wc = import "wirecell.jsonnet";
             // ioniztion "W-value" and a mean 0.7 recombination from
             // http://lar.bnl.gov/properties/#particle-pass
             filename: "g4tuple.json.bz2",
-            scale: wc.MeV*0.7/(23.6*wc.eV),
-            model: "scaled",    // take "q" as dE, no dX given
+            model: "MipRecombination",    // take "q" as dE, no dX given
         }
     },
+    mip_already_recombinated: {
+        type: 'MipRecombination',
+        data: {
+            Rmip: 1.0,          // in case where source of depos does the recombination
+        }
+    },
+
     electrondeps: {
         type: 'JsonDepoSource',
         name: "electrondeps",
         data : {
             filename: "g4tuple-qsn.json.bz2",
             model: "electrons",  // take "n" from depo as already in number of electrons
+            scale: -1.0,           // multiply by "n"
+            // fixme: this really shouldn't be needed.  There is another -1 on the charge lurking somewhere
         }
     },
+
+    /* todo:
     birksdeps: {
         type: 'JsonDepoSource',
         name: 'birksdeps',
@@ -70,8 +86,16 @@ local wc = import "wirecell.jsonnet";
             model: "box",      // q is dE, s is dX, apply Modified Box model.
         }
     },
+    */
+
     depos: self.electrondeps,
+    recombination: null,
+
+    //depos: self.onehitdep,
+    //recombination: self.mip_already_recombinated,
+
     depos_tn: self.depos.type + ":" + self.depos.name,
+
 
     drifter: {
         type : "Drifter",
