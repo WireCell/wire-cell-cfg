@@ -11,7 +11,8 @@ local wc = import "wirecell.jsonnet";
         name : "dune-anode-plane", // could leave empty, just testing out explicit name
         data : {
             // WIRECELL_PATH will be searched for these files
-            wires:"dune35t-tpc1-celltree-wires-v5.json.bz2",
+            //wires:"dune35t-tpc1-celltree-wires-v5.json.bz2",
+            wires:"pdsp-wires.json.bz2",
             fields:"garfield-1d-3planes-21wires-6impacts-dune-v1.json.bz2",
             ident : 0,
             gain : params.gain,
@@ -33,10 +34,17 @@ local wc = import "wirecell.jsonnet";
         data : {
             filename: "onehit.jsonnet",
             model: "electrons",    // take "n" as number of electrons directly.
-            scale: -1.0,           // multiply by "n"
-            // fixme: this really shouldn't be needed.  There is another -1 on the charge lurking somewhere
         }
     },
+    brooksdepos : {
+        type: 'JsonDepoSource',
+        name: "brooksdepos",
+        data : {
+            filename: "g4tuple-fixed.json.bz2",
+            model: "electrons",    // take "n" as number of electrons directly.
+        }
+    },
+
     // All other models should use the type of some recombination
     // component and also configure that component.  First, we just
     // list some possible ones and below we select them
@@ -47,7 +55,7 @@ local wc = import "wirecell.jsonnet";
             // the g4tuple.json file "q" is in units of MeV.  Multiply by
             // ioniztion "W-value" and a mean 0.7 recombination from
             // http://lar.bnl.gov/properties/#particle-pass
-            filename: "g4tuple.json.bz2",
+            filename: "g4tuple-fixed.json.bz2",
             model: "MipRecombination",    // take "q" as dE, no dX given
         }
     },
@@ -55,17 +63,6 @@ local wc = import "wirecell.jsonnet";
         type: 'MipRecombination',
         data: {
             Rmip: 1.0,          // in case where source of depos does the recombination
-        }
-    },
-
-    electrondeps: {
-        type: 'JsonDepoSource',
-        name: "electrondeps",
-        data : {
-            filename: "g4tuple-qsn.json.bz2",
-            model: "electrons",  // take "n" from depo as already in number of electrons
-            scale: -1.0,           // multiply by "n"
-            // fixme: this really shouldn't be needed.  There is another -1 on the charge lurking somewhere
         }
     },
 
@@ -88,7 +85,7 @@ local wc = import "wirecell.jsonnet";
     },
     */
 
-    depos: self.electrondeps,
+    depos: self.brooksdepos,
     recombination: null,
 
     //depos: self.onehitdep,
@@ -131,7 +128,7 @@ local wc = import "wirecell.jsonnet";
     digitizer : {
         type: "Digitizer",
         data : {
-            gain: -1.0,
+            gain: 1.0,
             baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
             resolution: 12,
             fullscale: [0*wc.volt, 2.0*wc.volt],
