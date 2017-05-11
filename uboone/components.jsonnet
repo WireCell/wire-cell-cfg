@@ -25,17 +25,27 @@ local wc = import "wirecell.jsonnet";
     // shortcut type+name for below
     anode_tn: self.anode.type + ":" + self.anode.name,
 
+    onehitdep : {
+        type: 'JsonDepoSource',
+        name: "onehitdep",
+        data : {
+            filename: "onehit.jsonnet",
+            model: "electrons",    // take "n" as number of electrons directly.
+            scale: -1.0,           // multiply by "n"
+            // fixme: this really shouldn't be needed.  There is another -1 on the charge lurking somewhere
+        }
+    },
     electrondeps: {
         type: 'JsonDepoSource',
         name: "electrondeps",
         data : {
             filename: "g4tuple-qsn.json.bz2",
             model: "electrons",  // take "n" from depo as already in number of electrons
-            scale: -1.0,           // multiply by "n"
-            // fixme: this really shouldn't be needed.  There is another -1 on the charge lurking somewhere
+            scale: 1.0,           // multiply by "n"
         }
     },
     depos: self.electrondeps,
+    //depos: self.onehitdep,
     depos_tn: self.depos.type + ":" + self.depos.name,
 
     drifter: {
@@ -72,7 +82,7 @@ local wc = import "wirecell.jsonnet";
     digitizer : {
         type: "Digitizer",
         data : {
-            gain: -1.0,
+            gain: 1.0,
             baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
             resolution: 12,
             fullscale: [0*wc.volt, 2.0*wc.volt],
