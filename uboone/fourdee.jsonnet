@@ -33,6 +33,27 @@ local wc = import "wirecell.jsonnet";
     uboone.drifter,
         
     {
+        type: "StaticChannelStatus",
+        data: {
+            nominal_gain: 14.0*wc.mV/wc.fC,
+            nominal_shaping: 2.0*wc.us,
+            deviants: [
+                {chid: 100, gain: 4.7*wc.mV/wc.fC, shaping: 1.0*wc.us},
+                {chid: 101, gain: 4.7*wc.mV/wc.fC, shaping: 1.0*wc.us},
+                {chid: 102, gain: 4.7*wc.mV/wc.fC, shaping: 1.0*wc.us},
+                {chid: 103, gain: 4.7*wc.mV/wc.fC, shaping: 1.0*wc.us},
+            ],
+        }
+    }
+    {
+        type: "EmpiricalNoiseModel",
+        data: {
+            spectra_file: "microboone-noise-spectra-v2.json.bz2",
+            chanstat: "StaticChannelStatus",
+        }
+    }
+
+    {
         type: "NoiseSource",
         data: {
             start_time: params.start_time,
@@ -40,6 +61,7 @@ local wc = import "wirecell.jsonnet";
             sample_period: params.tick,
             first_frame_number: params.start_frame_number,
             anode: uboone.anode_tn,
+            model: "EmpiricalNoiseModel",
         }
     },
 
@@ -64,8 +86,7 @@ local wc = import "wirecell.jsonnet";
             //DepoSource: "TrackDepos",
             DepoSource: uboone.depos_tn,
 
-            //Dissonance: "NoiseSource",
-            Dissonance: "",
+            Dissonance: "NoiseSource",
 
             /// Turning off digitizer saves frame as voltage.  Must
             // configure HistFrameSink's units to match!
