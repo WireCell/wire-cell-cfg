@@ -44,14 +44,16 @@ local wc = import "wirecell.jsonnet";
                 {chid: 103, gain: 4.7*wc.mV/wc.fC, shaping: 1.0*wc.us},
             ],
         }
-    }
+    },
+    
     {
         type: "EmpiricalNoiseModel",
         data: {
             spectra_file: "microboone-noise-spectra-v2.json.bz2",
             chanstat: "StaticChannelStatus",
+            anode: uboone.anode_tn,
         }
-    }
+    },
 
     {
         type: "NoiseSource",

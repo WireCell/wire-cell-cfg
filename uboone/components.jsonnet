@@ -39,7 +39,7 @@ local wc = import "wirecell.jsonnet";
         type: 'JsonDepoSource',
         name: "electrondeps",
         data : {
-            filename: "g4tuple-qsn-v2-fixed.json.bz2",
+            filename: "g4tuple-qsn-v1-fixed.json.bz2",
             model: "electrons",  // take "n" from depo as already in number of electrons
             scale: 1.0,           // multiply by "n"
         }
