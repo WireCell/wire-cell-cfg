@@ -6,6 +6,7 @@
 local params = import "uboone/globals.jsonnet";
 local wc = import "wirecell.jsonnet";
 {
+
     anode: {
         type : "AnodePlane",
         name : "uboone-anode-plane", // could leave empty, just testing out explicit name

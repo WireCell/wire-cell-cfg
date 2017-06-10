@@ -10,6 +10,14 @@ local wc = import "wirecell.jsonnet";
 	}
     },
 
+    {
+        type: "Random",
+        data: {
+            generator: "default",
+            seeds: [0,1,2,3,4],
+        }
+    },
+
     // "input" is to generate deposition along some track
     {
         type: 'TrackDepos',
