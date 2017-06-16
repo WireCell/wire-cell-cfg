@@ -1,12 +1,7 @@
-/*
-  This holds global parameters which may be referenced in other parts
-  of the configuration.
-*/
-
 local wc = import "wirecell.jsonnet";
 {
     // must match what was used in Garfield field response calculation
-    drift_speed: 1.114*wc.mm/wc.us,
+    drift_speed: 1.6*wc.mm/wc.us,
     // FEE amplifier gain.  fixme: code needs to change to take this
     // quantity in the system of untis.  fixme: need to also set the
     // post-FEE gain of 1.2 somewhere.
@@ -14,7 +9,7 @@ local wc = import "wirecell.jsonnet";
     // FEE peaking time
     shaping: 2*wc.us,
     // post-FEE gain
-    postgain: 1.2,
+    postgain: 1.1,
     // How long to readout the detector at once.
     readout: 5.0*wc.ms,
     // sample period
