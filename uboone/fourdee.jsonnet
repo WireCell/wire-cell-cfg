@@ -89,6 +89,18 @@ local wc = import "wirecell.jsonnet";
         }
     },
 
+    // output to Celltree (TClonesArray) frame sink from sio.
+    {
+        type: "CelltreeFrameSink",
+        data: {
+            filename: "uboone.root",
+            anode: uboone.anode_tn,
+            units: if params.digitize then 1.0 else wc.uV,
+            readout_time: params.readout,
+        }
+    },
+
+
     // The "app" component
     uboone.fourdee {
         data : super.data {
@@ -103,6 +115,7 @@ local wc = import "wirecell.jsonnet";
             Digitizer: if params.digitize then "Digitizer" else "",
             
             FrameSink: "HistFrameSink",            
+            //FrameSink: "CelltreeFrameSink",            
         }
     },
 
