@@ -1,6 +1,7 @@
 local params = import "params/chooser.jsonnet";
 local bits = import "multi/bits.jsonnet";
 local depos = import "multi/depos.jsonnet";
+local frames = import "multi/frames.jsonnet";
 local wc = import "wirecell.jsonnet";
 [
     bits.anode {
@@ -30,6 +31,13 @@ local wc = import "wirecell.jsonnet";
     },
 
 
+    depos.depos,
+    bits.drifter {
+        data : super.data {
+            anode: "AnodePlane:nominal",
+        },
+    },
+
     bits.ductor {
         name:"nominal",
         data : super.data {
@@ -54,6 +62,8 @@ local wc = import "wirecell.jsonnet";
             anode: "AnodePlane:truth",
         }
     },
+
+
 
     {
         type: "MultiDuctor",
@@ -114,6 +124,29 @@ local wc = import "wirecell.jsonnet";
             ]
         }
     },
+
+    bits.noisemodel {
+        data : super.data {
+            anode: "AnodePlane:nominal",
+        },
+    },
+    bits.noisesource {
+        data : super.data {
+            anode: "AnodePlane:nominal",
+        },
+    },
+
+    bits.digitizer {
+        data : super.data {
+            anode: "AnodePlane:nominal",
+        },
+    },
+
+    frames.sink {
+        data : super.data {
+            anode: "AnodePlane:nominal",
+        },
+    },        
 
     {
         type: "FourDee",

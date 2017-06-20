@@ -9,7 +9,7 @@ local wc = import "wirecell.jsonnet";
     // FEE peaking time
     shaping: 2*wc.us,
     // post-FEE gain
-    postgain: 1.1,
+    postgain: 1.2,
     // How long to readout the detector at once.
     readout: 5.0*wc.ms,
     // sample period
@@ -33,5 +33,16 @@ local wc = import "wirecell.jsonnet";
 
     // Output ADC or Volts
     digitize: true,
-    
+
+    // Digitizer related parameters
+    digitizer : {
+        // relative gain at the input of the digitizer
+        pregain: 1.0,
+        // plane baselines at input of digitizer
+        baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
+        // resolution in bits
+        resolution: 12,
+        // full scale range
+        fullscale: [0*wc.volt, 2.0*wc.volt],
+    },
 }
