@@ -1,5 +1,5 @@
 {
-    depos: {
+    jsonfile: {
         type: 'JsonDepoSource',
         name: '',
         data : {

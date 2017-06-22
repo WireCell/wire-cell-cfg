@@ -11,7 +11,7 @@ local wc = import "wirecell.jsonnet";
     // post-FEE gain
     postgain: 1.2,
     // How long to readout the detector at once.
-    readout: 5.0*wc.ms,
+    readout_time: 5.0*wc.ms,
     // sample period
     tick: 0.5*wc.us,  
 

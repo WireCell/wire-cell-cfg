@@ -289,17 +289,32 @@
     Track :: { time:0.0, charge:-1, ray:self.Ray },
 
 
-    // fixme: need to revisit what is below
 
-    // Configurables
+    // Base class for a configurable.
     Component :: {
 	type:"",
 	name:"",
 	data:{}
     },
+    /// example usage: 
     TrackDepos :: self.Component + { type: "TrackDepos" },
 
-    // DFP
+    /// Return canonical "type:name" or just "type" if no name from a
+    /// configuration object.  Use this instead of bare names to
+    /// better guard against typos and changes in dependent
+    /// configuration.  So instead of using:
+    ///
+    ///    anode: "Anode:myanode",
+    ///
+    /// use the more robust:
+    ///
+    ///    anode: wc.tn(myanode),
+    ///
+    tn(obj) :: if std.objectHas(obj, "name") && obj.name != "" then obj.type + ":" + obj.name else obj.type,
+
+
+
+    /// DFP helpers
     Node :: {type:"",name:"",port:0},
     uvw:: ["U","V","W"],
     conn_uvw_uvw(a,b,p)::

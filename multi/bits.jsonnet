@@ -1,45 +1,16 @@
 local params = import "params/chooser.jsonnet";
 local wc = import "wirecell.jsonnet";
+local anodes = import "multi/anodes.jsonnet";
 {
-    anode: {
-        type : "AnodePlane",
-        data : {
-            // WIRECELL_PATH will be searched for these files
-            wires: params.wires,
-            fields: params.fields.nominal,
-            ident : 0,
-            gain : params.gain,
-            shaping : params.shaping,
-            postgain: params.postgain,
-            readout_time : params.readout,
-            tick : params.tick,
-        }
-    },
-    
     drifter: {
         type : "Drifter",
         data : {
-            anode: "AnodePlane",
+            anode: wc.tn(anodes.nominal),
             DL : params.DL,
             DT : params.DT,
             lifetime : params.electron_lifetime,
             fluctuate : params.fluctuate,
         }
-    },
-
-    noisemodel :  {
-        type: "EmpiricalNoiseModel",
-        data: {
-            anode: "AnodePlane",
-            spectra_file: params.noise,
-        }
-    },
-    noisesource : {
-        type: "NoiseSource",
-        data: {
-            model: "EmpiricalNoiseModel",
-            anode: "AnodePlane",
-        },
     },
 
     digitizer : {
@@ -49,21 +20,9 @@ local wc = import "wirecell.jsonnet";
             baselines: params.digitizer.baselines,
             resolution: params.digitizer.resolution,
             fullscale: params.digitizer.fullscale,
-            anode: "AnodePlane",
+            anode: wc.tn(anodes.nominal),
         }
     },
-    ductor: {
-        type : 'Ductor',
-        data : {
-            nsigma : params.nsigma_diffusion_truncation,
-            fluctuate : params.fluctuate,
-            start_time: params.start_time,
-            readout_time: params.readout,
-            drift_speed : params.drift_speed,
-            first_frame_number: params.start_frame_number,
-            anode: "AnodePlane",
-        }
-    },        
 
 
 }

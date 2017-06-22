@@ -1,78 +1,66 @@
 local params = import "params/chooser.jsonnet";
 local bits = import "multi/bits.jsonnet";
+local anodes = import "multi/anodes.jsonnet";
+local ductors = import "multi/ductors.jsonnet";
 local depos = import "multi/depos.jsonnet";
 local frames = import "multi/frames.jsonnet";
 local wc = import "wirecell.jsonnet";
 [
-    bits.anode {
-        name: "nominal",
-    },
-    bits.anode {
-        name: "uvground",
-        data : super.data {
-            fields:params.fields.uvground,
-        }
-    },
-    bits.anode {
-        name: "vyground",
-        data : super.data {
-            fields:params.fields.vyground,
-        }
-    },
-    bits.anode {
-        name: "truth",
-        data : super.data {
-            // fixme: this should really be some special "field"
-            // response file which leads to some kind of "true signal
-            // waveforms" For now, just use the nominal one as a stand
-            // in to let the configuration and machinery be developed.
-            fields:params.fields.truth,
-        }
-    },
+    depos.jsonfile,             // set up input file use "-V depofile=foo.json" on wire-cell CLI.
+
+    anodes.nominal,             // set up the four types of anode planes
+    anodes.uvground,            // UV grounded wires
+    anodes.vyground,            // VY grounded wires
+    anodes.truth,               // "truth" responses
+
+    bits.drifter,               // one shared drifter
+    
+    ductors.nominal,            // for each anode plane field response, 
+    ductors.uvground,           // need corresponding ductor
+    ductors.vyground,           // 
+    ductors.truth,              // 
 
 
-    depos.depos,
-    bits.drifter {
+    
+
+    local noisemodel = {
+        type: "EmpiricalNoiseModel",
+        data: {
+            anode: "AnodePlane",
+            spectra_file: params.noise,
+        }
+    },
+    noisesource : {
+        type: "NoiseSource",
+        data: {
+            model: "EmpiricalNoiseModel",
+            anode: "AnodePlane",
+        },
+    },
+
+    local noisemodel = {
         data : super.data {
             anode: "AnodePlane:nominal",
         },
     },
+    noisemodel,
 
-    bits.ductor {
-        name:"nominal",
+    local noisesource {
         data : super.data {
+            model: wc.tn(noisemodel),
             anode: "AnodePlane:nominal",
-        }
-    },
-    bits.ductor {
-        name:"uvground",
-        data : super.data {
-            anode: "AnodePlane:uvground",
-        }
-    },
-    bits.ductor {
-        name:"vyground",
-        data : super.data {
-            anode: "AnodePlane:vyground",
-        }
-    },
-    bits.ductor {
-        name:"truth",
-        data : super.data {
-            anode: "AnodePlane:truth",
-        }
+        },
     },
 
 
-
-    {
+    {                           // Now, the main event is to define chains of rules
         type: "MultiDuctor",
         data: {
-            anode : "AnodePlane:nominal",
+            anode : wc.tn(anodes.nominal),
             chains : [
                 [
                     {           // select based on transverse location
-                        ductor: "Ductor:uvground", // type/name of ductor
+                        ductor: wc.tn(ductors.uvground),
                         rule: "wirebounds",    // select based on wire bounds.
                         args: [ // If depo is in one of the regions then this ductor is applied.
                             // Each region is specified as a range in u, v and w wire index ranges.
@@ -90,7 +78,7 @@ local wc = import "wirecell.jsonnet";
                     },
 
                     {           // select based on transverse location
-                        ductor: "Ductor:vyground", // type/name of ductor
+                        ductor: wc.tn(ductors.vyground),
                         rule: "wirebounds",    // select based on wire bounds.
                         args: [             // If depo is in one of the regions then this ductor is applied.
                             // Each region is specified as a range in u, v and w wire index ranges.
@@ -104,14 +92,14 @@ local wc = import "wirecell.jsonnet";
                     },
 
                     {   // if nothing above matches, then use this one
-                        ductor: "Ductor:nominal",
+                        ductor: wc.tn(ductors.nominal),
                         rule: "bool",
                         args: true,
                     }
                 ],
                 [
                     {   // Always run this one
-                        ductor: "Ductor:truth",
+                        ductor: wc.tn(ductors.truth),
                         rule: "bool",
                         args: true,
                     },
@@ -125,16 +113,6 @@ local wc = import "wirecell.jsonnet";
         }
     },
 
-    bits.noisemodel {
-        data : super.data {
-            anode: "AnodePlane:nominal",
-        },
-    },
-    bits.noisesource {
-        data : super.data {
-            anode: "AnodePlane:nominal",
-        },
-    },
 
     bits.digitizer {
         data : super.data {
@@ -142,7 +120,7 @@ local wc = import "wirecell.jsonnet";
         },
     },
 
-    frames.sink {
+    frames.celltree {
         data : super.data {
             anode: "AnodePlane:nominal",
         },
@@ -160,7 +138,7 @@ local wc = import "wirecell.jsonnet";
             // configure HistFrameSink's units to match!
             Digitizer: if params.digitize then "Digitizer" else "",
             
-            FrameSink: "HistFrameSink",            
+            FrameSink: wc.tn(frames.celltree)
         }
     },
     
