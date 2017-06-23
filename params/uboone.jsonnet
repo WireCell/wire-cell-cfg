@@ -10,4 +10,6 @@ common {
     },
     wires: "microboone-celltree-wires-v2.json.bz2",
     noise: "microboone-noise-spectra-v2.json.bz2",
+    drift_speed: 1.114*wc.mm/wc.us,
+
 }
