@@ -1,3 +1,4 @@
+local wc = import "wirecell.jsonnet";
 local common = import "params/common.jsonnet";
 common {
     fields: {
