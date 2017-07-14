@@ -288,7 +288,14 @@
     Ray :: {tail:self.Point,head:self.Point},
     Track :: { time:0.0, charge:-1, ray:self.Ray },
 
-
+    // WirePlaneID is a packed integer.  WARNING, layer is NOT what
+    // most people call "plane number".  It is a bit field.  For
+    // 3-plane detectors the outer most wire plane layer is 1, then 2
+    // and collection is 4 (not 3).  layer=0 is undefined.
+    Ulayer:1<<0,
+    Vlayer:1<<1,
+    Wlayer:1<<2,
+    WirePlaneId(layer, face=0, apa=0) :: (layer&7) | (face << 3) | (apa << 4),
 
     // Base class for a configurable.
     Component :: {
