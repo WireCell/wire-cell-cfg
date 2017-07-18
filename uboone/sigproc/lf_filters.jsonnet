@@ -7,7 +7,6 @@ local wc = import "wirecell.jsonnet";
     basic : {
         type: "LfFilter",
         data: {
-            nbins: 9594,
 	    max_freq: 1 * wc.megahertz,
 	    tau: 0.0 * wc.megahertz,
         }

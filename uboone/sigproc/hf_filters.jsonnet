@@ -7,7 +7,6 @@ local wc = import "wirecell.jsonnet";
     basic : {
         type: "HfFilter",
         data: {
-	    nbins: 9594,
 	    max_freq: 1 * wc.megahertz,
 	    sigma: 0.0 * wc.megahertz,
 	    power: 2,
@@ -88,16 +87,16 @@ local wc = import "wirecell.jsonnet";
         },
 
         induction: $.basic {
+            type: "HfFilter",
             name: "Wire_ind",
             data: $.wire.basic_data {
-	        nbins: 2400,
 	        sigma: 1.0/std.sqrt(3.1415926)*1.4,
             }
         },
         collection: $.basic {
+            type: "HfFilter",
             name: "Wire_col",
             data: $.wire.basic_data {
-                nbins: 3456,
                 sigma: 1.0/std.sqrt(3.1415926)*3.0,
             }
         },

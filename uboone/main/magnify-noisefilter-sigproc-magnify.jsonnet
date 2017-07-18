@@ -29,7 +29,7 @@ local magnify = import "uboone/io/magnify.jsonnet";
 
 // make local vars for these as we need to reference them a couple times.
 local source = magnify.source { data: super.data { histtype: "orig" } };
-local sink = magnify.sink { data: super.data { rebin: 1, histtype: "decon", shunt:["orig","baseline"] }};
+local sink = magnify.sink { data: super.data { rebin: 1, histtype: "decon", shunt:["orig","threshold"] }};
 
 // now the main configuration sequence.
 [
