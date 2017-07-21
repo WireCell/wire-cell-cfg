@@ -11,4 +11,8 @@ common {
     noise: "microboone-noise-spectra-v2.json.bz2",
     drift_speed: 1.114*wc.mm/wc.us,
 
+    // nominal number of samples
+    nsamples: 9594,
+    // How long to readout the detector at once.
+    readout_time: $.nsamples * $.tick, // 5.0*wc.ms,
 }

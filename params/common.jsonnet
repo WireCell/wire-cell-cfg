@@ -10,10 +10,12 @@ local wc = import "wirecell.jsonnet";
     shaping: 2*wc.us,
     // post-FEE gain
     postgain: 1.2,
-    // How long to readout the detector at once.
-    readout_time: 5.0*wc.ms,
     // sample period
     tick: 0.5*wc.us,  
+    // nsamples in a frame
+    nsamples: 10000,
+    // How long to readout the detector at once.
+    readout_time: $.nsamples * $.tick, // 5.0*wc.ms,
 
     // from arXiv:1508.07059v2
     DL:  7.2 * wc.cm2/wc.s,

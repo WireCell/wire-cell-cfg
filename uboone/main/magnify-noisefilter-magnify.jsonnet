@@ -24,6 +24,11 @@ local sink = magnify.sink { data: super.data { rebin: 1, histtype: "raw", shunt:
     
     omni.noisedb,
 
+    omni.channel_filters.bitshift,
+    omni.channel_filters.single,
+    omni.channel_filters.grouped,
+    omni.channel_filters.status,
+
     omni.noisefilter,
 
     sink,

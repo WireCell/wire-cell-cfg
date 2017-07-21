@@ -3,12 +3,17 @@
 local wc = import "wirecell.jsonnet";
 local anodes = import "multi/anodes.jsonnet"; 
 local handmade = import "omnicndb-resp.jsonnet";
-
+local params = import "params/chooser.jsonnet";
 
 {
     anode: wc.tn(anodes.nominal),  
-    tick: 0.5*wc.us,
-    nsamples: 9600,
+    tick: params.tick,
+
+    // fixme: this is really dicey to put here as the data may not
+    // infact match this number of samples and almost not code
+    // correctly will convert the data derived from this number to
+    // match the number of samples in the actual data.
+    nsamples: params.nsamples,
 
     // channel groups is a 2D list.  Each element is one group of
     // channels which should be considered together for coherent noise
@@ -16,16 +21,16 @@ local handmade = import "omnicndb-resp.jsonnet";
     groups: [std.range(g*48, (g+1)*48-1) for g in std.range(0,171)],
 
     // externally determined "bad" channels.
-    bad: std.range(7136, 7199) + std.range(7201,7215) + std.range(7216,7263),
-
+    bad: std.range(7136, 7199) + std.range(7201,7214) + std.range(7216,7263),
 
     // overide defaults for specific channels.  If an info is
     // mentioned for a particular channel in multiple objects, last
     // one wins.
     channel_info: [             
 
-        // Default channel info which is used if not overriden by one of
-        // the channel_info objects (below) for a given channel.
+        // First entry provides default channel info across all
+        // channels.  Subsequent entries override a subset of channels
+        // with a subset of these entries.
         {
             channels: std.range(0, 2400 + 2400 + 3456 - 1),
             nominal_baseline: 2048.0,  // adc count
@@ -45,21 +50,22 @@ local handmade = import "omnicndb-resp.jsonnet";
             // list to make "noise" spectrum mask
             freqmasks: [],
 
-            // field response waveform to make "response" spectrum
+            // field response waveform to make "response" spectrum.  
             response: {},
 
         },
 
         {
             channels: {wpid: wc.WirePlaneId(wc.Ulayer)},
-            nominal_baseline: 2048.0,
             freqmasks: [
                 { value: 1.0, lobin: 0, hibin: $.nsamples-1 },
                 { value: 0.0, lobin: 169, hibin: 173 },
                 { value: 0.0, lobin: 513, hibin: 516 },
             ],
-            response: { wpid: wc.WirePlaneId(wc.Ulayer) },
-            // response: { waveform: handmade.u_resp, waveformid = wc.Ulayer }
+            /// this will use an average calculated from the anode
+            // response: { wpid: wc.WirePlaneId(wc.Ulayer) },
+            /// this uses hard-coded waveform.
+            response: { waveform: handmade.u_resp, waveformid: wc.Ulayer },
             response_offset: 79,
             pad_window_front: 20,
 	    pad_window_back: 10,
@@ -67,14 +73,15 @@ local handmade = import "omnicndb-resp.jsonnet";
 
         {
             channels: {wpid: wc.WirePlaneId(wc.Vlayer)},
-            nominal_baseline: 2048.0,
             freqmasks: [
                 { value: 1.0, lobin: 0, hibin: $.nsamples-1 },
                 { value: 0.0, lobin: 169, hibin: 173 },
                 { value: 0.0, lobin: 513, hibin: 516 },
             ],
-            response: { wpid: wc.WirePlaneId(wc.Vlayer) },
-            // response: { waveform: handmade.v_resp, waveformid = wc.Vlayer }
+            /// this will use an average calculated from the anode
+            // response: { wpid: wc.WirePlaneId(wc.Vlayer) },
+            /// this uses hard-coded waveform.
+            response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
             response_offset: 82,
             pad_window_front: 10,
 	    pad_window_back: 10,
@@ -112,7 +119,7 @@ local handmade = import "omnicndb-resp.jsonnet";
             max_rms_cut: 5.0,
         },
         {
-            channels: std.range(100,1999) + std.range(2400+300, 2400+2199),
+            channels: std.range(100,1999) + std.range(2400+290, 2400+2199),
             min_rms_cut: 1.9,
             max_rms_cut: 11.0,
         },
