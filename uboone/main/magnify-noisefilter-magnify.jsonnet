@@ -4,8 +4,18 @@ local magnify = import "uboone/io/magnify.jsonnet";
 local omni = import "uboone/sigproc/omni.jsonnet";
 
 // make local vars for these as we need to reference them a couple times.
-local source = magnify.source { data: super.data { histtype: "orig" } };
-local sink = magnify.sink { data: super.data { rebin: 1, histtype: "raw", shunt:["orig","baseline"] } };
+local source = magnify.source {
+    data: super.data {
+        frames: ["orig"],
+    }
+};
+local sink = magnify.sink {
+    data: super.data {
+        frames: ["raw"],
+        shunt:["hu_orig", "hv_orig", "hw_orig","hv_baseline","hu_baseline","hw_baseline"],
+        summaries:[],
+    }
+};
 
 // now the main configuration sequence.
 [

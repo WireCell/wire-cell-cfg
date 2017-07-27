@@ -6,20 +6,21 @@
         type: "MagnifySource",
         data: {
             filename: std.extVar("input"),
-            histtype: "raw",
+            frames: ["raw"],
         }
     },
     sink: {
         type: "MagnifySink",
         data: {
-            // What factor to rebin.
-            rebin: 1,
-            // fixme: giving an input file here is evil.
             input_filename: std.extVar("input"),
             output_filename: std.extVar("output"),
 
-            // the category to use for the output histogram
-            histtype: "decon",
+            // The list of tags on traces to select groups of traces
+            // to form into frames.
+            frames: ["decon"],
+
+            // The list of summary tags to save as 1D hisograms.
+            summaries: ["u_threshold", "v_threshold", "w_threshold"],
 
             // The evilness includes shunting data directly from input
             // file to output file.  This allows the shunt to be
