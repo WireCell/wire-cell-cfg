@@ -63,15 +63,19 @@ local default_noisedb_cfg = import "omnicndb.jsonnet";
                 wc.tn($.channel_filters.status),
             ],
             noisedb: wc.tn($.noisedb),
+            intraces: "orig",
+            outtraces: "quiet",
         }
     },
+
     pmtfilter: {
         type: "OmnibusPMTNoiseFilter",
         data: {
             anode: wc.tn(anodes.nominal),
+            intraces: "quiet",
+            outtraces: "raw",
         }
     },
-
 
 
     sigproc : {

@@ -34,12 +34,16 @@ local sink = magnify.sink {
     
     omni.noisedb,
 
+    // individual noise filter filters
     omni.channel_filters.bitshift,
     omni.channel_filters.single,
     omni.channel_filters.grouped,
     omni.channel_filters.status,
 
+    // the main noise filter
     omni.noisefilter,
+
+    omni.pmtfilter,
 
     sink,
 
@@ -48,7 +52,10 @@ local sink = magnify.sink {
         data: {
             source: wc.tn(source),
             sink: wc.tn(sink),
-            filters: [wc.tn(omni.noisefilter)],
+            filters: [
+                wc.tn(omni.noisefilter),
+                wc.tn(omni.pmtfilter),
+            ],
         }
     },
     
