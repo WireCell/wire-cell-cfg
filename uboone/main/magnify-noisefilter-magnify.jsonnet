@@ -7,12 +7,14 @@ local omni = import "uboone/sigproc/omni.jsonnet";
 local source = magnify.source {
     data: super.data {
         frames: ["orig"],
+        cmmtree: [],            // none
     }
 };
 local sink = magnify.sink {
     data: super.data {
         frames: ["raw"],
         shunt:["hu_orig", "hv_orig", "hw_orig","hv_baseline","hu_baseline","hw_baseline"],
+        cmmtree: [["bad","T_bad"], ["lf_noisy", "T_lf"]],
         summaries:[],
     }
 };

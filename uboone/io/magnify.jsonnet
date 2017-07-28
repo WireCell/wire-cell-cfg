@@ -7,6 +7,11 @@
         data: {
             filename: std.extVar("input"),
             frames: ["raw"],
+            // Map between a channel mask map key name and its TTree for reading.
+            cmmtree: [         
+                ["bad", "T_bad"],
+                //["lf_noisy", "T_lf"],
+            ],
         }
     },
     sink: {
@@ -30,6 +35,13 @@
             // is left unset or null then all categories known to the
             // code will be shunted.
             shunt: [],
+
+            // Map between a channel mask map key name and its TTree for writing.
+            cmmtree: [         
+                ["bad", "T_bad"],
+                ["lf_noisy", "T_lf"],
+            ],
+
         },
     }
 
