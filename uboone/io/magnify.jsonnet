@@ -6,10 +6,10 @@
         type: "MagnifySource",
         data: {
             filename: std.extVar("input"),
-            frames: ["raw"],
+            frames: [],
             // Map between a channel mask map key name and its TTree for reading.
             cmmtree: [         
-                ["bad", "T_bad"],
+                //["bad", "T_bad"],
                 //["lf_noisy", "T_lf"],
             ],
         }
@@ -22,10 +22,10 @@
 
             // The list of tags on traces to select groups of traces
             // to form into frames.
-            frames: ["decon"],
+            frames: [],
 
             // The list of summary tags to save as 1D hisograms.
-            summaries: ["u_threshold", "v_threshold", "w_threshold"],
+            summaries: [],
 
             // The evilness includes shunting data directly from input
             // file to output file.  This allows the shunt to be
@@ -38,8 +38,8 @@
 
             // Map between a channel mask map key name and its TTree for writing.
             cmmtree: [         
-                ["bad", "T_bad"],
-                ["lf_noisy", "T_lf"],
+                //["bad", "T_bad"],
+                //["lf_noisy", "T_lf"],
             ],
 
         },
