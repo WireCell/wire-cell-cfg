@@ -42,8 +42,6 @@ local params = import "params/chooser.jsonnet";
 	    adc_limit: 15,
             min_rms_cut: 1.0,         // units???
             max_rms_cut: 5.0,         // units???
-    	    decon_limit: 0.05,	      // mystery
-	    adc_limit: 15.0,	      // mystery
 
             // parameter used to make "rcrc" spectrum
             rcrc: 1.0*wc.millisecond,
