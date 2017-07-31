@@ -18,7 +18,6 @@ local anodes = import "multi/anodes.jsonnet";
 local bits = import "uboone/sigproc/bits.jsonnet";
 local filters = import "uboone/sigproc/filters.jsonnet";
 local omni = import "uboone/sigproc/omni.jsonnet";
-
 local magnify = import "uboone/io/magnify.jsonnet";
 
 // make local vars for these as we need to reference them a couple times.
