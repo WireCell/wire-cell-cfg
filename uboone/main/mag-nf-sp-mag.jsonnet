@@ -11,27 +11,38 @@
 //
 
 local wc = import "wirecell.jsonnet";
-local anodes = import "multi/anodes.jsonnet"; 
+local guts = import "uboone/sigproc/omni-nf-sp.jsonnet";
 local magnify = import "uboone/io/magnify.jsonnet";
-local omni = import "uboone/sigproc/omni.jsonnet";
-local bits = import "uboone/sigproc/bits.jsonnet";
-local filters = import "uboone/sigproc/filters.jsonnet";
 
-// make local vars for these as we need to reference them a couple times.
+// make local vars for these as we need to reference them a couple times below.
 local source = magnify.source {
     data: super.data {
         frames: ["orig"],
         cmmtree: [],            // none
     }
 };
-local sink = magnify.sink {
+local in_sink = magnify.sink {
+    name: "in_sink",
+    data: super.data {
+	frames: ["orig"],
+	root_file_mode: "RECREATE",
+    },
+};
+local nf_sink = magnify.sink {
+    name: "nf_sink",
+    data: super.data {
+	frames: ["raw"],
+	root_file_mode: "UPDATE",
+    },
+};
+local sp_sink = magnify.sink {
+    name: "sp_sink",
     data: super.data {
         frames: ["wiener", "gauss"],
-        shunt:["Trun", "hu_orig", "hv_orig", "hw_orig",
-               "hv_baseline","hu_baseline","hw_baseline"],
+	root_file_mode: "UPDATE",
+        shunt:["Trun", "hv_baseline","hu_baseline","hw_baseline"],
         cmmtree: [["bad","T_bad"], ["lf_noisy", "T_lf"]],
         summaries: ["threshold"],
-
     }
 };
 
@@ -47,45 +58,23 @@ local sink = magnify.sink {
     },
 
     source,
+    in_sink,
+    nf_sink,
+    sp_sink,
 
-    anodes.nominal,
-    
-    // The channel noise database
-    omni.noisedb,
-
-    // individual noise filters used by the main filter.
-    omni.channel_filters.bitshift,
-    omni.channel_filters.single,
-    omni.channel_filters.grouped,
-    omni.channel_filters.status,
-
-    // The main noise filter
-    omni.noisefilter,
-    // The PMT noise filter
-    omni.pmtfilter,
-
-    bits.fieldresponse,
-
-    // low/hi frequency signal processing filters
-] + filters + [
-
-    // per channel response
-    bits.perchanresp,
-
-    // the main signal processing 
-    omni.sigproc,
-
-    sink,
+] + guts.config_sequence + [
 
     {
         type: "Omnibus",
         data: {
             source: wc.tn(source),
-            sink: wc.tn(sink),
-            filters: [		// linear chaing of frame filters
-                wc.tn(omni.noisefilter),
-                wc.tn(omni.pmtfilter),
-		wc.tn(omni.sigproc),
+            //sink: wc.tn(sink),
+            filters: [		// linear chaning of frame filters
+		wc.tn(in_sink)
+	    ] + std.map(wc.tn, guts.noise_frame_filters) + [
+		wc.tn(nf_sink),
+	    ] + std.map(wc.tn, guts.sigproc_frame_filters) + [
+		wc.tn(sp_sink),
             ],
         }
     },
