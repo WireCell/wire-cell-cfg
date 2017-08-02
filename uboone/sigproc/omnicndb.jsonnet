@@ -7,13 +7,12 @@ local params = import "params/chooser.jsonnet";
 
 {
     anode: wc.tn(anodes.nominal),  
-    tick: params.tick,
+    tick: params.sigproc.sample_period,
 
-    // fixme: this is really dicey to put here as the data may not
-    // infact match this number of samples and almost not code
-    // correctly will convert the data derived from this number to
-    // match the number of samples in the actual data.
-    nsamples: params.nsamples,
+    // WARNING: this sets the number of frequency-domain bins used in
+    // the noise filtering.  Actual data may come into the NF which
+    // differing number of time-domain bins.
+    nsamples: params.sigproc.frequency_bins,
 
     // channel groups is a 2D list.  Each element is one group of
     // channels which should be considered together for coherent noise

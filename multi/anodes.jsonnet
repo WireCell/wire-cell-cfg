@@ -5,14 +5,14 @@ local wc = import "wirecell.jsonnet";
         type : "AnodePlane",
         data : {
             // WIRECELL_PATH will be searched for these files
-            wires: params.wires,
-            fields: params.fields.nominal,
+            wires: params.detector.wires,
+            fields: params.detector.fields.nominal,
             ident : 0,
-            gain : params.gain,
-            shaping : params.shaping,
-            postgain: params.postgain,
-            readout_time : params.readout_time,
-            tick : params.tick,
+            gain : params.detector.gain,
+            shaping : params.detector.shaping,
+            postgain: params.detector.postgain,
+            readout_time : params.detector.readout_time,
+            tick : params.detector.tick,
         }
     },
 
@@ -20,7 +20,7 @@ local wc = import "wirecell.jsonnet";
     uvground : $.nominal {
         name: "uvground",
         data : super.data {
-            fields:params.fields.uvground,
+            fields:params.detector.fields.uvground,
         }
     },
 
@@ -28,7 +28,7 @@ local wc = import "wirecell.jsonnet";
     vyground : $.nominal {
         name: "vyground",
         data : super.data {
-            fields:params.fields.vyground,
+            fields:params.detector.fields.vyground,
         }
     },
     
@@ -40,7 +40,7 @@ local wc = import "wirecell.jsonnet";
             // response file which leads to some kind of "true signal
             // waveforms" For now, just use the nominal one as a stand
             // in to let the configuration and machinery be developed.
-            fields:params.fields.truth,
+            fields:params.detector.fields.truth,
         }
     },
     
