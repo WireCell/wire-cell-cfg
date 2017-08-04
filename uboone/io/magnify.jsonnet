@@ -20,6 +20,9 @@
             input_filename: std.extVar("input"),
             output_filename: std.extVar("output"),
 
+	    // this best be made consistent
+	    anode: "AnodePlane",
+
             // The list of tags on traces to select groups of traces
             // to form into frames.
             frames: [],
