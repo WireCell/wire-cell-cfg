@@ -1,5 +1,5 @@
 // This overrides select common parameters with ones that are specific
-// to MicroBooNE.
+// to MicroBooNE.  
 
 local wc = import "wirecell.jsonnet";
 local common = import "params/common.jsonnet";
@@ -38,8 +38,10 @@ common {
     
     sigproc: super.sigproc {
 
-	frequency_bins: 9595,
-
+	// This sets the bins used for frequency space calcualtions.
+	// It may also be used to resize time domain waveforms to
+	// match.
+	frequency_bins: 9592,
 
     },
 }
