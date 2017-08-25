@@ -1,0 +1,11 @@
+* What is here
+
+This is a self-contained directory holding configuration to run WCT NF+SP jobs.
+
+One main entry is [[./magnfsp.jsonnet]] which will run a WCT NF+SP job
+using [[https://github.com/bnlif/magnify][Magnify]] files as input and output.  The file I/O layer is
+defined just in this top-level file.  The rest of the configuration
+may be reused as-is for other I/O systems, such as running WCT inside
+art/LArSoft.
+
+
