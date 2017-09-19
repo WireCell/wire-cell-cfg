@@ -4,6 +4,8 @@ local wc = import "wirecell.jsonnet";
 local handmade = import "chndb-resp.jsonnet";
 local params = import "params.jsonnet";
 
+local rms_cuts = import "chndb_rmscut.jsonnet";
+
 {
     tick: params.sample_period,
 
@@ -116,36 +118,6 @@ local params = import "params.jsonnet";
                 to:   {gain: 14.0*wc.mV/wc.fC, shaping: 2.2*wc.us},
             }
         },
-
-        // min/max RMS cut
-        {
-            channels: std.range(0,99) + std.range(2400, 2400+289),
-            min_rms_cut: 1.0,
-            max_rms_cut: 5.0,
-        },
-        {
-            channels: std.range(100,1999) + std.range(2400+290, 2400+2199),
-            min_rms_cut: 1.9,
-            max_rms_cut: 11.0,
-        },
-        {
-            channels: std.range(2000, 2399),
-            min_rms_cut: 0.9,
-            max_rms_cut: 5.0,
-        },
-        {
-            channels: std.range(2400+2200, 2400+2399),
-            min_rms_cut: 1.0,
-            max_rms_cut: 5.0,
-        },
-        {
-            channels: { wpid: wc.WirePlaneId(wc.Wlayer) },
-            min_rms_cut: 1.25,
-            max_rms_cut: 8.0,
-        },
-
-    ],
-
+    ] + rms_cuts,
 }
-
     
