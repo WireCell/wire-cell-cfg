@@ -108,7 +108,8 @@ The various required Jsonnet files may be "compiled" into a single JSON file whi
 To "compile" Jsonnet to JSON simply run the =jsonnet= command on the top level Jsonnet file.  Sine the resulting JSON is not in a convenient form to further modify and because WCT supports it, running the output through =bzip2= is recommended.  And, since the result is a single file, there is no longer any need to include a job configuration directory in =WIRECELL_PATH= (the static configuration "data" directory is still needed).
 
 #+BEGIN_EXAMPLE
-  $ jsonnet -J wire-cell-cfg wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp.json.bz2
+  $ jsonnet -V hwnf_epoch=before -J wire-cell-cfg \
+    wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp.json.bz2
   $ cp ubnfsp.json.bz2 wire-cell-cfg/uboone/nfsp/ubnfsp.fcl /path/to/rundir
   $ export WIRECELL_PATH=/path/to/wire-cell-data
   $ cd /path/to/rundir
@@ -117,16 +118,18 @@ To "compile" Jsonnet to JSON simply run the =jsonnet= command on the top level J
 
 Where the above has relied on =ubnfsp.fcl= to be written so that it names =ubnfsp.json.bz= in its =configs= list.  If it is not convenient to place the =ubnfsp.json.bz2= file in the same directory as the the job runs then simply add the directory holding it to =WIRECELL_PATH=.
 
-
 The example above creates a "firmware" file for using WCT inside /art/.  But "firmware" configuration files can also be made for =wire-cell=.  However, as it is common to use Jsonnet's =std.extVar()= to inject input and output file names from the =wire-cell= command line, they must also be specified during "firmware" file "compilation".
 
 #+BEGIN_EXAMPLE
   $ jsonnet -V output=out.root \
             -V input=in.root \
+            -V hwnf_epoch=before \
             -J wire-cell-cfg \
      wire-cell-cfg/uboone/nfsp/magnfsp.jsonnet \
      | bzip2 > magnfsp.json.bz2
 #+END_EXAMPLE
+
+The =-V hwnf_epoch=before= flag shown above is described in detail in the next section.
 
 ** Conditional compilation
 
