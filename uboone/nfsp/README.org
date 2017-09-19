@@ -1,11 +1,195 @@
-* What is here
+#+TITLE: WCT Configuration for MicroBooNE Noise-Filtering and Signal Processing
 
-This is a self-contained directory holding configuration to run WCT NF+SP jobs.
+* General configuration files
 
-One main entry is [[./magnfsp.jsonnet]] which will run a WCT NF+SP job
-using [[https://github.com/bnlif/magnify][Magnify]] files as input and output.  The file I/O layer is
-defined just in this top-level file.  The rest of the configuration
-may be reused as-is for other I/O systems, such as running WCT inside
-art/LArSoft.
+The majority of files in this directory are written to be generic to
+the WCT application.  A single file, [[../../wirecell.jsonnet][wirecell.jsonnet]] from outside
+this directory is need.  
 
 
+The general files are:
+
+ - [[./params.jsonnet]] defines some things used elsewhere
+ - [[./general.jsonnet]] define some general components (specifically the anode plane object)
+ - [[./nf.jsonnet]] configuration specific to noise-filtering components 
+ - [[./sp.jsonnet]] configuration specific to signal-processing components 
+ - [[./chndb_data.jsonnet]] a big structure defining static information relevant to noise filtering (see below)
+ - [[./chndb-resp.jsonnet]] hand-crafted field response functions for quick and dirty deconvolution done inside coherent noise subtraction
+ - [[./hf_filters.jsonnet]] and [[./lf_filters.jsonnet]] parameters defining high and low frequency filters used in signal processing
+
+
+** Channel noise database
+
+The channel noise database configuration (=chndb_data.jsonnet=) needs
+some extra description.  The comments in the file should be enough to
+describe the structure but the =channel_info= sub-structure in
+particular deserves some extra here.  It is an ordered list of
+/channel info objects/ (CIO):
+
+#+BEGIN_EXAMPLE
+  channel_info: [cio1, cio2, cio3, ...]
+#+END_EXAMPLE
+
+Each CIO must have a =channels= entry which determines to which
+channels the rest of the object is applied.  The CIOs are applied in
+order so that any later CIO may override some value for some channel
+that had been set by an earlier CIO.  As such, the first CIO can be
+applied to all channels in order to set some global defaults.
+
+The =channels= to which a CIO may apply can be set in a number of ways:
+
+- =std.range(first,last)= :: function returns a list of numbers in =[first, last]=.  Be cautious that this expansion is *inclusive* of =last= unlike specifying ranges in Python or C++.
+- ={wpid: wc.WirePlaneId(wc.Ulayer)}= :: object identifying all channels reading out a given wire plane (aka "layer")
+- =<number>= :: scalar explicitly giving a single channel number
+- =[<n1>, <n2>, ...]= :: array explicitly listing all required channels
+
+In the case of running WCT in /art/ (more on this below) this file is
+also re-used in the top-level [[./ubnfsp.jsonnet]] file.  Here, a feature
+of Jsonnet is used to allow this same data structure to be used and to
+override the "pure" WCT =OmniChannelNoiseDB= with the LArSoft-aware
+=wclsChannelNoiseDB= component which itself inherits from
+=OmniChannelNoiseDB=.  In particular, a local =wcls_nf= is derived
+from =nf= (imported from [[./nf.jsonnet]]) replacing the =chndb=
+substructure with one defined here.  That replacement sets a new
+=type= of =wclsChannelNoiseDB= and defines a =data= which is based on
+=chndb_data= but then extended to add additional entries specific to
+=wclsChannelNoiseDB=.  This adds the =misconfig_channel= policy to
+state that it will use a LArSoft service for this info and supply some
+missing parameters.  In principle it may also specify a a
+=bad_channel= policy to use a service to get dynamic bad channel
+lists, however that would be wrong as the NF determines these
+internally.
+
+* Top level files
+
+This directory also includes two examples of top-level WCT config
+files which connect the "guts" configuration described above to the
+components which connect them to the application layer (eg, the
+command line =wire-cell= program or integration into a larger app like
+/art/).  
+
+
+** Pure WCT
+
+A "pure" =wire-cell= command line job may be given a configuration
+with [[./magnfsp.jsonnet]] at the top-level.  This will Pull in the "guts"
+described above as well as configure the job use [[https://github.com/bnlif/magnify][Magnify]] files for
+input and output.  The file I/O layer is defined just in this
+top-level file.  
+
+
+** WC/LS
+
+Configuration for WCT to run inside an /art/ job is almost identical
+to a "pure WCT" configuration except for using [[./ubnfsp.jsonnet]] as the
+top-level file.
+
+In addition, because the command line program is /art/ a FHiCL
+fragment must be given to /art/ in order to specify the information
+that would otherwise be given to the =wire-cell= command line.  The
+file [[./ubnfsp.fcl]] provides an example of such a FHiCL file which
+includes the WCT configuration as a "firmware" file (see below).
+
+* Using Configuration Files
+
+Whether the main program is /art/ or /wire-cell/ the user must specify
+one (or potentially more) top-level configuration files.  As described
+below there are two ways to provide the "top-level" file, as WCT
+Jsonnet source or as compiled (and optionally compressed) JSON
+"firmware".
+
+The examples below assumes something like:
+
+#+BEGIN_EXAMPLE
+  mkdir -p /path/to
+  cd /path/to
+  git clone https://github.com/WireCell/wire-cell-cfg.git
+  git clone https://github.com/WireCell/wire-cell-data.git
+#+END_EXAMPLE
+
+In general the two resulting directories need to be listed in =WIRECELL_PATH=:
+
+#+BEGIN_EXAMPLE
+  $ export WIRECELL_PATH=`pwd`/wire-cell-cfg:`pwd`/wire-cell-data
+#+END_EXAMPLE
+
+Although note that when using the "firmware" method to provide
+configuration described below, only the second is required.
+
+** Specifying configuration file to application
+
+For =wire-cell= command line, top-level configuration files are specified with the =-c= option.
+
+#+BEGIN_EXAMPLE
+  $ wire-cell -c top.jsonnet [...]
+#+END_EXAMPLE
+
+For /art/, the top-level configuration files are specified by setting
+the =configs= option of the =wcls_main= art tool configuration:
+
+#+BEGIN_EXAMPLE
+  wcls_main: {
+     configs: ["top.jsonnet"]
+     # ...
+  }
+#+END_EXAMPLE
+
+Whether the file is specified as a single file or a relative path, its
+location is searched in the path list held by =WIRECELL_PATH=.
+
+** Configuration source files
+
+Providing configuration as source is simply making available all the
+Jsonnet files to the application such that they may either be located
+directly in =WIRECELL_PATH= or such that they may be located relative
+to one Jsonnet which calls =import= with a relative path.  For
+example:
+
+#+BEGIN_EXAMPLE
+  $ export WIRECELL_PATH=/path/to/wire-cell-cfg:/path/to/wire-cell-data
+  $ wire-cell -c uboone/nfsp/magnfsp.jsonnet [...]
+#+END_EXAMPLE
+
+** Configuration "firmware" files
+
+The various required Jsonnet files may be "compiled" into a single
+JSON file which may additionally be compressed.  This bundling is
+somewhat erroneously called a "firmware" file as it is in a form that
+can not easily be directly modified but which is very "tidy" to 
+manage as a single "blob" file and efficient for WCT to load.
+
+To "compile" Jsonnet to JSON simply run the =jsonnet= command on the
+top level Jsonnet file.  Sine the resulting JSON is not in a
+convenient form to further modify and because WCT supports it, running
+the output through =bzip2= is recommended.  And, since the result is a
+single file, there is no longer any need to include a job
+configuration directory in =WIRECELL_PATH= (the static configuration
+"data" directory is still needed).
+
+#+BEGIN_EXAMPLE
+  $ jsonnet -J wire-cell-cfg wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp.json.bz2
+  $ cp ubnfsp.json.bz2 wire-cell-cfg/uboone/nfsp/ubnfsp.fcl /path/to/rundir
+  $ export WIRECELL_PATH=/path/to/wire-cell-data
+  $ cd /path/to/rundir
+  $ art -c ubnfsp.fcl -o output.root -s input.root
+#+END_EXAMPLE
+
+Where the above has relied on =ubnfsp.fcl= to be written so that it
+names =ubnfsp.json.bz= in its =configs= list.  If it is not convenient
+to place the =ubnfsp.json.bz2= file in the same directory as the the
+job runs then simply add the directory holding it to =WIRECELL_PATH=.
+
+
+The example above creates a "firmware" file for using WCT inside
+/art/.  But "firmware" configuration files can also be made for
+=wire-cell=.  However, as it is common to use Jsonnet's =std.extVar()=
+to inject input and output file names from the =wire-cell= command
+line, they must also be specified during "firmware" file "compilation".
+
+#+BEGIN_EXAMPLE
+  $ jsonnet -V output=out.root \
+            -V input=in.root \
+            -J wire-cell-cfg \
+     wire-cell-cfg/uboone/nfsp/magnfsp.jsonnet \
+     | bzip2 > magnfsp.json.bz2
+#+END_EXAMPLE
