@@ -22,5 +22,5 @@ local wc = import "wirecell.jsonnet";
     // Data files.
     fields_file: "ub-10-half.json.bz2",
     wires_file: "microboone-celltree-wires-v2.json.bz2",
-    chresp_file: "calib_resp_v1.json.bz2",
+    chresp_file: "microboone-channel-responses-v1.json.bz2",
 }
