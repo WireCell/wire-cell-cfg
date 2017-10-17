@@ -40,7 +40,11 @@ common {
 
 	// This sets the bins used for frequency space calcualtions.
 	// It may also be used to resize time domain waveforms to
-	// match.
+	// match.  WARNING: some noise filters are specified with
+	// frequency bin number and that makes implicit assumption
+	// about how many frequency bins are used.  Too large of a
+	// change to this number will require those bin numbers to be
+	// recalculated or else noise spikes will no longer be masked.
 	frequency_bins: 9592,
 
     },
