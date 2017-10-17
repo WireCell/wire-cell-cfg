@@ -110,26 +110,12 @@ To "compile" Jsonnet to JSON simply run the =jsonnet= command on the top level J
 #+BEGIN_EXAMPLE
   $ jsonnet -V hwnf_epoch=before -J wire-cell-cfg \
     wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp.json.bz2
-  $ cp ubnfsp.json.bz2 wire-cell-cfg/uboone/nfsp/ubnfsp.fcl /path/to/rundir
+  $ cp ubnfsp.json.bz2 wire-cell-cfg/uboone/nfsp/*.fcl /path/to/rundir
   $ export WIRECELL_PATH=/path/to/wire-cell-data
   $ cd /path/to/rundir
-  $ art -c ubnfsp.fcl -o output.root -s input.root
 #+END_EXAMPLE
+The =-V hwnf_epoch=before= flag shown above is described in detail in the next section and information on the art FHiCL files following it.
 
-Where the above has relied on =ubnfsp.fcl= to be written so that it names =ubnfsp.json.bz= in its =configs= list.  If it is not convenient to place the =ubnfsp.json.bz2= file in the same directory as the the job runs then simply add the directory holding it to =WIRECELL_PATH=.
-
-The example above creates a "firmware" file for using WCT inside /art/.  But "firmware" configuration files can also be made for =wire-cell=.  However, as it is common to use Jsonnet's =std.extVar()= to inject input and output file names from the =wire-cell= command line, they must also be specified during "firmware" file "compilation".
-
-#+BEGIN_EXAMPLE
-  $ jsonnet -V output=out.root \
-            -V input=in.root \
-            -V hwnf_epoch=before \
-            -J wire-cell-cfg \
-     wire-cell-cfg/uboone/nfsp/magnfsp.jsonnet \
-     | bzip2 > magnfsp.json.bz2
-#+END_EXAMPLE
-
-The =-V hwnf_epoch=before= flag shown above is described in detail in the next section.
 
 ** Conditional compilation
 
@@ -157,21 +143,37 @@ Then to compile two "firmware" files, one for each epoch simply add a flag to se
     wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp-after-hwnf.json.bz2
 #+END_EXAMPLE
 
-Likewise, the FHiCL fragment needs to be bifurcated in order to individually name the corresponding file.
 
-- [[./ubnfsp-after-hwnf.fcl]]
-- [[./ubnfsp-before-hwnf.fcl]]
+* FHiCL files
 
-Note, if using Jsonnet source directly to configure the job instead compiling it into a single JSON file, the same set of Jsonnet files may be used for both epochs.  The switch between epochs would then be performed not by two different FHiCL files each with its own "firmware" but two different FHiCL files with different =hwnf_epoch= parameters set in the =params= section of the =wcls_main= tool configuration.  For example:
+The art FHiCL files for configuring art to run WCT NF+SP as well as
+non-WCT related code for the purpose of MicroBooNE data production are
+kept here for convenience.  
+
+They try to follow [[https://indico.fnal.gov/event/9928/session/6/material/0/7.pdf][Good art Workflow]] so have some structure that
+should be understood.  First, there are two short main files which
+hold the switch between pre/post hardware fix configuration "epoch":
+
+- [[./ubnfspct-prehwf.fcl]] pre hardware noise fix main FCL
+- [[./ubnfspct-posthwf.fcl]] post hardware noise fix main FCL
+
+These each include a common:
+
+- [[./ubnfspct-generic.fcl]] generic main FCL
+
+but then override just the setting for the actual WCT configuration
+file.  The generic file relies on:
+
+- [[./wcls.fcl]] define =physics.producer= config for modules provided by larwirecell 
+- FIXME define config for celltree module
+
+An art job might then be run something like:
 
 #+BEGIN_EXAMPLE
-  nfsp : {
-     module_type : WireCellToolkit
-     wcls_main: {
-        // ...
-        params: {
-           hwnf_epoch: "before"
-        }
-    }
-  }
+  # pre hardware noise fix input data:
+  $ art -c ubnfspct-prehwf.fcl -o output.root -s input.root
+  # post hardware noise fix input data:
+  $ art -c ubnfspct-posthwf.fcl -o output.root -s input.root
 #+END_EXAMPLE
+
+
