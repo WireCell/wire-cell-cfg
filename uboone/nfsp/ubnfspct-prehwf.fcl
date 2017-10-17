@@ -2,6 +2,6 @@
 # process (SP) and celltree (CT) and event butchering on pre hardware
 # noise fix (prehwf) data.
 
-#include "ubnfsp-generic.fcl"
+#include "ubnfspct-generic.fcl"
 physics.producers.nfsp.wcls_main.configs: ["ubnfsp-before.json.bz2"]
 
