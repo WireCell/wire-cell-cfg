@@ -11,7 +11,7 @@ local anodes = import "multi/anodes.jsonnet";
     perchanresp : {
         type : "PerChannelResponse",
         data : {
-            filename: "calib_resp_v1.json.bz2",
+            filename: "microboone-channel-responses-v1.json.bz2",
         },
     },
     
