@@ -108,14 +108,34 @@ The various required Jsonnet files may be "compiled" into a single JSON file whi
 To "compile" Jsonnet to JSON simply run the =jsonnet= command on the top level Jsonnet file.  Sine the resulting JSON is not in a convenient form to further modify and because WCT supports it, running the output through =bzip2= is recommended.  And, since the result is a single file, there is no longer any need to include a job configuration directory in =WIRECELL_PATH= (the static configuration "data" directory is still needed).
 
 #+BEGIN_EXAMPLE
-  $ jsonnet -V hwnf_epoch=before -J wire-cell-cfg \
-    wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp.json.bz2
-  $ cp ubnfsp.json.bz2 wire-cell-cfg/uboone/nfsp/*.fcl /path/to/rundir
-  $ export WIRECELL_PATH=/path/to/wire-cell-data
+  $ jsonnet -V noisedb=fnal -V hwnf_epoch=before -J wire-cell-cfg \
+    wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp-before.json.bz2
+  $ cp ubnfsp-before.json.bz2 wire-cell-cfg/uboone/nfsp/*.fcl /path/to/rundir
+  $ export WIRECELL_PATH=/path/to/wire-cell-data:/path/to/rundir
   $ cd /path/to/rundir
 #+END_EXAMPLE
 The =-V hwnf_epoch=before= flag shown above is described in detail in the next section and information on the art FHiCL files following it.
 
+Options:
+
+- =noisedb= :: set how to get the noise information.  The value can be *static* to rely on just info in the Jsonnet.  This is useful for testing on workstation/laptop when FNAL databases can not be reached.  Or it can be *fnal* (really, any value than *static*) to use the FNAL database.
+- =hwnf_epoch= :: set which hardware noise fix configuration epoch to assume.  It may take *before*  or *after*.
+
+The name used for the =.json.bz2= file needs to be set in the FHiCL file.  The =ubnfsp-before-hwnf.fcl= has the name from the above example properly hard-coded.  Etc for "after".
+
+Note for pure-WCT users: the example above creates a "firmware" file for using WCT inside /art/.  But "firmware" configuration files can also be made for =wire-cell=.  However, as it is common to use Jsonnet's =std.extVar()= to inject input and output file names from the =wire-cell= command line, they must also be specified during "firmware" file "compilation".
+
+#+BEGIN_EXAMPLE
+  $ jsonnet -V output=out.root \
+            -V input=in.root \
+            -V hwnf_epoch=before \
+            -V noisedb=static \
+            -J wire-cell-cfg \
+     wire-cell-cfg/uboone/nfsp/magnfsp.jsonnet \
+     | bzip2 > magnfsp.json.bz2
+#+END_EXAMPLE
+
+The =-V hwnf_epoch=before= flag shown above is described in more detail in the next section.
 
 ** Conditional compilation
 
@@ -137,9 +157,9 @@ in with the external variable =hwnf_epoch= defined to either =before= or =after=
 Then to compile two "firmware" files, one for each epoch simply add a flag to set the =hwnf_epoch= 
 
 #+BEGIN_EXAMPLE
-  $ jsonnet -V hwnf_epoch=before -J wire-cell-cfg \
+  $ jsonnet -V noisedb=fnal -V hwnf_epoch=before -J wire-cell-cfg \
     wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp-before-hwnf.json.bz2
-  $ jsonnet -V hwnf_epoch=after -J wire-cell-cfg \
+  $ jsonnet -V noisedb=fnal -V hwnf_epoch=after -J wire-cell-cfg \
     wire-cell-cfg/uboone/nfsp/ubnfsp.jsonnet | bzip2 > ubnfsp-after-hwnf.json.bz2
 #+END_EXAMPLE
 
@@ -170,10 +190,17 @@ file.  The generic file relies on:
 An art job might then be run something like:
 
 #+BEGIN_EXAMPLE
-  # pre hardware noise fix input data:
-  $ art -c ubnfspct-prehwf.fcl -o output.root -s input.root
-  # post hardware noise fix input data:
-  $ art -c ubnfspct-posthwf.fcl -o output.root -s input.root
+  nfsp : {
+     module_type : WireCellToolkit
+     wcls_main: {
+        configs: ["ubnfsp.jsonnet"]
+        // only needed if giving .jsonnet instead of pre-compiled .json file
+        params: {
+           hwnf_epoch: "before",
+           noisedb: "fnal"
+        }
+    }
+  }
 #+END_EXAMPLE
 
 

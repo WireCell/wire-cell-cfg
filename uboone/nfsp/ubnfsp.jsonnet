@@ -19,7 +19,7 @@ local chndb_data = import "chndb_data.jsonnet";
 
 // Override parts of the NF config in order to use LArSoft-specific
 // channel noise database class.
-local wcls_nf = nf {
+local wcls_nf = (if std.extVar("noisedb") == "static" then nf else nf {
     chndb : {
 	type: "wclsChannelNoiseDB",
 	data: chndb_data {
@@ -32,7 +32,7 @@ local wcls_nf = nf {
 	    }
 	}
     }
-};
+});
 
 // This source converts between LArSoft raw::RawDigit and WCT IFrame
 // for input to WCT.  
