@@ -125,6 +125,8 @@ Options:
 
 The name used for the =.json.bz2= file needs to be set in the FHiCL file.  The =ubnfsp-before-hwnf.fcl= has the name from the above example properly hard-coded.  Etc for "after".
 
+See also [[./deploy.sh]].
+
 Note for pure-WCT users: the example above creates a "firmware" file for using WCT inside /art/.  But "firmware" configuration files can also be made for =wire-cell=.  However, as it is common to use Jsonnet's =std.extVar()= to inject input and output file names from the =wire-cell= command line, they must also be specified during "firmware" file "compilation".
 
 #+BEGIN_EXAMPLE
@@ -215,6 +217,14 @@ The figure below shows the parts of a full MicroBooNE NF+SP+Celltree+Butcher pro
 
 #+ATTR_HTML: :class svgfig
 [[file:nfsp-chain.svg]]
+
+To assist in preparing configuration files run [[./deploy.sh]] like
+
+#+BEGIN_EXAMPLE
+  ./deploy.sh /path/to/cfgdir
+#+END_EXAMPLE
+
+It makes JSON files and copies then and the FHiCL files to the given path.
 
 ** NF+SP
 
