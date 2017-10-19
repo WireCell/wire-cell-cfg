@@ -45,7 +45,7 @@ common {
 	// about how many frequency bins are used.  Too large of a
 	// change to this number will require those bin numbers to be
 	// recalculated or else noise spikes will no longer be masked.
-	frequency_bins: 9592,
+	frequency_bins: 9600,
 
     },
 }
