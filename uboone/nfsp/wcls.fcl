@@ -16,12 +16,9 @@ wcls: {
 	    # it probably get's overridden in whatever includes this chunk.
 	    configs: ["ubnfsp.json.bz2"]
 	    # Two-faced input components.  Needs to also be mentioned in WCT config.
-	    # inputers: ["wclsRawFrameSource", "wclsChannelNoiseDB"]
-	    # Note: need wclsChannelNoiseDB to use LS services for bad/misconfigured channels.
-	    # Note: need to change uboone-nf-sp.jsonnet too
-	    inputers: ["wclsRawFrameSource"]
+	    inputers: ["wclsRawFrameSource", "wclsChannelNoiseDB"]
 	    # Two-faced output components.  Needs to also be mentioned in WCT config.
-	    outputers: ["wclsCookedFrameSink"]
+	    outputers: ["wclsFrameSaver:nfsaver", "wclsFrameSaver:spsaver"]
 	    # external parameters injected into the WCT configuration
 	    params: { }
 	 }
@@ -37,8 +34,23 @@ wcls: {
 
          inRawTag: "nfsp:raw:"
          inSigTag: "nfsp:gauss:"
+
+	 # apparently downstream code is too brittle to handle giving
+         # any instance names.
+
+	 outRawTag: ""
+	 outSigTag: ""
+	 outAssnTag: ""
+
+	 # throw away perfectly cromulent data.  very dubious but
+         # that's what people want.
+
          ndrop: 1600
          nkeep: 6400
+
+	 # match some arbitrary and inaplicable "ADC" charge scale
+         # instead of number of ionized electrons.
+
          sigscale: 0.005
       }
    }

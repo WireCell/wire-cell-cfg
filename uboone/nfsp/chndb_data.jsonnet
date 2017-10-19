@@ -3,10 +3,13 @@
 local wc = import "wirecell.jsonnet";
 local handmade = import "chndb-resp.jsonnet";
 local params = import "params.jsonnet";
+local gen = import "general.jsonnet";
 
 local rms_cuts = import "chndb_rmscut.jsonnet";
 
 {
+    anode: wc.tn(gen.anode),
+
     tick: params.sample_period,
 
     // This sets the number of frequency-domain bins used in the noise

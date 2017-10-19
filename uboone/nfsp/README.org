@@ -1,5 +1,7 @@
 #+TITLE: WCT Configuration for MicroBooNE Noise-Filtering and Signal Processing
 
+#+html_head_extra: <style>.svgfig {width: 90%; }</style>
+
 * General configuration files
 
 The majority of files in this directory are written to be generic to the WCT application.  A single file, [[../../wirecell.jsonnet][wirecell.jsonnet]] from outside this directory is need.
@@ -176,6 +178,8 @@ hold the switch between pre/post hardware fix configuration "epoch":
 
 - [[./ubnfspct-prehwf.fcl]] pre hardware noise fix main FCL
 - [[./ubnfspct-posthwf.fcl]] post hardware noise fix main FCL
+- [[./ubnfspct-prehwf-static.fcl]] pre hardware noise fix main FCL, using static noise DB (no =fnal.gov= connection needed)
+- [[./ubnfspct-posthwf-static.fcl]] pre hardware noise fix main FCL, using static noise DB (no =fnal.gov= connection needed)
 
 These each include a common:
 
@@ -204,3 +208,88 @@ An art job might then be run something like:
 #+END_EXAMPLE
 
 
+
+* Full production job
+
+The figure below shows the parts of a full MicroBooNE NF+SP+Celltree+Butcher production job.
+
+#+ATTR_HTML: :class svgfig
+[[file:nfsp-chain.svg]]
+
+** NF+SP
+
+The NF+SP part is handled by the =WireCellToolkit= /art/ Module.  It takes about 2 minutes on single core of Xeon E5-2630 v4 @ 2.20GHz and requires a bit more than 3GB peak RAM for 1 event:
+
+#+BEGIN_EXAMPLE
+MemReport  VmPeak = 3327.5 VmHWM = 2904.45
+#+END_EXAMPLE
+
+Here are the records it produces:
+
+#+BEGIN_EXAMPLE
+Swizzler...... | daq........... | ..................... | std::vector<raw::RawDigit> | 8256
+DataRecoStage1 | wcNoiseFilter. | ..................... | std::vector<raw::RawDigit> | 8256
+ubnfspct...... | nfsp.......... | raw.................. | std::vector<raw::RawDigit> | 8256
+ubnfspct...... | nfsp.......... | bad.................. | std::vector<int>.......... | .850
+ubnfspct...... | nfsp.......... | wiener............... | std::vector<recob::Wire>.. | 8256
+ubnfspct...... | TriggerResults | ..................... | art::TriggerResults....... | ...-
+ubnfspct...... | nfsp.......... | threshold............ | std::vector<double>....... | 8256
+ubnfspct...... | nfsp.......... | gauss................ | std::vector<recob::Wire>.. | 8256
+#+END_EXAMPLE
+
+** NF+SP+Butcher
+
+The event "butcher" takes care of "impedance matching" between what
+WCT produces and assumption made by existing MicroBooNE code that
+wants to consume its products.  It destroys information by truncating
+waveforms (thus "butcher") and it scales signal from WCT's useful
+normalization of "number of ionized electrons" to useless and
+meaningless (for signal) one "ADC".  
+
+The butcher adds about 30 seconds an no appreciable extra memory.
+When it is included with NF+SP the full possible output is:
+
+#+BEGIN_EXAMPLE
+Swizzler...... | daq........... | ..................... | std::vector<raw::RawDigit>................ | 8256
+DataRecoStage1 | wcNoiseFilter. | ..................... | std::vector<raw::RawDigit>................ | 8256
+ubnfspct...... | nfsp.......... | wiener............... | std::vector<recob::Wire>.................. | 8256
+ubnfspct...... | butcher....... | truncsig............. | std::vector<recob::Wire>.................. | 8256
+ubnfspct...... | butcher....... | rawsigassns.......... | art::Assns<raw::RawDigit,recob::Wire,void> | 8256
+ubnfspct...... | nfsp.......... | gauss................ | std::vector<recob::Wire>.................. | 8256
+ubnfspct...... | nfsp.......... | threshold............ | std::vector<double>....................... | 8256
+ubnfspct...... | nfsp.......... | raw.................. | std::vector<raw::RawDigit>................ | 8256
+ubnfspct...... | butcher....... | truncraw............. | std::vector<raw::RawDigit>................ | 8256
+ubnfspct...... | TriggerResults | ..................... | art::TriggerResults....................... | ...-
+ubnfspct...... | nfsp.......... | bad.................. | std::vector<int>.......................... | .850
+#+END_EXAMPLE
+
+This single event file is 106MB.  To save disk space, the overall job
+is also configured to drop the useful data WCT and keep only the
+butchered.  It also keeps the bad channel list (=bad= of
+=vector<int>=) produced by NF.  
+
+#+BEGIN_EXAMPLE
+Swizzler.... | daq........... | ..................... | std::vector<raw::RawDigit>................ | ...?
+ubnfspct.... | butcher....... | ..................... | std::vector<raw::RawDigit>................ | 8256
+ubnfspct.... | butcher....... | ..................... | art::Assns<raw::RawDigit,recob::Wire,void> | 8256
+ubnfspct.... | butcher....... | ..................... | std::vector<recob::Wire>.................. | 8256
+ubnfspct.... | nfsp.......... | gauss................ | std::vector<recob::Wire>.................. | ...?
+ubnfspct.... | nfsp.......... | raw.................. | std::vector<raw::RawDigit>................ | ...?
+ubnfspct.... | TriggerResults | ..................... | art::TriggerResults....................... | ...-
+ubnfspct.... | nfsp.......... | bad.................. | std::vector<int>.......................... | .850
+#+END_EXAMPLE
+
+With the butcher turned on the job takes only 102 seconds, (same
+memory usage).  The faster speed is due to saving less data.  This
+file is only 19MB.
+
+As the eventual Gauss hit finder apparently can not handle waveform
+data with instance names.  This event dump above reflects them being
+set to the empty string.
+
+** NF+SP+Celltree+Butcher
+
+Inserted to the final job is the Celltree module to write a special
+file which will be used for input to WC 3D imaging code which is still
+in the WC prototype.  It will draw from the "pre butchered" data in
+addition to PMT data not shown above.

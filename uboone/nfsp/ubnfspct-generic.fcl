@@ -1,12 +1,16 @@
 // Generic MicroBooNE WC/LS NF+SP+CT+Butcher job
 
+
+
 #include "wcls.fcl"
+
+process_name: ubnfspct
+
 
 source :{
    module_type: RootInput
    saveMemoryObjectThreshold: 10485760
 
-   // Jyoti: these likely need attention.  
    inputCommands: ["drop *", "keep raw::RawDigits_*_*_*"]
 }
 
@@ -38,10 +42,10 @@ outputs:{
       fileName: "output.root"
       saveMemoryObjectThreshold: 10485760 
 
-      // Jyoti: these likely need attention.  
       outputCommands :   [
          "keep *_*_*_*",
          "drop *_nfsp_raw_*",
+         "drop *_nfsp_threshold_*",
          "drop *_nfsp_wiener_*",
          "drop *_nfsp_gauss_*",
          "drop *_wcNoiseFilter_*_*",
