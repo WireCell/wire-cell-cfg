@@ -14,6 +14,14 @@
             ],
         }
     },
+    celltreesource : {
+        type: "CelltreeSource",
+        data: {
+            filename: std.extVar("input"),
+            EventNo: std.extVar("evt"),
+            frames: [],
+        }
+    },
     sink: {
         type: "MagnifySink",
         data: {

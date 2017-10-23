@@ -1,0 +1,56 @@
+// Generic MicroBooNE WC/LS NF+SP+CT+Butcher job
+
+
+
+#include "wcls.fcl"
+
+process_name: ubnfspct
+
+
+source :{
+   module_type: RootInput
+   saveMemoryObjectThreshold: 10485760
+
+   inputCommands: ["drop *", "keep raw::RawDigits_*_*_*"]
+}
+
+physics :{
+   producers: {
+      nfsp : @local::wcls.producers.nfsp
+      butcher : @local::wcls.producers.butcher
+   }
+   
+   ## Hook in Brooke's celltree module.  (FIXME: currently make some guess about where the FCL prolog is provided.)
+   #analyzers : {
+   #   celltree: @local:: uboone.producers.celltree
+   #}
+
+   p1 : [
+      nfsp
+      # ,celltree
+      ,butcher
+   ]
+   trigger_paths : [ p1 ]
+   
+   o1 : [ out1 ]
+   end_paths: [ o1 ]
+}
+
+outputs:{
+   out1: {
+      module_type: RootOutput
+      fileName: "output.root"
+      saveMemoryObjectThreshold: 10485760 
+
+      outputCommands :   [
+         "keep *_*_*_*",
+         "drop *_nfsp_raw_*",
+         "drop *_nfsp_threshold_*",
+         "drop *_nfsp_wiener_*",
+         "drop *_nfsp_gauss_*",
+         "drop *_wcNoiseFilter_*_*",
+         "drop *_daq_*_*"
+      ]
+
+   }
+}

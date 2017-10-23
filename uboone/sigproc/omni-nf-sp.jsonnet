@@ -16,12 +16,14 @@ local spfilters = import "uboone/sigproc/filters.jsonnet";
     // this will probably be needed elsehwere for consistentcy
     anode: anodes.nominal,
 
+    noisedb: omni.noisedb,
+
     misc_components : [
 	// anode plane
 	anodes.nominal,
 
 	// channel noise database
-	omni.noisedb,
+	$.noisedb,
 
 	// field
 	bits.fieldresponse,

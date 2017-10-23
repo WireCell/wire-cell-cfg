@@ -1,0 +1,72 @@
+digraph nfsp {
+	newrank=true;
+	compound=true;
+
+	event[label="         art::Event         ",fontname="fixed",color=blue,fontcolor=blue];
+	event2[label="         art::Event         ",fontname="fixed",color=blue,fontcolor=blue];
+	event3[label="         art::Event         ",fontname="fixed",color=blue,fontcolor=blue];
+
+	node[shape=box];
+
+	subgraph cluster_0 {
+		ndbcfg[label="static config",color=red,fontcolor=red, shape=ellipse];
+
+		input[label="RawFrameSource",color=blue,fontcolor=red];
+		nfch[label="channel noise\nfilters",color=red,fontcolor=red];
+		nfpm[label="PMT noise\nfilter",color=red,fontcolor=red];
+		//bcs[label="frame\nsaver",color=blue,fontcolor=red];
+		rfs[label="frame\nsaver",color=blue,fontcolor=red];
+		sp[label="signal\nprocessing",color=red,fontcolor=red];
+		cfs[label="frame\nsaver",color=blue,fontcolor=red];
+
+
+		svcs[label="LArSoft\nservices",color=blue,fontcolor=blue];
+		chndb[label="chan. noise DB",color=blue,fontcolor=red];
+		label="WireCellToolkit art module in larwirecell";
+		labelloc="b";		
+	}
+
+		
+	subgraph cluster_1 {
+		ctm[label="celltree\nmodule",color=blue,fontcolor=blue];
+		celltree[label="celltree file", shape=ellipse];
+		label="CellTree module in uboonecode"
+		labelloc="b";
+	}
+
+	subgraph cluster_2 {
+		butcher[label="rawdata\nbutcher",color=blue,fontcolor=blue];
+		label="Format data to suit uB\n(module in larwirecell)\n((although, this is really generic!))";
+		labelloc="b";
+	}
+
+	{rank=same; event, event2, event3}
+	{rank=same; input,nfch,nfpm,rfs,sp,cfs, ctm, butcher}
+
+	
+	{rank=same; svcs, chndb, ndbcfg}
+
+	artcfg[label="art job cfg notes:\ndrop full raw digits\ndrop full signals\n(wiener + gauss)"];
+	
+
+	event->event2->event3[color=blue];
+	
+	event:w->input:n[label="raw::RawDigit",color=blue,fontcolor=blue];
+	input->nfch->nfpm->rfs->sp->cfs[color=red];
+	rfs:n->event:s[label="raw::RawDigit\nbad ch",color=blue,fontcolor=blue];
+
+	cfs:n->event:se[label="recob::Wire x2\n+ thresholds",color=blue,fontcolor=blue];
+	
+	svcs->chndb[color=blue];
+	nfch->chndb[dir=back,color=red];
+	chndb->ndbcfg[dir=back,color=red];
+	
+	event2->ctm[label="V-plane raw digits\n signal\nbad ch\nPMT info",color=blue,fontcolor=blue]
+	ctm->celltree;
+	
+	event3->butcher[label=" full raw\nfull sig",color=blue,fontcolor=blue];
+	butcher->event3[label=" truncated raw\ntruncated+scaled sig\n raw-sig assns",color=blue,fontcolor=blue];
+
+	butcher->artcfg[style=invis];
+	
+}
