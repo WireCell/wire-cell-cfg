@@ -71,6 +71,20 @@ local wc = import "wirecell.jsonnet";
             first_frame_number: params.start_frame_number,
             anode: $.anode_tn,
         }
+    },
+
+   truthductor: {
+       	type : 'Truth',
+        data : {
+            nsigma : params.nsigma_diffusion_truncation,
+            fluctuate : params.fluctuate,
+            start_time: params.start_time,
+            readout_time: params.readout,
+            drift_speed : params.drift_speed,
+            first_frame_number: params.start_frame_number,
+            anode: $.anode_tn,
+	    truth_type: "Unit"
+        }
     },        
 
 
@@ -99,7 +113,8 @@ local wc = import "wirecell.jsonnet";
         data : {
             DepoSource: "TrackDepos",
             Drifter: "Drifter",
-            Ductor: "Ductor",
+            //Ductor: "Ductor",
+	    Ductor: "Truth",
             Dissonance: "NoiseSource",
             Digitizer: "Digitizer",
             FrameSink: "DumpFrames",            
