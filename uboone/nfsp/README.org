@@ -303,3 +303,63 @@ Inserted to the final job is the Celltree module to write a special
 file which will be used for input to WC 3D imaging code which is still
 in the WC prototype.  It will draw from the "pre butchered" data in
 addition to PMT data not shown above.
+** Fix to save full channel mask maps
+
+Initial try saved only channel mask maps as a simple list of channels as =vector<int>=.  
+Later it was understood that full masks are needed in order to be saved by the Celltree module so that downstream WCP imaging can use this info. 
+The simple list of channels are kept and a second =vector<int>= is saved which stores a sequential triple of:
+#+BEGIN_EXAMPLE
+[channel, begin, end,  channel, begin, end, ...]
+#+END_EXAMPLE
+Where:
+- channel :: gives the channel number, same one held in the simple list
+- begin :: gives the index into the associated channel waveform of the first tick in the mask
+- end :: give one past the index (usual C++ iterator convention) of the last tick in the mask
+
+Take note, as said, the waveform indices are applicable to waveforms
+to which the masks are associated.  It's up to the user to keep this
+clear.  Here is an example dump now:
+
+#+BEGIN_EXAMPLE
+Swizzler.... | daq........... | ..................... | std::vector<raw::RawDigit>................ | ...?
+ubnfspct.... | butcher....... | ..................... | std::vector<raw::RawDigit>................ | 8256
+ubnfspct.... | nfsp.......... | badchannels.......... | std::vector<int>.......................... | .850
+ubnfspct.... | butcher....... | ..................... | art::Assns<raw::RawDigit,recob::Wire,void> | 8256
+ubnfspct.... | butcher....... | ..................... | std::vector<recob::Wire>.................. | 8256
+ubnfspct.... | nfsp.......... | gauss................ | std::vector<recob::Wire>.................. | ...?
+ubnfspct.... | nfsp.......... | raw.................. | std::vector<raw::RawDigit>................ | ...?
+ubnfspct.... | TriggerResults | ..................... | art::TriggerResults....................... | ...-
+ubnfspct.... | nfsp.......... | badmasks............. | std::vector<int>.......................... | 2550
+#+END_EXAMPLE
+
+Note the =badmasks= are of length 3x that of badchannels in this
+particular case because there is exactly one mask for each "bad"
+channel.  In general, one channel may have multiple masked chunks of
+waveform.  
+
+As above, the begin/end numbers in the =badmasks= provide index into
+an associated =raw::RawDigit= vector named "=raw=" here and which
+happens to be dropped from the output in this example.  As the
+remaining =raw::RawDigit= and =recob::Wire= produced by the "butcher"
+module are *truncated* these the mask indices do not directly apply.
+Knowing how the drop was configured would allow them to still apply.  
+
+In any case, to access the masks one might do something like:
+
+#+BEGIN_SRC c++
+  int nch = badmasks.size()/3;
+  for (int ind=0; ind<nch; ++ind) {
+      const int offset = 3*ind;
+      const int ch          = badmasks[offset+0];
+      const int begin_index = badmasks[offset+1];
+      const int end_index   = badmasks[offset+2];
+      // ...
+  }
+#+END_SRC
+
+Note this packing and duplication is highly weird and kludgey.  The
+duplication is so that the job may drop the masks vector after
+Celltree saves the data as they are not expected to be needed by the
+rest of the MicroBooNE/LArSoft world.  The silly 3x packing is to
+avoid creating a new, proper /art/ data product with more explicit
+structure.
