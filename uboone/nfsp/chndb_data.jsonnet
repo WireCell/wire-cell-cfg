@@ -23,7 +23,7 @@ local rms_cuts = import "chndb_rmscut.jsonnet";
     groups: [std.range(g*48, (g+1)*48-1) for g in std.range(0,171)],
 
     // Externally determined "bad" channels.
-    bad: std.range(7136, 7199) + std.range(7201,7214) + std.range(7216,7263),
+    bad: [446] + std.range(7136, 7199) + std.range(7201,7214) + std.range(7216,7263),
 
     // Overide defaults for specific channels.  If an info is
     // mentioned for a particular channel in multiple objects in this

@@ -16,6 +16,7 @@ wcls: {
 	    # it probably get's overridden in whatever includes this chunk.
 	    configs: ["ubnfsp.json.bz2"]
 	    # Two-faced input components.  Needs to also be mentioned in WCT config.
+	    #inputers: ["wclsRawFrameSource"]
 	    inputers: ["wclsRawFrameSource", "wclsChannelNoiseDB"]
 	    # Two-faced output components.  Needs to also be mentioned in WCT config.
 	    outputers: ["wclsFrameSaver:nfsaver", "wclsFrameSaver:spsaver"]
@@ -45,7 +46,7 @@ wcls: {
 	 # throw away perfectly cromulent data.  very dubious but
          # that's what people want.
 
-         ndrop: 1600
+         ndrop: 2400
          nkeep: 6400
 
 	 # match some arbitrary and inaplicable "ADC" charge scale
