@@ -76,6 +76,8 @@ local nf_saver = {
     data: {
         anode: wc.tn(gen.anode),
         digitize: true,
+        //digitize: false,
+        //sparse: true,
         //pedestal_mean: "fiction",
         pedestal_mean: 0.0,
         pedestal_sigma: 1.75,
@@ -84,6 +86,28 @@ local nf_saver = {
         chanmaskmaps: ["bad"],
     }
 };
+
+
+
+//Additional(Optional-Check) sink of data back to art:Event. This is for
+//saving noise-filtered output in recob:wire i.e, float. Add as wclsFrameSaver:nfrsaver
+local nfr_saver = {
+    type: "wclsFrameSaver",
+    name: "nfrsaver",
+    data: {
+        anode: wc.tn(gen.anode),
+        //digitize: true,
+        digitize: false,
+        sparse: false,
+        //pedestal_mean: "fiction",
+        pedestal_mean: 0.0,
+        pedestal_sigma: 1.75,
+        frame_tags: ["raw"],
+        nticks: params.output_nticks,
+        chanmaskmaps: [],
+    }
+};
+
 
 // Another sink of data back to art::Event.  This saves the final
 // signal processed ROIs as recob::Wire.  It needs to be added to the
@@ -110,14 +134,14 @@ local sp_saver = {
 
 // Finally, the main config sequence:
 
-[ gen.anode, source, nf_saver, sp_saver ] + nf.sequence + sp.sequence + [
+[ gen.anode, source, nf_saver, nfr_saver, sp_saver ] + nf.sequence + sp.sequence + [
 
     {
         type: "Omnibus",
         data: {
             source: wc.tn(source),
             //sink: wc.tn(sink),
-            filters: std.map(wc.tn, nf.frame_filters + [nf_saver] + sp.frame_filters + [sp_saver]),
+            filters: std.map(wc.tn, nf.frame_filters + [nf_saver,nfr_saver] + sp.frame_filters + [sp_saver]),
         }
     },
     

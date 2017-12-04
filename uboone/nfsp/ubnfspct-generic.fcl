@@ -50,22 +50,25 @@ physics :{
       #}
    #}
  
-   ## Hook in Brooke's celltree module.  (FIXME: currently make some guess about where the FCL prolog is provided.)
-   #analyzers : {
-      #WCUB : @local::celltreeub
-   #}
+   analyzers : {
+      Event : @local::celltreeub
+   }
 
    p1 : [
       #filter 
       nfsp
-      #,WCUB
       ,butcher
    ]
+
+   ana : [
+      Event
+   ]  	
+
    trigger_paths : [ p1 ]
    
    #o1 : [ WCUB, out1 ]
    o1 : [ out1 ]
-   end_paths: [ o1 ]
+   end_paths: [ o1, ana ]
 }
 
 outputs:{
