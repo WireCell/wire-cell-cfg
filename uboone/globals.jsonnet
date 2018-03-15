@@ -12,6 +12,8 @@ local wc = import "wirecell.jsonnet";
     gain: 14.0*wc.mV/wc.fC,
     // FEE peaking time
     shaping: 2*wc.us,
+    // RC constant 
+    rc_constant: 1*wc.ms,
     // post-FEE gain
     postgain: 1.2,
     // How long to readout the detector at once.
