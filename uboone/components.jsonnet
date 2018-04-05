@@ -61,7 +61,7 @@ local wc = import "wirecell.jsonnet";
         }
     },
 
-    ductor: {
+    signalductor: {
         type : 'Ductor',
         data : {
             nsigma : params.nsigma_diffusion_truncation,
@@ -87,7 +87,7 @@ local wc = import "wirecell.jsonnet";
 	    truth_type: "Unit"
         }
     },        
-
+    ductor: self.truthductor,   // shorthand for the ductor to use
 
     noise : {
         type: "NoiseSource",
@@ -114,8 +114,7 @@ local wc = import "wirecell.jsonnet";
         data : {
             DepoSource: "TrackDepos",
             Drifter: "Drifter",
-            //Ductor: "Ductor",
-	    Ductor: "Truth",
+	    Ductor: wc.tn($.ductor),
             Dissonance: "NoiseSource",
             Digitizer: "Digitizer",
             FrameSink: "DumpFrames",            
