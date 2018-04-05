@@ -87,7 +87,10 @@ local wc = import "wirecell.jsonnet";
 	    truth_type: "Unit"
         }
     },        
-    ductor: self.truthductor,   // shorthand for the ductor to use
+
+    // switch for the actual ductor to use
+    //ductor: self.truthductor,
+    ductor: self.signalductor,
 
     noise : {
         type: "NoiseSource",
