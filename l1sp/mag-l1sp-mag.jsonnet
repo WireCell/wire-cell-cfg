@@ -94,6 +94,15 @@ local fmerge = {
 };
 local flow = [fmerge];
 
+local l1sp = {
+    type: "L1SPFilter",
+    data: {
+        filter: [0.0,0.0,0.0,0.5,1.0,0.5,0.0,0.0], // bogus place holder
+        adctag: "raw",
+        sigtag: "gauss",
+        outtag: "l1sp",
+    }
+};
 
 local app = {
     type: "Pgrapher",
@@ -109,6 +118,10 @@ local app = {
             },
             {
                 tail: { node: wc.tn(fsplit), port:1 },
+                head: { node: wc.tn(l1sp) },
+            },
+            {
+                tail: { node: wc.tn(l1sp) },
                 head: { node: wc.tn(fmerge), port:1 },
             },
             {
@@ -123,4 +136,4 @@ local app = {
     }        
 };
 
-utils + mag + flow + [app]
+utils + mag + flow + [l1sp, app]
