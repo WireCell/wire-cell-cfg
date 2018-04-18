@@ -48,7 +48,7 @@ local magsink = {
 
         // The list of tags on traces to select groups of traces
         // to form into frames.
-        frames: [],
+        frames: ["raw","wiener","gauss"],
 
         // The list of summary tags to save as 1D hisograms.
         summaries: [],
@@ -85,7 +85,11 @@ local fmerge = {
     type: "FrameMerger",
     data: {
         rule: "replace",
-        tags: ["raw","gauss"],
+        mergemap: [
+            ["raw","raw","raw"],
+            ["l1sp","gauss","gauss"],
+            ["l1sp","wiener","wiener"],
+        ],
     }
 };
 local flow = [fmerge];
