@@ -96,7 +96,7 @@ local chsel = {
 local l1sp = {
     type: "L1SPFilter",
     data: {
-        filter: [0.0,0.0,0.0,0.5,1.0,0.5,0.0,0.0], // bogus place holder
+        filter: [0.000305453, 0.000978027, 0.00277049, 0.00694322, 0.0153945, 0.0301973, 0.0524048, 0.0804588, 0.109289, 0.131334, 0.139629, 0.131334, 0.109289, 0.0804588, 0.0524048, 0.0301973, 0.0153945, 0.00694322, 0.00277049, 0.000978027, 0.000305453], // bogus place holder
         adctag: "raw",                             // trace tag of raw data
         sigtag: "gauss",                           // trace tag of input signal
         outtag: "l1sp",                            // trace tag for output signal
