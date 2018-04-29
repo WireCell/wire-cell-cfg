@@ -101,7 +101,17 @@ local l1sp = {
 	raw_ROI_th_adclimit:  9,
 	overall_time_offset : 0,
 	collect_time_offset : 3.0,
-	roi_pad: 20, 
+	roi_pad: 20,
+	adc_l1_threshold: 6,
+	adc_sum_threshold: 160,
+	adc_sum_rescaling: 90,
+	adc_sum_rescaling_limit : 50,
+	l1_seg_length : 120,
+	l1_scaling_factor : 500,
+	l1_lambda : 5,
+	l1_epsilon : 0.05,
+	l1_niteration : 100000,
+	l1_decon_limit : 50,
 	adctag: "raw",                             // trace tag of raw data
         sigtag: "gauss",                           // trace tag of input signal
         outtag: "l1sp",                            // trace tag for output signal
