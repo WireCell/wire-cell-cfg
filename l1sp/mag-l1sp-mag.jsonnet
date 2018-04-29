@@ -97,7 +97,12 @@ local l1sp = {
     type: "L1SPFilter",
     data: {
         filter: [0.000305453, 0.000978027, 0.00277049, 0.00694322, 0.0153945, 0.0301973, 0.0524048, 0.0804588, 0.109289, 0.131334, 0.139629, 0.131334, 0.109289, 0.0804588, 0.0524048, 0.0301973, 0.0153945, 0.00694322, 0.00277049, 0.000978027, 0.000305453], // bogus place holder
-        adctag: "raw",                             // trace tag of raw data
+	raw_ROI_th_nsigma: 4.2,
+	raw_ROI_th_adclimit:  9,
+	overall_time_offset : 0,
+	collect_time_offset : 3.0,
+	roi_pad: 20, 
+	adctag: "raw",                             // trace tag of raw data
         sigtag: "gauss",                           // trace tag of input signal
         outtag: "l1sp",                            // trace tag for output signal
     }
