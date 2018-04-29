@@ -112,6 +112,7 @@ local l1sp = {
 	l1_epsilon : 0.05,
 	l1_niteration : 100000,
 	l1_decon_limit : 50,
+        l1_ind_scale : 4,
 	adctag: "raw",                             // trace tag of raw data
         sigtag: "gauss",                           // trace tag of input signal
         outtag: "l1sp",                            // trace tag for output signal
