@@ -113,7 +113,7 @@ local l1sp = {
 	l1_niteration : 100000,
 	l1_decon_limit : 50,
 	l1_resp_scale : 0.5,
-	l1_col_scale : 1.25,
+	l1_col_scale : 1.15,
         l1_ind_scale : 0.5,
 	adctag: "raw",                             // trace tag of raw data
         sigtag: "gauss",                           // trace tag of input signal
