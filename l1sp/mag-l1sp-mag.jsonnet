@@ -26,6 +26,13 @@ local anode = {
     }
 };
 
+local fieldresponse = {
+    type : "Fieldresponse",
+    data: {
+        filename: params.files.fields,
+    }
+};
+
 local magsource = {
     type: "MagnifySource",
     data: {
@@ -75,7 +82,7 @@ local frame_sink = {            // no config
     type: "DumpFrames",
 };
 
-local mag = [magsource, magsink, anode];
+local mag = [magsource, magsink, anode, fieldresponse];
 
 local fsplit = {                // no config
     type: "FrameSplitter",
