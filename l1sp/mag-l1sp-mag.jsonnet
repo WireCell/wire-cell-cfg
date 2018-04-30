@@ -27,7 +27,7 @@ local anode = {
 };
 
 local fieldresponse = {
-    type : "Fieldresponse",
+    type : "FieldResponse",
     data: {
         filename: params.files.fields,
     }
