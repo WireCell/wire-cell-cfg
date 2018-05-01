@@ -40,7 +40,7 @@ local rms_cuts = import "chndb_rmscut.jsonnet";
             response_offset: 0.0,      // ticks?
             pad_window_front: 0,     // ticks?
             pad_window_back: 0,      // ticks?
-	    decon_limit: 0.05,
+	    decon_limit: 0.02,
 	    adc_limit: 15,
             min_rms_cut: 1.0,         // units???
             max_rms_cut: 5.0,         // units???
@@ -73,7 +73,7 @@ local rms_cuts = import "chndb_rmscut.jsonnet";
             response_offset: 79,
             pad_window_front: 20,
 	    pad_window_back: 10,
-	    decon_limit: 0.05,
+	    decon_limit: 0.02,
 	    adc_limit: 15,
         },
 
@@ -91,7 +91,7 @@ local rms_cuts = import "chndb_rmscut.jsonnet";
             response_offset: 82,
             pad_window_front: 10,
 	    pad_window_back: 10,
-	    decon_limit: 0.05,
+	    decon_limit: 0.02,
 	    adc_limit: 15,
         },
 
