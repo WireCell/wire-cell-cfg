@@ -112,6 +112,7 @@ local l1sp = {
 	adc_l1_threshold: 6,
 	adc_sum_threshold: 160,
 	adc_sum_rescaling: 90,
+	adc_ratio_threshold: 0.2,
 	adc_sum_rescaling_limit : 50,
 	l1_seg_length : 120,
 	l1_scaling_factor : 500,
