@@ -20,6 +20,9 @@
     // Multiply a scalar to a vector, element by element
     scale(v,s) :: std.map(function(e) e*s, v),
 
+    // Add a scalar to a vector, element by element
+    increase(v,s) :: std.map(function(e) e+s, v),
+
     // Return 3-vector in "3D point" format
     topoint(v) :: { x:v[0], y:v[1], z:v[2] },
 
