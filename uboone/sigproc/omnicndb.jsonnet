@@ -72,7 +72,7 @@ local params = import "params/chooser.jsonnet";
             pad_window_front: 20,
 	    pad_window_back: 10,
 	    decon_limit: 0.02,
-	    decon_limit1: 0.08,	
+	    decon_limit1: 0.06,	
 	    adc_limit: 15,
         },
 
@@ -90,8 +90,8 @@ local params = import "params/chooser.jsonnet";
             response_offset: 82,
             pad_window_front: 10,
 	    pad_window_back: 10,
-	    decon_limit: 0.02,
-	    decon_limit1: 0.08,	
+	    decon_limit: 0.01,
+	    decon_limit1: 0.06,	
 	    adc_limit: 15,
         },
 
