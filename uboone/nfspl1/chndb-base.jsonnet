@@ -30,18 +30,20 @@ local gen = import "general.jsonnet";
     // list then last mention wins.
     channel_info: [             
 
-        // First entry provides default channel info across all
+        // First entry provides default channel info across ALL
         // channels.  Subsequent entries override a subset of channels
-        // with a subset of these entries.
+        // with a subset of these entries.  There's no reason to
+        // repeat values found here in subsequent entries unless you
+        // wish to change them.
         {
             channels: std.range(0, 2400 + 2400 + 3456 - 1),
             nominal_baseline: 2048.0,  // adc count
             gain_correction: 1.0,     // unitless
             response_offset: 0.0,      // ticks?
-            pad_window_front: 0,     // ticks?
-            pad_window_back: 0,      // ticks?
+            pad_window_front: 10,     // ticks?
+            pad_window_back: 10,      // ticks?
 	    decon_limit: 0.02,
-	    decon_limit1: 0.08,
+	    decon_limit1: 0.09,
 	    adc_limit: 15,
             min_rms_cut: 1.0,         // units???
             max_rms_cut: 5.0,         // units???
@@ -73,10 +75,6 @@ local gen = import "general.jsonnet";
             response: { waveform: handmade.u_resp, waveformid: wc.Ulayer },
             response_offset: 79,
             pad_window_front: 20,
-	    pad_window_back: 10,
-	    decon_limit: 0.02,
-	    decon_limit1: 0.08,
-	    adc_limit: 15,
         },
 
         {
@@ -91,21 +89,14 @@ local gen = import "general.jsonnet";
             /// this uses hard-coded waveform.
             response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
             response_offset: 82,
-            pad_window_front: 10,
-	    pad_window_back: 10,
-	    decon_limit: 0.02,
-	    decon_limit1: 0.08,	 
-	    adc_limit: 15,
+	    decon_limit: 0.01,
         },
 
         {
             channels: {wpid: wc.WirePlaneId(wc.Wlayer)},
             nominal_baseline: 400.0,
-            pad_window_front: 10,
-	    pad_window_back: 10,
 	    decon_limit: 0.05,
 	    decon_limit1: 0.08,
-	    adc_limit: 15,
         },
 
         {                       // special channel
