@@ -75,6 +75,8 @@ local gen = import "general.jsonnet";
             response: { waveform: handmade.u_resp, waveformid: wc.Ulayer },
             response_offset: 79,
             pad_window_front: 20,
+	    decon_limit: 0.02,
+	    decon_limit1: 0.09,
         },
 
         {
@@ -90,7 +92,8 @@ local gen = import "general.jsonnet";
             response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
             response_offset: 82,
 	    decon_limit: 0.01,
-        },
+	    decon_limit1: 0.09,
+	},
 
         {
             channels: {wpid: wc.WirePlaneId(wc.Wlayer)},
