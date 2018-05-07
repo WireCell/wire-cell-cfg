@@ -1,0 +1,20 @@
+BEGIN_PROLOG
+wcls: {
+   producers : {
+
+      nfspl1 : {
+         module_type : WireCellToolkit
+         wcls_main: {
+            tool_type: WCLS
+            apps: ["Pgrapher"]
+            plugins: ["WireCellGen", "WireCellSigProc", "WireCellSio",
+               "WireCellPgraph", "WireCellLarsoft"]
+            configs: ["uboone-nfspl1.jsonnet"]
+            inputers: ["wclsRawFrameSource", "wclsMultiChannelNoiseDB"]
+            outputers: ["wclsFrameSaver:nfsaver", "wclsFrameSaver:spsaver"]
+            params: { }
+         }
+      }
+
+}
+END_PROLOG
