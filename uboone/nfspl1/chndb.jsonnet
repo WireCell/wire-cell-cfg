@@ -1,8 +1,4 @@
-/* There are five possible channel noise DB objects.  There is a 2x2
-matrix of (before,after) X (wcls,wct).  The "wcls" uses an
-implementation which requires a connection to larsoft service DBs and
-the wct one is stand-alone and statically configured.  The 5th type is
-"multi" which uses the two wcls DB objects. */
+// see README.org
 
 local wc = import "wirecell.jsonnet";
 
@@ -65,17 +61,17 @@ local after = if par.noisedb.flavor == "wcls" then wcls_after
 
 local multi = {
     type: "wclsMultiChannelNoiseDB",
-    name: "chndb",
+    // note, if a name is given here, it must match what is used in the .fcl for inputers.
     data: {
         rules: [
             {
                 rule: "runbefore",
-                chndb: wc.tn(wcls_before),
+                chndb: wc.tn(before),
                 args: par.noisedb.run12boundary
             },
             {
                 rule: "runstarting",
-                chndb: wc.tn(wcls_after),
+                chndb: wc.tn(after),
                 args: par.noisedb.run12boundary,
             },
             // note, there might be a need to add a catchall if the
@@ -86,9 +82,9 @@ local multi = {
 
 
 // finally return what is wanted.
-if par.noisedb.flavor == "multi" then
+if par.noisedb.epoch == "multi" then
 {
-    configs : [wcls_before, wcls_after, multi],
+    configs : [before, after, multi],
     typename : wc.tn(multi)
 }    
 else if par.noisedb.epoch == "before" then

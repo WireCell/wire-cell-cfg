@@ -78,13 +78,13 @@ local magsink = {
     },
 };
 
-local frame_sink = {            // no config
+local frame_sink = {
     type: "DumpFrames",
 };
 
-local mag = [magsource, magsink, anode, fieldresponse];
+local mag = [magsource, magsink, anode, fieldresponse, frame_sink];
 
-local fsplit = {                // no config
+local fsplit = {
     type: "FrameSplitter",
 };
 
@@ -145,7 +145,7 @@ local fmerge = {
         ],
     }
 };
-local flow = [chsel, l1sp, fmerge];
+local flow = [fsplit, chsel, l1sp, fmerge];
 
 
 local app = {

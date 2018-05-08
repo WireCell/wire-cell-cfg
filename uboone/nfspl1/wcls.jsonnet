@@ -1,4 +1,8 @@
-// This holds some WC/LS I/O integration components / nodes
+// This file configures (most) of the WCT components which exist in
+// the WC/LS integration boundary.  They are the ones involved in I/O
+// between art::Event and WCT data interfaces.  The main component not
+// included here is the channel noise database object.  See
+// chndb.jsonnet.
 
 local wc = import "wirecell.jsonnet";
 local par = import "params.jsonnet";
@@ -55,15 +59,14 @@ local sp_saver = {
         frame_tags: ["gauss", "wiener"],
         frame_scale: wcls_charge_scale,
         nticks: par.output_nticks,
-        summary_tags: ["threshold"], 
-        summary_scale: wcls_charge_scale,
+// This may be needed still but it can't be saved from this component as it gets inserted into the graph after L1 where the array no longer exists.
+//        summary_tags: ["threshold"], 
+//        summary_scale: wcls_charge_scale,
     }
 };
 
-// A final true sink is needed to cap off the graph.  This one is
-// fine.  It's not an IConfigurable so is must not be added to the
-// "configs" list.  Define it as a local just to have one spot
-local frame_sink = {            // no config
+// A final true sink is needed to cap off the graph.
+local frame_sink = {
     type: "DumpFrames",
 };
 
@@ -76,6 +79,6 @@ local frame_sink = {            // no config
     sink: {node: wc.tn(frame_sink)},
 
     // All the configurables
-    configs: [source, nf_saver, sp_saver],
+    configs: [source, nf_saver, sp_saver, frame_sink],
 }
 

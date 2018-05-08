@@ -1,68 +1,117 @@
 #+TITLE: Configuration for Noise-Filtering and 2D and L1 Signal Processing for MicroBooNE
 
-* Overview
+#+html_head_extra: <style>.svgfig {width: 90%; }</style>
 
-This directory holds the Wire-Cell Toolkit (WCT) and art/LArSoft (LS)
-configuration files for a MicroBooNE data processing job which applies
-WCT noise filtering (NF) and signal processing (SP) including the L1SP
-required to handle signals from the shorted wire regions.  The basic
-NF+SP pipeline is:
+
+
+* Introduction
+
+This directory holds the Wire-Cell Toolkit (WCT) and art/LArSoft (LS) configuration files for a MicroBooNE data processing job which applies WCT noise filtering (NF) and signal processing (SP) including the L1SP required to handle signals from the shorted wire regions.  The basic NF+SP pipeline is:
+
+#+ATTR_HTML: :class svgfig
+[[file:nfspl1.svg]]
+
 
 1) read ~raw::RawDigit~ from ~art::Event~
 2) apply TPC channel noise filtering 
 3) apply filtering of PMT induced signals on TPC channels
-4) integer-truncate samples and save to ~raw::RawDigit~
+4) integer-truncate samples and save to ~art::Event~ as ~vector<raw::RawDigit>~
 5) apply nominal 2D deconvolution signal processing (SP) 
 6) apply special "L1SP" to select channels
-7) write out final waveforms to ~art::Event~ as (sparse) ~recob::Wire~ collection
+7) write out final (sparse) waveforms to ~art::Event~ as ~vector<recob::Wire>~
 
-Step 2 requires a so-called "channel noise DB object" (chndb).  But,
-in fact, the job will configure multiple chndb objects in order to
-cover multiple run periods, specifically before/after hardware fix for
-the excess coherent noise.  In the [[../nfsp/][previous config]] switching between
-these two configuration "epochs" was a run-time determination.  The
-powers that be in MicroBooNE now want it to be hard-coded into the
-job.  The request was to hard-code it in the C++ but instead it is
-hard-coded in the user configuration by mapping each epoch to its own,
-particularly configured chndb.
 
-* Usage
+* Overview of the config
 
-This directory is self contained except for the general Jsonnet support provided at top level of the ~wire-cell-cfg~ directory (eg, [[../../wirecell.jsonnet][wirecell.jsonnet]] and [[../../vector.jsonnet][vector.jsonnet]].  
+In the previous config, a pair of ~.json.bz2~ "firmware blobs" were provided.  These were produce by evaluating the Jsonnet source.  In this release, we provide just the Jsonnet source in full with the anticipation that it's time people open up its "black box" a little.  See also the section below on [[Parameters]].
+
+This directory is largely self-contained except for a few, general Jsonnet support provided at top level of the ~wire-cell-cfg~ directory (eg, [[../../wirecell.jsonnet][wirecell.jsonnet]] and [[../../vector.jsonnet][vector.jsonnet]].
 
 Main entry points:
 
 - [[./uboone-nfspl1.fcl]] :: FHiCL file that runs the three module pipeline and which may be used as an example for some other context.
+
 - [[./uboone-nfspl1.jsonnet]] :: Jsonnet file referenced by the FHiCL configuration of the WireCellToolkit module that runs NF+SP.
 
 
-* Parameters
+** FHiCL
 
-The configuration has a large number of high-level parameters which
-are managed inside [[./params.jsonnet]] and used elsewhere.  The Jsonnet
-~std.extVar()~ mechanism allows arbitrary parts of the its object to
-be overridden by the user by specifying an external variable called
-~override~ at the ~wire-cell~ CLI or art/FHiCL file.
-With the WCT CLI one may do like:
+The ~.fcl~ files are split up by module and are included from the main one listed above.
+
+- [[./wcls_nfspl1.fcl]] :: sets up the actual WCT NF+SP 2D+L1 processing.
+
+- [[./wcls_butcher.fcl]] :: the "event butcher" module has nothing to do, per se, with WCT.  It uses no WCT code.  It throws away data for reasons known to downstream uboonecode module authors.  Use of this module is not endorsed by WCT developers.
+
+There may also be a "celltree" module run but config for this does not (yet?) exist here.
+
+** Jsonnet
+
+The WCT configuration for NF+SP (2D+L1) is organized somewhat to facilitate reuse.  The job is generally conceived as a "thing graph".  It's almost a pipeline but there is some branching as shown above.  Starting at the main file [[./uboone-nfspl1.jsonnet]] there are a number of sub files which export some configuration objects ("~configs~") and some which export edges to be formed into the final WCT execution graph.
+
+
+** Parameters
+
+The Jsonnet configuration files can be edited using any text editor.  Some users are unwilling to do that and so a mechanism has been added to allow select parameters to be set from outside these files.  This mechanism requires passing an ~override~ data structure through whichever interface to the toolkit one is using.  This data structure *must* be passed, even if it is empty.
+If using the WCT CLI one may call it like:
 
 #+BEGIN_EXAMPLE
-  $ wire-cell -V override={answer:42, foo:"bar"}' [...]
+  $ wire-cell -V 'override={...}' [...]
 #+END_EXAMPLE
+
 The equivalent FHiCL would look like:
+
 #+BEGIN_EXAMPLE
 wcls_main: {
   // ...
   params: {
-    override: '{answer:42, foo:"bar"}'
+    override: '{...}'
   }
 }
 #+END_EXAMPLE
 Notes:
 
-1) The value of ~override~ is a string representation of a Jsonnet object. 
-2) This resulting ~override~ object is "merge patched" into the hard wired defaults and so one is not restricted to setting only top-level parts of the ~params.jsonnet~ data structure.
-3) FHiCL and shell both likely requires overall quoting and both can use ~\'~ or ~\"~ quote escaping if needed.
+1) The value of ~override~ is a string representation of a Jsonnet object matching one used in the greater Jsonnet configuration set (see [[./params.jsonnet]]). 
+2) The evaluated string produces a Jsonnet object which is "merge patched" into the hard wired defaults.  Thus, one is not restricted to setting only top-level parts of the ~params.jsonnet~ data structure but may surgically override some leaf.
+3) FHiCL and shell both likely requires overall quoting and both can use ~\'~ or ~\"~ quote escaping as needed.
+4) To repeat, ~override~ *must* be provided, even if it is an empty object ('~{}~') 
 
 
+** Channel noise database object
+
+A collection of configuration is bundled up into a so called "channel noise database object".  There are a few C++ implementations of this object
+
+ - ~OmniChannelNoiseDB~ :: static "bag" of configuration (designated ~"wct"~ below)
+ - ~wclsChannelNoiseDB~ :: able to use LArSoft services to get misconfigured channels, thus requires access to Fermilab DB servers (designated ~"wcls"~ below)
+ - ~wclsMultiChannelNoiseDB~ :: a facade/PIMPL patterned class that can switch between other implementations based on the current run number presented by the ~art::Event~ (designated ~"multi"~ below)
+
+The ~"multi"~ implementation is used to switch between two different lists of RMS corresponding to the "epochs" (designated ~"before"~ and ~"after"~ in the config) relative to when the hardware fix to the excess noise was done.  If ~"multi"~ is not used then a single epoch must be specified.
+
+These switches can be made by setting the override data structure ~noisedb~.
+For example, to have both dynamically misconfigured channels (flavor) and dynamic choice of epoch for the RMS cuts this structure would be provided:
+
+#+BEGIN_SRC javascript
+  noisedb: {
+      flavor: "wcls",
+      epoch: "multi",
+  },
+#+END_SRC
+
+Or, squashed to fit FHiCL:
+
+#+BEGIN_EXAMPLE
+  wcls_main: {
+     tool_type: WCLS
+     params: {
+        override: "{noisedb:{epoch:\"multi\", flavor:\"wcls\", run12boundary:7000}}"
+     // ...
+     }
+  }
+#+END_EXAMPLE
+
+
+
+* Usage
+
+The config can be run directly by cloning this repo.  However, it strictly only needs the Jsonnet files in this directory plus the few at top level.
 
 

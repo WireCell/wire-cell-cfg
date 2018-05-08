@@ -51,8 +51,13 @@ local sigproc = {
     }
 };
 
-local fsplit = {                // no config
+local rawsplit = {
     type: "FrameSplitter",
+    name: "rawsplitter"
+};
+local sigsplit = {
+    type: "FrameSplitter",
+    name: "sigsplitter"
 };
 
 local chsel = {
@@ -98,8 +103,29 @@ local l1sp = {
     }
 };
 
-local fmerge = {
+// merge the split output from NF ("raw" tag) and just the "gauss"
+// from normal SP for input to L1SP
+local rawsigmerge = {
     type: "FrameMerger",
+    name: "rawsigmerge",
+    data: {
+        rule: "replace",
+
+        // note: the first two need to match the order of what data is
+        // fed to ports 0 and 1 of this component in the pgraph below!
+        mergemap: [
+            ["raw","raw","raw"],
+            ["gauss","gauss","gauss"],
+        ],
+    }
+};
+
+// merge out of L1 ("l1sp" tag) with previously split output from
+// regular SP ("wiener" and "gauss" tags).  The "raw" tag is unlikely
+// to be found.
+local l1merge = {
+    type: "FrameMerger",
+    name: "l1merge",
     data: {
         rule: "replace",
 
@@ -115,19 +141,31 @@ local fmerge = {
 
 
 {
-    configs: [perchanresp] + filters + [sigproc, chsel, l1sp, fmerge],
+    configs: [perchanresp] + filters + [sigproc, rawsplit, sigsplit, chsel, l1sp, rawsigmerge, l1merge],
     
     edges : [
         {
+            tail: { node: wc.tn(rawsplit), port:1 },
+            head: { node: wc.tn(rawsigmerge), port:1 }
+        },
+        {
+            tail: { node: wc.tn(rawsplit), port:0 },
+            head: { node: wc.tn(sigproc) }
+        },
+        {
             tail: { node: wc.tn(sigproc) },
-            head: { node: wc.tn(fsplit) },
+            head: { node: wc.tn(sigsplit) },
         },
         {
-            tail: { node: wc.tn(fsplit), port:1 },
-            head: { node: wc.tn(fmerge), port:1 },
+            tail: { node: wc.tn(sigsplit), port:1 },
+            head: { node: wc.tn(l1merge), port:1 },
         },
         {
-            tail: { node: wc.tn(fsplit), port:0 },
+            tail: { node: wc.tn(sigsplit), port:0 },
+            head: { node: wc.tn(rawsigmerge), port:0 },
+        },
+        {
+            tail: { node: wc.tn(rawsigmerge) },
             head: { node: wc.tn(chsel) },
         },
         {
@@ -136,11 +174,11 @@ local fmerge = {
         },
         {
             tail: { node: wc.tn(l1sp) },
-            head: { node: wc.tn(fmerge), port:0 },
+            head: { node: wc.tn(l1merge), port:0 },
         },
     ],
-    input : { node: wc.tn(sigproc) },
-    output : { node: wc.tn(fmerge) },
+    input : { node: wc.tn(rawsplit) },
+    output : { node: wc.tn(l1merge) },
 
 
 }
