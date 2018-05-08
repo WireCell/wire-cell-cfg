@@ -44,11 +44,32 @@ local nf_saver = {
     }
 };
 
+local wcls_charge_scale = 1.0;  // No scaling, handle it in the butcher module
+
+// The threshold array used to be saved as part of the gauss/wiener
+// signal sets but we now save them downstream after L1.  We add a
+// saver just for them here.  Alternatively the FrameMerger could be
+// improved to all this auxiliary data to be handled.
+local th_saver = {
+    type: "wclsFrameSaver",
+    name: "thsaver",
+    data: {
+        anode: gen.anode,
+        digitize: false,
+        sparse: true,
+        frame_tags: [],
+        frame_scale: null,      // this turns off saving frames
+        nticks: par.output_nticks,
+        summary_tags: ["threshold"], 
+        summary_scale: wcls_charge_scale,
+    }
+};
+
+
 // Another sink of data back to art::Event.  This saves the final
 // signal processed ROIs as recob::Wire.  It needs to be added to the
 // "outputers" list in the FHiCL for WireCellToolkit.  Note, it has
 // both a type and a name.  Add as wclsFrameSaver:spsaver.
-local wcls_charge_scale = 1.0;  // No scaling, handle it in the butcher module
 local sp_saver = {
     type: "wclsFrameSaver",
     name: "spsaver",
@@ -59,9 +80,6 @@ local sp_saver = {
         frame_tags: ["gauss", "wiener"],
         frame_scale: wcls_charge_scale,
         nticks: par.output_nticks,
-// This may be needed still but it can't be saved from this component as it gets inserted into the graph after L1 where the array no longer exists.
-//        summary_tags: ["threshold"], 
-//        summary_scale: wcls_charge_scale,
     }
 };
 
@@ -75,10 +93,13 @@ local frame_sink = {
     // Give the special nodes this file defines as half-edges.
     source: {node: wc.tn(source)},
     nfsave: {node: wc.tn(nf_saver)},
+    thsave: {node: wc.tn(th_saver)},
     spsave: {node: wc.tn(sp_saver)},
     sink: {node: wc.tn(frame_sink)},
 
-    // All the configurables
-    configs: [source, nf_saver, sp_saver, frame_sink],
+    // All the configurables.  Don't forget to include this in the
+    // .fcl in either the inputers or outputers list of wcls_main
+    // tool.
+    configs: [source, nf_saver, th_saver, sp_saver, frame_sink],
 }
 

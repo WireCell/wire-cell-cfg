@@ -1,8 +1,19 @@
 // -*- js -*-
 // This configures the Signal Processing stage of a job.
+//
+
 
 local wc = import "wirecell.jsonnet";
 local par = import "params.jsonnet";
+
+
+// Caveat: this import breaks the purity of this file.  Without it, it
+// would be possible to use this configuration for a stand-alone
+// wire-cell job.  However, the art job needs to have a "frame saver"
+// (a WC/LS integration component) placed just after the SP component.
+// This can probably be cleaned up to break the explicit connection
+// but for now we take the expedient route.  
+local wcls = import "wcls.jsonnet";
 
 
 local hf = import "hf_filters.jsonnet";
@@ -154,6 +165,10 @@ local l1merge = {
         },
         {
             tail: { node: wc.tn(sigproc) },
+            head: wcls.thsave ,
+        },                      // break the stand-alone purity
+        {                       // of this file with this thsave.
+            tail: wcls.thsave ,
             head: { node: wc.tn(sigsplit) },
         },
         {

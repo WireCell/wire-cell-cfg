@@ -39,13 +39,13 @@ outputs:{
       saveMemoryObjectThreshold: 10485760 
 
       outputCommands :   [
-         "keep *_*_*_*",
-         "drop *_nfspl1_raw_*",
-         "drop *_nfspl1_threshold_*",
-         "drop *_nfspl1_wiener_*",
-         "drop *_nfspl1_gauss_*",
-         "drop *_wcNoiseFilter_*_*",
-         "drop *_daq_*_*"
+         "keep *_*_*_*"
+         // "drop *_nfspl1_raw_*",
+         // "drop *_nfspl1_threshold_*",
+         // "drop *_nfspl1_wiener_*",
+         // "drop *_nfspl1_gauss_*",
+         // "drop *_wcNoiseFilter_*_*",
+         // "drop *_daq_*_*"
       ]
 
    }

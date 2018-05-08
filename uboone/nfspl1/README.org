@@ -115,3 +115,23 @@ Or, squashed to fit FHiCL:
 The config can be run directly by cloning this repo.  However, it strictly only needs the Jsonnet files in this directory plus the few at top level.
 
 
+#+BEGIN_EXAMPLE
+  $ art -o out.root -c uboone-nfspl1.fcl in.root 
+#+END_EXAMPLE
+
+With no output "drop" commands one gets something like this:
+#+BEGIN_EXAMPLE
+  PROCESS NAME......... | MODULE_LABEL.. | PRODUCT INSTANCE NAME | DATA PRODUCT TYPE......................... | SIZE
+  Swizzler............. | daq........... | ..................... | std::vector<raw::RawDigit>................ | 8256
+  DataApr2016RecoStage1 | digitfilter... | ..................... | std::vector<raw::RawDigit>................ | 8196
+  ubwclsnfspl1......... | nfspl1........ | raw.................. | std::vector<raw::RawDigit>................ | 8256
+  ubwclsnfspl1......... | butcher....... | ..................... | art::Assns<raw::RawDigit,recob::Wire,void> | 8256
+  ubwclsnfspl1......... | nfspl1........ | badmasks............. | std::vector<int>.......................... | 3591
+  ubwclsnfspl1......... | butcher....... | ..................... | std::vector<recob::Wire>.................. | 8256
+  ubwclsnfspl1......... | butcher....... | ..................... | std::vector<raw::RawDigit>................ | 8256
+  ubwclsnfspl1......... | nfspl1........ | threshold............ | std::vector<double>....................... | 8256
+  ubwclsnfspl1......... | TriggerResults | ..................... | art::TriggerResults....................... | ...-
+  ubwclsnfspl1......... | nfspl1........ | gauss................ | std::vector<recob::Wire>.................. | 8256
+  ubwclsnfspl1......... | nfspl1........ | wiener............... | std::vector<recob::Wire>.................. | 8256
+  ubwclsnfspl1......... | nfspl1........ | badchannels.......... | std::vector<int>.......................... | 1197
+#+END_EXAMPLE
