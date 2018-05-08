@@ -92,7 +92,7 @@ local gen = import "general.jsonnet";
             response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
             response_offset: 82,
 	    decon_limit: 0.01,
-	    decon_limit1: 0.09,
+	    decon_limit1: 0.08,
 	},
 
         {

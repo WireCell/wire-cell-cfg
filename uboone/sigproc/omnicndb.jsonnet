@@ -91,7 +91,7 @@ local params = import "params/chooser.jsonnet";
             pad_window_front: 10,
 	    pad_window_back: 10,
 	    decon_limit: 0.01,
-	    decon_limit1: 0.09,	
+	    decon_limit1: 0.08,	
 	    adc_limit: 15,
         },
 
