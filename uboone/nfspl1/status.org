@@ -1,0 +1,34 @@
+#+TITLE: Status toward next release
+
+The next release of WCT will be 0.7.x and is driven by simulation and L1 SP features.
+
+* Status checklist
+
+** Simulation [3/3]
+
+- [X] implement simulation as Pgraph
+- [X] simulation WC/LS integration
+- [X] simulation wires fix (Hanyu)
+
+** SigProc [6/9]
+
+- [X] Pgraph and Magnify based devel stub for L1 porting
+- [X] L1 ported into WCT (Xin)
+- [X] ~decon_limit~ tuning (Xiangpan)
+- [X] Pgraph and /art/ based configuration for SigProc (replaces the ~Omnibus~ "app")
+- [X] NF+SP+L1 WC/LS integration
+- [X] NF+SP+L1 + butcher FHiCL+Jsonnet configuration 
+- [ ] Add celltree to above (Jyoti? Hanyu? Brooke?)
+- [ ] Produce a few outputs in celltree format (Hanyu? Brooke?)
+- [ ] Validate new output against old (Xin?)
+
+** Making Fermilab Happy [1/1]
+
+- [X] Allow select WCT configuration to be injected from FHiCL
+
+** Release management [0/4]
+
+- [ ] release WCT 0.7.x (bv)
+- [ ] update ~wirecell~ UPS build shims (bv+Lynn)
+- [ ] request ~wirecell~ build + ~larwirecell~ and ~lardataobj~ branch ~feature/bv_simint~ merge (Lynn)
+- [ ] LArG4 making depos (Wes, others - not WCT team)

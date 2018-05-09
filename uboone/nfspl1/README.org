@@ -3,7 +3,6 @@
 #+html_head_extra: <style>.svgfig {width: 90%; }</style>
 
 
-
 * Introduction
 
 This directory holds the Wire-Cell Toolkit (WCT) and art/LArSoft (LS) configuration files for a MicroBooNE data processing job which applies WCT noise filtering (NF) and signal processing (SP) including the L1SP required to handle signals from the shorted wire regions.  The basic NF+SP pipeline is:
