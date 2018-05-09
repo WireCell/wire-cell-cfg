@@ -23,7 +23,7 @@ This directory holds the Wire-Cell Toolkit (WCT) and art/LArSoft (LS) configurat
 
 * Overview of the config
 
-In the previous config, a pair of ~.json.bz2~ "firmware blobs" were provided.  These were produce by evaluating the Jsonnet source.  In this release, we provide just the Jsonnet source in full with the anticipation that it's time people open up its "black box" a little.  See also the section below on [[Parameters]].
+In the previous config, a pair of ~.json.bz2~ "firmware blobs" were provided.  These were produce by evaluating the Jsonnet source.  In this release, we provide just the Jsonnet source in full with the anticipation that it's time people open up its "black box" a little.  See also the section below on [[External Configuration]].
 
 This directory is largely self-contained except for a few, general Jsonnet support provided at top level of the ~wire-cell-cfg~ directory (eg, [[../../wirecell.jsonnet][wirecell.jsonnet]] and [[../../vector.jsonnet][vector.jsonnet]].
 
@@ -49,21 +49,22 @@ There may also be a "celltree" module run but config for this does not (yet?) ex
 The WCT configuration for NF+SP (2D+L1) is organized somewhat to facilitate reuse.  The job is generally conceived as a "thing graph".  It's almost a pipeline but there is some branching as shown above.  Starting at the main file [[./uboone-nfspl1.jsonnet]] there are a number of sub files which export some configuration objects ("~configs~") and some which export edges to be formed into the final WCT execution graph.
 
 
-** Parameters
+** External Configuration
 
-The Jsonnet configuration files can be edited using any text editor.  Some users are unwilling to do that and so a mechanism has been added to allow select parameters to be set from outside these files.  This mechanism requires passing an ~override~ data structure through whichever interface to the toolkit one is using.  This data structure *must* be passed, even if it is empty.
-If using the WCT CLI one may call it like:
+The Jsonnet configuration files are designed to allow some elements to be overridden using an external source of configuration information.  Currently this may be done by providing a data structure as Jsonnet text associated with the Jsonnet external variable name ~override~.  This external variable *must* be provided.  If no overriding configuration is required it must be set to text that evaluates to an empty Jsonnet object: ~"{}"~.
+
+This external structure may be specified from the WCT CLI like:
 
 #+BEGIN_EXAMPLE
-  $ wire-cell -V 'override={...}' [...]
+  $ wire-cell -C 'override={...}' [...]
 #+END_EXAMPLE
 
-The equivalent FHiCL would look like:
+And from FHiCL would look like:
 
 #+BEGIN_EXAMPLE
 wcls_main: {
   // ...
-  params: {
+  structs: {
     override: '{...}'
   }
 }
@@ -101,7 +102,7 @@ Or, squashed to fit FHiCL:
 #+BEGIN_EXAMPLE
   wcls_main: {
      tool_type: WCLS
-     params: {
+     structs: {
         override: "{noisedb:{epoch:\"multi\", flavor:\"wcls\", run12boundary:7000}}"
      // ...
      }

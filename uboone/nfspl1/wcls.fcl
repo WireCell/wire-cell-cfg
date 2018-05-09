@@ -20,8 +20,26 @@ wcls: {
          // sure to still have around the top level cfg/*.jsonnet files.
          configs: ["uboone/nfspl1/uboone-nfspl1.jsonnet"]
 
-         // Allow setting of select WCT parameters right here.
-         params: {
+         // Allow setting of select WCT parameters as
+         //   key <--> scalar
+         // value pairs.  Acceptable keys depend on how the Jsonnet
+         // files given in "configs" are written.  The Jsonnet will
+         // access the key via a call to the std.extVar(key) function.
+         // An entry is equivalent to one "-V" option to wire-cell CLI.
+         params : {
+            // key1: "value"
+            // key2: 42
+         }
+
+         // Allow setting of select WCT parameters as
+         //   key <--> structure
+         // value pairs.  The structure is in the form of Jsonnet text.
+         // Acceptable keys depend on how the
+         // Jsonnet files given in "configs" are written.  The Jsonnet
+         // will access the key via a call to the std.extVar(key)
+         // function.  
+         // An entry is equivalent to one "-C" option to wire-cell CLI.
+         structs: {
             // run with dynamic RMS cuts based on run and with larsoft
             // services for misconfigured channels
             // override: "{noisedb:{epoch:\"multi\", flavor:\"wcls\", run12boundary:7000}}"
