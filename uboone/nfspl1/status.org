@@ -4,11 +4,12 @@ The next release of WCT will be 0.7.x and is driven by simulation and L1 SP feat
 
 * Status checklist
 
-** Simulation [3/3]
+** Simulation [4/4]
 
 - [X] implement simulation as Pgraph
 - [X] simulation WC/LS integration
 - [X] simulation wires fix (Hanyu)
+- [X] shorted response fix (Hanyu)
 
 ** SigProc [6/9]
 
