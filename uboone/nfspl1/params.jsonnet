@@ -16,10 +16,13 @@ local defaults = {
     raw_input_label: "daq",
 
     noisedb:{
-        flavor: "wcls",    // "wcls", "wct" or "multi".
+        // This can be "wcls" (requires connection to Fermilab DB
+        // servers) or "wct" (just static config).  It sets how the
+        // misconfigured channels are found.
+        flavor: "wcls",    
 
-        // before/after HW noise fix.  This is needed only if flavor
-        // is NOT "multi".
+        // This can be "before" or "after" or "multi".  It sets how
+        // the list of RMS cuts are found.
         epoch: "after",
 
         // A run number needed if flavor is multi.  It gives some run
