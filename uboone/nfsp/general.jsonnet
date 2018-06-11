@@ -5,6 +5,15 @@
 local wc = import "wirecell.jsonnet";
 local params = import "params.jsonnet";
 
+local wires = {
+    type: "WireSchemaFile",
+    data: { filename: par.wires_file }
+};
+local fields = {
+    type: "FieldResponse",
+    data: { filename: par.fields_file }
+};
+
 {
     // This holds various info about one anode plane aka APA.  Note:
     // in general multiple anode planes may be in use and
@@ -12,7 +21,7 @@ local params = import "params.jsonnet";
     // hard-coded default and uboone only has the one so we need not
     // set the "anode" configuration parameter everywhere.
     anode: {
-	type: "AnodePlane",
+	type: "AnodePlane",     // 
 	data: {
 	    // can have multiple anodes, just one in uboone
             ident: 0,
@@ -26,13 +35,13 @@ local params = import "params.jsonnet";
 	    shaping: 2.0*wc.us,
 	    // sample period
 	    tick: params.sample_period,
-	    // data file holding field response functions.
-            fields: params.fields_file,
-	    // data file holding wire definitions
-            wires: params.wires_file,
+	    // field response functions.
+            field_response: wc.tn(fields)
+	    // wire geometry
+            wire_schema: wc.tn(wires)
 	},
     },
 
-    sequence : [ $.anode, ],
+    sequence : [ wires, fields, $.anode, ],
 
 }

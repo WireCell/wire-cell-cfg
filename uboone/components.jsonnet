@@ -6,14 +6,22 @@
 local params = import "uboone/globals.jsonnet";
 local wc = import "wirecell.jsonnet";
 {
+    wires: {
+        type: "WireSchemaFile",
+        data: { filename: "microboone-celltree-wires-v2.json.bz2", }
+    },
+    fields: {
+        type: "FieldResponse",
+        data: { filename: "garfield-1d-3planes-21wires-6impacts-v6.json.bz2", }
+    },
 
     anode: {
-        type : "AnodePlane",
+        type : "AnodePlane", //
         name : "uboone-anode-plane", // could leave empty, just testing out explicit name
         data : {
             // WIRECELL_PATH will be searched for these files
-            wires:"microboone-celltree-wires-v2.json.bz2",
-            fields:"garfield-1d-3planes-21wires-6impacts-v6.json.bz2",
+            wire_schema: wc.tn($.wires),
+            field_response: wc.tn($.fields),
             ident : 0,
             gain : params.gain,
             shaping : params.shaping,

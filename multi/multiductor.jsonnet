@@ -5,6 +5,24 @@ local ductors = import "multi/ductors.jsonnet";
 local depos = import "multi/depos.jsonnet";
 local frames = import "multi/frames.jsonnet";
 local wc = import "wirecell.jsonnet";
+
+local noisemodel = {
+    type: "EmpiricalNoiseModel",
+    data: {
+        anode: wc.tn(anodes.nominal),
+        spectra_file: params.simulation.noise,
+    }
+};
+local noisesource = {
+    type: "NoiseSource",
+    data: {
+        model: wc.tn(noisemodel),
+        anode: wc.tn(anodes.nominal),
+    },
+};
+
+
+
 [
     depos.jsonfile,             // set up input file use "-V depofile=foo.json" on wire-cell CLI.
 
@@ -21,36 +39,8 @@ local wc = import "wirecell.jsonnet";
     ductors.truth,              // 
 
 
-    
-
-    local noisemodel = {
-        type: "EmpiricalNoiseModel",
-        data: {
-            anode: "AnodePlane",
-            spectra_file: params.noise,
-        }
-    },
-    noisesource : {
-        type: "NoiseSource",
-        data: {
-            model: "EmpiricalNoiseModel",
-            anode: "AnodePlane",
-        },
-    },
-
-    local noisemodel = {
-        data : super.data {
-            anode: "AnodePlane:nominal",
-        },
-    },
     noisemodel,
-
-    local noisesource {
-        data : super.data {
-            model: wc.tn(noisemodel),
-            anode: "AnodePlane:nominal",
-        },
-    },
+    noisesource,
 
 
     {                           // Now, the main event is to define chains of rules
@@ -116,13 +106,13 @@ local wc = import "wirecell.jsonnet";
 
     bits.digitizer {
         data : super.data {
-            anode: "AnodePlane:nominal",
+            anode: wc.tn(anodes.nominal),
         },
     },
 
     frames.celltree {
         data : super.data {
-            anode: "AnodePlane:nominal",
+            anode: wc.tn(anodes.nominal),
         },
     },        
 
@@ -132,11 +122,11 @@ local wc = import "wirecell.jsonnet";
             DepoSource: depos.depos_tn,
             Drifter: "Drifter",
             Ductor: "MultiDuctor",
-            Dissonance: "NoiseSource",
+            Dissonance: wc.tn(noisesource),
 
             /// Turning off digitizer saves frame as voltage.  Must
             // configure HistFrameSink's units to match!
-            Digitizer: if params.digitize then "Digitizer" else "",
+            Digitizer: if params.simulation.digitize then "Digitizer" else "",
             
             FrameSink: wc.tn(frames.celltree)
         }

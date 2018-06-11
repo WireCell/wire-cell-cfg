@@ -6,20 +6,20 @@ local anodes = import "multi/anodes.jsonnet";
         type : "Drifter",
         data : {
             anode: wc.tn(anodes.nominal),
-            DL : params.DL,
-            DT : params.DT,
-            lifetime : params.electron_lifetime,
-            fluctuate : params.fluctuate,
+            DL : params.simulation.DL,
+            DT : params.simulation.DT,
+            lifetime : params.simulation.electron_lifetime,
+            fluctuate : params.simulation.fluctuate,
         }
     },
 
     digitizer : {
         type: "Digitizer",
         data : {
-            gain: params.digitizer.pregain,
-            baselines: params.digitizer.baselines,
-            resolution: params.digitizer.resolution,
-            fullscale: params.digitizer.fullscale,
+            gain: params.simulation.digitizer.pregain,
+            baselines: params.simulation.digitizer.baselines,
+            resolution: params.simulation.digitizer.resolution,
+            fullscale: params.simulation.digitizer.fullscale,
             anode: wc.tn(anodes.nominal),
         }
     },

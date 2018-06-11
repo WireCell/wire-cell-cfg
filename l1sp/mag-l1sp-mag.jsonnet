@@ -19,17 +19,22 @@ local random = {
 };
 local utils = [cmdline, random];
 
-local anode = {
-    type : "AnodePlane",
-    data : params.elec + params.daq + params.files {
-        ident : 0,
-    }
+local wires = {
+    type: "WireSchemaFile",
+    data: { filename: params.files.wires }
 };
-
-local fieldresponse = {
-    type : "FieldResponse",
-    data: {
-        filename: params.files.fields,
+local fields = {
+    type: "FieldResponse",
+    data: { filename: params.files.fields }
+};
+local anode = {
+    type : "AnodePlane",        // 
+    data : params.elec + params.daq {
+        ident : 0,
+	// field response functions.
+        field_response: wc.tn(fields),
+	// wire geometry
+        wire_schema: wc.tn(wires),
     }
 };
 
@@ -82,7 +87,7 @@ local frame_sink = {
     type: "DumpFrames",
 };
 
-local mag = [magsource, magsink, anode, fieldresponse, frame_sink];
+local mag = [magsource, magsink, fields, wires, anode, frame_sink];
 
 local fsplit = {
     type: "FrameSplitter",
@@ -102,7 +107,8 @@ local chsel = {
 local l1sp = {
     type: "L1SPFilter",
     data: {
-        filter: [0.000305453, 0.000978027, 0.00277049, 0.00694322, 0.0153945, 0.0301973, 0.0524048, 0.0804588, 0.109289, 0.131334, 0.139629, 0.131334, 0.109289, 0.0804588, 0.0524048, 0.0301973, 0.0153945, 0.00694322, 0.00277049, 0.000978027, 0.000305453], // bogus place holder
+        fields: wc.tn(fields),
+        filter: [0.000305453, 0.000978027, 0.00277049, 0.00694322, 0.0153945, 0.0301973, 0.0524048, 0.0804588, 0.109289, 0.131334, 0.139629, 0.131334, 0.109289, 0.0804588, 0.0524048, 0.0301973, 0.0153945, 0.00694322, 0.00277049, 0.000978027, 0.000305453],
 	raw_ROI_th_nsigma: 4.2,
 	raw_ROI_th_adclimit:  9,
 	overall_time_offset : 0,

@@ -5,15 +5,25 @@
 
 local params = import "dune/globals.jsonnet";
 local wc = import "wirecell.jsonnet";
+
+
 {
+// WIRECELL_PATH will be searched for these files
+    wires: {
+        type: "WireSchemaFile",
+        data: { filename: "pdsp-wires.json.bz2" }
+    },
+    fields: {
+        type: "FieldResponse",
+        data: { filename:  "garfield-1d-3planes-21wires-6impacts-dune-v1.json.bz2"}
+    },
+
     anode: {
-        type : "AnodePlane",
+        type : "AnodePlane", //
         name : "dune-anode-plane", // could leave empty, just testing out explicit name
         data : {
-            // WIRECELL_PATH will be searched for these files
-            //wires:"dune35t-tpc1-celltree-wires-v5.json.bz2",
-            wires:"pdsp-wires.json.bz2",
-            fields:"garfield-1d-3planes-21wires-6impacts-dune-v1.json.bz2",
+            wire_schema: wc.tn($.wires),
+            field_response: wc.tn($.fields)
             ident : 0,
             gain : params.gain,
             shaping : params.shaping,

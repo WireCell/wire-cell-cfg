@@ -8,5 +8,5 @@
             scale: 1.0,           // multiply by "n"
         }
     },
-    depos_tn: self.depos.type + ":" + self.depos.name,
+    depos_tn: self.jsonfile.type + ":" + self.jsonfile.name,
 }

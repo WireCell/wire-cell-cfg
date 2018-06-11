@@ -36,6 +36,8 @@ local wc = import "wirecell.jsonnet";
     uboone.depos,
 
     // anode needed by drifter, ductor and digitzer, so put first
+    uboone.wires,
+    uboone.fields,
     uboone.anode,
 
     uboone.drifter,
