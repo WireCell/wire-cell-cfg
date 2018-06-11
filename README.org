@@ -20,29 +20,36 @@ This holds a Jsonnet version of the WCT /system of units/ (which is
 essentially identical to CLHEP's).  It also includes a number of
 Jsonnet functions to form some common configuration data structures.
 
+- [[./vector.jsonnet]] 
+
+This holds some functions to assist in doing vector arithmetic in Jsonnet.
+
 ** Configuration file sets
 
 A number of configuration file sets are provided in subdirectories.
-Each targets some particular job, may be used as examples or copied
-and adapted.  Configuration file sets may employ various
-organizational structure but in general there is a top level file that
-provides the final WCT configuration sequence which references data
-structures defined in lower level files.  Examples include:
+Some organizational guidelines:
 
-- [[./uboone/nfsp/]] configures a noise filtering and signal processing.
-  The [[./uboone/nfsp/magnfsp.jsonnet][magnfsp.jsonnet]] is the main file to give to =wire-cell=.  This
-  will use Magnify files as input and output.  The other low-level
-  files can be used as-is to run an almost identical job in LArSoft
-  which will use the =art::Event= data structure as input and output.
-  The equivalent to =magnfsp.jsonnet= can be found in the
-  =larwirecell= package.
+- Do keep file sets self contained to a sub-directory.
 
-- [[./uboone/fourdee.jsonnet]] is a main file for setting up a simple
-  "four D" simulation with MicroBooNE wire geometry.  
+- Do not cross-reference files in other sub-directories.
 
-- [[./multi/main.jsonnet]] is the main file for setting up "multiductor"
-  simulation.  It uses files under [[./uboone/]].
+- Do reference (~import~) general support files from the top level
+  directory.
 
+- Feel free to organize into sub-sub-directories.
+
+Some examples include:
+
+- [[./uboone/nfspl1/]] config for MicroBooNE noise filter and signal
+  process with support for grounded wires ("L1").  See also testing
+  config under [[./l1sp]].
+
+As jobs or configuration organization styles become outdated their
+sub-directories are moved under [[./obsolete/]].  Avoid using these but
+they may hold historical significance for past processing.
+
+There may be other Jsonnet files found in the ~/test/~ sub-directories
+of the various WCT packages.
 
 * Tests
 
