@@ -1,4 +1,3 @@
-// A collection of Jsonnet functions for dealing with vectors
 {
     // element by element vector arithmatic
     vadd(v1,v2) :: std.map(function(i) v1[i]+v2[i],std.range(0,std.length(v1)-1)),

@@ -1,0 +1,111 @@
+#+title: WCT Simulation + Signal Processing Configuration
+
+* Overview
+
+This directory holds an example of WCT configuration which supports
+signal and noise simulation followed by signal processing.  It
+supports a number of possible high-level choices:
+
+- insertion of software noise filtering
+- variation of field responses (eg to emulate and correct microboone's shorted wires)
+- variation of electronics response (eg to emulate and correct microboone's misconfigured channels)
+- command line running or running from inside /art/ 
+
+* Configuration structure
+
+The configuration ultimately must describe a job that uses the WCT
+Pgrapher app component.  The Pgrapher app itself must be given a list
+of graph edges connecting two WCT ~INode~ instances (specifically,
+connecting their *configuration* data structures).  The final
+configuration, as always, must be an ordered sequence of the
+configuration data structures for all WCT components to be created and
+used at runtime.
+
+As this configuration tries to handle many job variants, it could
+become exhaustive and complex.  It is recognized that many jobs share
+a common subgraph.  To exploit this to manage complexity an abstract
+and new type of node is introduced called a *pnode*.  A pnode may
+refer to a subgraph of other pnodes or an individual WCT component
+node.
+
+A *pnode* has the following attributes:
+
+- type :: hard wired as "Pnode"
+- name :: optional
+- iports :: input port descriptions
+- oports :: output port descriptions
+- edges :: internal edges
+- uses :: array of node objects directly used by this node
+
+In writing the fundamental configuration structures for WCT
+components, the ~uses~ attribute can also be added.  Their contents
+will be lifted into the main configuration sequence and the ~uses~
+attribute will be removed.
+
+
+* Blah
+
+
+
+
+
+
+
+In order for one configuration file set to
+support a variety of jobs the fact that these different jobs have some
+shared subgraph is exploited in order to reduce complexity.  The
+configuration is organized 
+
+ ultimately as a Pgrapher graph.  However, a
+number of job variants can be constructed that have some common
+subgraph.  In order 
+
+to structure the configuration as a "graph of
+graphs" so as to get reusable configuration an abstract node object is
+defined.  This node
+
+
+At a high level the job is a linear pipeline consisting of a sequence
+of conceptual *pipeline elements*.  Each element is itself is composed
+as some graph of some number of WCT component nodes and associated
+tool components.  The configuration is organized to provide one
+Jsonnet file for each conceptual element:
+
+- [[./sim.jsonnet][sim]] :: takes a depo and produces frames.  simulates signal and optionally noise, output waveforms are in units of ADC.
+- [[./nf.jsonnet][nf]] :: takes a frame and produces a frame.  applies noise filtering, output waveforms are in units of (floating point) ADC.
+- [[./sp.jsonnet][sp]] :: takes a frame and produces a frame.  applies signal processing, output waveforms are in units of number of electrons.
+
+Each of these pipeline element files provides a Jsonnet object.  The
+attributes of this object represent a specific pipeline element
+configuration (PEC) object.  All PEC objects follow the same schema:
+
+ - ~inode~ :: gives an input node specification (ie in general, ~{node: "type:name", port:0}~)
+ - ~onode~ :: gives an output node specification
+ - ~edges~ :: a Pgrapher edge list
+ - ~uses~ :: a configuration sequence 
+
+The ~uses~ sequence should include the full *component configuration
+object* (CCO) for every node referenced in the ~edges~ list.  Here,
+the CCO is extended from what WCT accepts.  Besides the required WCT
+fields:
+
+- type :: the WCT component type name
+
+and the optional WCT fields:
+
+- name :: the WCT component instance name
+- data :: the WCT component configuration data
+
+there is an additional optional field:
+
+- uses :: an array of CCOs for components which are directly referenced in the ~data~ field.
+
+For example, a ~Ductor~ "uses" an ~AnodePlane~ which in turn "uses" a
+~WireSchema~ and a ~FieldResponse~.  
+
+A higher level configuration file then selects among the pipeline
+elements and for each selects a particular PEC.  It then builds the
+pipeline, possibly inserting interstitial pipeline elements or bare
+components and returns the full ~configs~ sequence which resolves any
+"uses" and suitably removes any duplicates.
+
