@@ -45,6 +45,10 @@ local wc = import "wirecell.jsonnet";
         fluctuate: true,        // if statistical fluctations should be applied
         continuous: false,      // if continuous or discontinuous mode is is used.
     },
+    nf : {                    // noise filtering specific parameters.  
+        frequency_bins: 9592, // number of frequency bins in which NF operates
+        run12boundary: 7000,  // separation between "before" and "after" hw noise fix.
+    },                        // bunch of stuff also in chndb-*.jsonnet
     files : {
         wires:"microboone-celltree-wires-v2.1.json.bz2",
         fields:["ub-10-half.json.bz2",
