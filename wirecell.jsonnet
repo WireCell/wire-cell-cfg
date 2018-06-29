@@ -320,43 +320,9 @@
     tn(obj) :: if std.objectHas(obj, "name") && obj.name != "" then obj.type + ":" + obj.name else obj.type,
 
 
-
-    /// DFP helpers
-    Node :: {type:"",name:"",port:0},
-    uvw:: ["U","V","W"],
-    conn_uvw_uvw(a,b,p)::
-    {
-	tail: {type:a, name:a + $.uvw[p], port:p},
-	head: {type:b, name:b + $.uvw[p], port:p},
-    },
-    conn_one_uvw(a,b,p)::
-    {
-	tail: {type:a, name:a},
-	head: {type:b, name:b + $.uvw[p]},
-    },
-    conn_uvw_one(a,b,p)::
-    {
-	tail: {type:a, name:a + $.uvw[p]},
-	head: {type:b, name:b,            port:p},
-    },
-
-
     // Return a new list where only the first occurrence of any object is kept.
     unique_helper(l, x):: if std.count(l,x) == 0 then l + [x] else l,
     unique_list(l):: std.foldl($.unique_helper, l, []),
-
-    // An extension on the Jsonnet-side is to tack on a "uses" field
-    // to a component configuration object which holds an array of
-    // other CCOs which this CCO references.  The following functions
-    // will help resolve and strip these uses.  This allows
-    // configuration authors to have local bookkeeping of CCO
-    // dependencies.
-
-    popuses(l, obj):: if std.objectHas(obj, "uses")
-    then l + std.foldl($.popuses, obj.uses, []) + [std.prune(std.mapWithKey(function (k,v) if k == "uses" then null else v, obj))]
-    else l + [obj],
-    
-    resolve_uses(seq):: $.unique_list(std.foldl($.popuses, seq, [])),
 
 }
 

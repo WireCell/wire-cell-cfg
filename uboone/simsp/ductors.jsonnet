@@ -1,9 +1,11 @@
 // This collects configuration related to ductors.
 
 local wc = import "wirecell.jsonnet";
+local g = import "pgraph.jsonnet";
+
 local par = import "params.jsonnet";
 local com = import "common.jsonnet";
-local pnode = import "pnode.jsonnet";
+
 
 // Ductors to span the possible anodes
 
@@ -77,8 +79,8 @@ local multi_ductor = {
 
 
 {
-    single : pnode.inode(ductors[0]),
-    multi : pnode.inode(multi_ductor),
+    single : g.pnode(ductors[0], nin=1, nout=1),
+    multi : g.pnode(multi_ductor, nin=1, nout=1),
 }
 
 

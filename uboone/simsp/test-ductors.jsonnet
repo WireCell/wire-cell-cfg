@@ -1,5 +1,5 @@
-local wc = import "wirecell.jsonnet";
+local g = import "pgraph.jsonnet";
+
 local ductors = import "ductors.jsonnet";
 
-wc.resolve_uses([ductors.single])
-
+ductors.single
