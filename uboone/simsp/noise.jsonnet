@@ -45,8 +45,8 @@ local frame_summer = g.pnode({
     // use the same node for both input and output and we cap off one
     // of the ports (frame_summer:1) with an internal edge.
     nominal: g.intern([frame_summer],[frame_summer],[noise_source],
-                      iports=[g.port(frame_summer)],
-                      oports=[g.port(frame_summer)],
+                      iports=frame_summer.iports[:1],
+                      oports=frame_summer.oports,
                       edges=[g.edge(noise_source, frame_summer, 0, 1)],
                       name="NominalNoise"),
 

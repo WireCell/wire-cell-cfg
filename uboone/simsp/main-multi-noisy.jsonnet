@@ -1,5 +1,5 @@
 // This is a main WCT configuration file.
-// It configures a job to run the most simple simulation.
+// It configures a job to run sim with noise and multiductor.
 // Kinematics consist of ideal tracks.
 
 
@@ -27,9 +27,9 @@ local base_saver = {
 
 // Insert depo saver between drifter and ductor.
 local depo_saver = g.pnode(base_saver { type: "NumpyDepoSaver" }, nin=1,nout=1);
-local mysim = g.insert_one(sim.single_quiet,0,
+local mysim = g.insert_one(sim.multi_noisy,0,
                            depo_saver, depo_saver,
-                           name="SimpleQuietSim");
+                           name="MultiNoisySim");
 
 
 // Aggregate stuff into an output node
