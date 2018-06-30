@@ -1,5 +1,3 @@
-// test wc.graph
-
 local g = import "pgraph.jsonnet";
 
 {
