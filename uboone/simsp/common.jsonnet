@@ -27,6 +27,13 @@ local params = import "params.jsonnet";
         data: { filename: fname }
     }, params.files.fields),
 
+    perchanresp : {
+        type: "PerChannelResponse",
+        data: {
+            filename: params.files.chresp,
+        }
+    },
+
     wires : {
         type: "WireSchemaFile",
         data: { filename: params.files.wires }
@@ -45,6 +52,7 @@ local params = import "params.jsonnet";
         uses: [fr, $.wires],
     }, $.fields),
 
+    field: $.fields[0],
     anode: $.anodes[0],         // one special/nominal anode
 
 }

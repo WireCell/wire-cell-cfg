@@ -55,6 +55,7 @@ local wc = import "wirecell.jsonnet";
                 "ub-10-uv-ground-half.json.bz2",
                 "ub-10-vy-ground-half.json.bz2"],
         noise: "microboone-noise-spectra-v2.json.bz2",
+        chresp: "microboone-channel-responses-v1.json.bz2",
     }
 }
 

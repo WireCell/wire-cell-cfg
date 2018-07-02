@@ -10,6 +10,7 @@
 
 local wc = import "wirecell.jsonnet";
 
+
 local defaults = {
 
     // The art::Event label for the input raw::RawDigit collection
@@ -55,4 +56,9 @@ local defaults = {
 
 
 };
-std.mergePatch(defaults, std.extVar("override"))
+
+// If testing with "jsonnet" CLI, must use --ext-code 'overide={...}' (not -V).
+// Etc, if compiling with libjsonnet++.
+local override = std.extVar("override")
+
+std.mergePatch(override, defaults)

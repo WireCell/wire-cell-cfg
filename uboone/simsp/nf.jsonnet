@@ -1,3 +1,7 @@
+// This provides some noise filtering related pnodes, one for each
+// channel noise database object defined by chndb.jsonet.  They are
+// provided with the same attribute keys as chndb.
+
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 

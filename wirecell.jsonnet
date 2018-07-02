@@ -11,6 +11,7 @@
     twopi  : 2*self.pi,
     halfpi  : self.pi/2,
     pi2 : self.pi*self.pi,
+    sqrtpi: std.sqrt(self.pi),
 
     //
     // Length [L]
