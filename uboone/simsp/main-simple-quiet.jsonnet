@@ -14,7 +14,7 @@ local dig = import "digitizers.jsonnet";
 
 
 
-local mydepos = dep.wee_twin_tracks;
+local mydepos = dep.big_twin_tracks;
 
 
 // This depends very much on the job so define it here instead of in

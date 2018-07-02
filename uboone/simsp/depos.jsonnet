@@ -24,4 +24,24 @@ local par = import "params.jsonnet";
             ]
         }
     }, nout=1),
+
+    big_twin_tracks: g.pnode({
+        type: "TrackDepos",
+        data: {
+            step_size: 1.0 * wc.millimeter,
+            tracks: [
+                {
+                    time: 0.0*wc.us,
+                    charge: -5000, // negative means charge per step
+                    ray: wc.ray(wc.point(100,50,500,wc.mm), wc.point(110,50,5510,wc.mm))
+                },
+                {
+                    time: 50.0*wc.us,
+                    charge: -5000, // negative means charge per step
+                    ray: wc.ray(wc.point(100,-50,500,wc.mm), wc.point(110,-50,5510,wc.mm))
+                },
+            ]
+        }
+    }, nout=1),
+
 }
