@@ -28,18 +28,21 @@ local make_obnf(chndbobj) = {
             Window: 5,
             Nbins: 250,
             Cut: 14,
+            anode: wc.tn(com.anode)
         },            
     },
     local single = {
         type: "mbOneChannelNoise",
         data: {
             noisedb: wc.tn(chndbobj),
+            anode: wc.tn(com.anode)
         }
     },
     local grouped = {
         type: "mbCoherentNoiseSub",
         data: {
             noisedb: wc.tn(chndbobj),
+            anode: wc.tn(com.anode)
         }
     },
 
@@ -62,7 +65,7 @@ local make_obnf(chndbobj) = {
             intraces: "orig",
             outtraces: "quiet",
         }
-    }, uses=[chndbobj, single, grouped, bitshift, status], nin=1, nout=1)
+    }, uses=[chndbobj, com.anode, single, grouped, bitshift, status], nin=1, nout=1)
 };
 
 local pmtfilter = g.pnode({
@@ -70,8 +73,9 @@ local pmtfilter = g.pnode({
     data: {
         intraces: "quiet",
         outtraces: "raw",
+        anode: wc.tn(com.anode),
     }
-}, nin=1, nout=1);
+}, nin=1, nout=1, uses=[com.anode]);
 
 local make_nf(obnf,name="") = g.intern([obnf], [pmtfilter],
                                        edges = [ g.edge(obnf, pmtfilter) ],
