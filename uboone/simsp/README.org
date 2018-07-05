@@ -13,99 +13,43 @@ supports a number of possible high-level choices:
 
 * Configuration structure
 
-The configuration ultimately must describe a job that uses the WCT
-Pgrapher app component.  The Pgrapher app itself must be given a list
-of graph edges connecting two WCT ~INode~ instances (specifically,
-connecting their *configuration* data structures).  The final
-configuration, as always, must be an ordered sequence of the
-configuration data structures for all WCT components to be created and
-used at runtime.
+This configuration makes use of the new ~pnode~ paradigm described in
+[[https://wirecell.github.io/news/posts/pgrapher-configuration-improvements/][this Wire-Cell news post]] to provide a layered configuration.  From
+top-down these layers are as follows.
 
-As this configuration tries to handle many job variants, it could
-become exhaustive and complex.  It is recognized that many jobs share
-a common subgraph.  To exploit this to manage complexity an abstract
-and new type of node is introduced called a *pnode*.  A pnode may
-refer to a subgraph of other pnodes or an individual WCT component
-node.
+** Main files
 
-A *pnode* has the following attributes:
+The Jsonnet files which are suitable to give to WCT are named like
+~main-*.jsonnet~.  They aggregate results from the lower layers in
+order to provide the final configuration sequence.
 
-- type :: hard wired as "Pnode"
-- name :: optional
-- iports :: input port descriptions
-- oports :: output port descriptions
-- edges :: internal edges
-- uses :: array of node objects directly used by this node
+** Globals
 
-In writing the fundamental configuration structures for WCT
-components, the ~uses~ attribute can also be added.  Their contents
-will be lifted into the main configuration sequence and the ~uses~
-attribute will be removed.
+The next layer down are some "global" information that may be used by
+all layers.  This layer is populated by two special files:
 
+- [[./params.jsonnet]] a data structure holding parameters that tend to be
+  used by many components.  
 
-* Blah
+- [[./common.jsonnet]] provides a number of configuration data structures
+  for "tool" components that are shared by several other components.
 
+** Pipeline elements
 
+The "main" layer largely builds a final linear pipeline.  The elements
+of this pipeline are ~pnode~ instances which have a single input and a
+single output.  The pipeline element files provide a set of possible
+elements to choose inside the "main", each of which cover some general
+aspect of a job.  The pipeline element files are:
 
+- [[./sim.jsonnet]] simulation 
+- [[./nf.jsonnet]] noise filter
+- [[./sp.jsonnet]] signal processing
 
+** All the rest
 
-
-
-In order for one configuration file set to
-support a variety of jobs the fact that these different jobs have some
-shared subgraph is exploited in order to reduce complexity.  The
-configuration is organized 
-
- ultimately as a Pgrapher graph.  However, a
-number of job variants can be constructed that have some common
-subgraph.  In order 
-
-to structure the configuration as a "graph of
-graphs" so as to get reusable configuration an abstract node object is
-defined.  This node
-
-
-At a high level the job is a linear pipeline consisting of a sequence
-of conceptual *pipeline elements*.  Each element is itself is composed
-as some graph of some number of WCT component nodes and associated
-tool components.  The configuration is organized to provide one
-Jsonnet file for each conceptual element:
-
-- [[./sim.jsonnet][sim]] :: takes a depo and produces frames.  simulates signal and optionally noise, output waveforms are in units of ADC.
-- [[./nf.jsonnet][nf]] :: takes a frame and produces a frame.  applies noise filtering, output waveforms are in units of (floating point) ADC.
-- [[./sp.jsonnet][sp]] :: takes a frame and produces a frame.  applies signal processing, output waveforms are in units of number of electrons.
-
-Each of these pipeline element files provides a Jsonnet object.  The
-attributes of this object represent a specific pipeline element
-configuration (PEC) object.  All PEC objects follow the same schema:
-
- - ~inode~ :: gives an input node specification (ie in general, ~{node: "type:name", port:0}~)
- - ~onode~ :: gives an output node specification
- - ~edges~ :: a Pgrapher edge list
- - ~uses~ :: a configuration sequence 
-
-The ~uses~ sequence should include the full *component configuration
-object* (CCO) for every node referenced in the ~edges~ list.  Here,
-the CCO is extended from what WCT accepts.  Besides the required WCT
-fields:
-
-- type :: the WCT component type name
-
-and the optional WCT fields:
-
-- name :: the WCT component instance name
-- data :: the WCT component configuration data
-
-there is an additional optional field:
-
-- uses :: an array of CCOs for components which are directly referenced in the ~data~ field.
-
-For example, a ~Ductor~ "uses" an ~AnodePlane~ which in turn "uses" a
-~WireSchema~ and a ~FieldResponse~.  
-
-A higher level configuration file then selects among the pipeline
-elements and for each selects a particular PEC.  It then builds the
-pipeline, possibly inserting interstitial pipeline elements or bare
-components and returns the full ~configs~ sequence which resolves any
-"uses" and suitably removes any duplicates.
+The lowest layer contains files written in support of the pipeline
+element files.  They tend to be named after the component that they
+provide variants of configurations for but otherwise follow no fixed
+patterns.
 

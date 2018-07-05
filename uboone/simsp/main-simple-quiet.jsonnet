@@ -14,7 +14,7 @@ local dig = import "digitizers.jsonnet";
 
 
 
-local mydepos = dep.big_twin_tracks;
+local mydepos = dep.wee_twin_tracks;
 
 
 // This depends very much on the job so define it here instead of in
@@ -33,7 +33,7 @@ local mysim = g.insert_one(sim.single_quiet,0,
 
 
 // Aggregate stuff into an output node
-local frame_saver = g.pnode(base_saver { type: "NumpyFrameSaver" }, nin=1,nout=1);
+local frame_saver = g.pnode(base_saver {type: "NumpyFrameSaver"}, nin=1,nout=1);
 local frame_sink = g.pnode({ type: "DumpFrames" }, nin=1);
 local myout = g.intern(
     name = "DaqFile",

@@ -50,6 +50,9 @@ local make_obnf(chndbobj) = {
         type: "OmnibusNoiseFilter",
         data : {
 
+            // This is the number of bins in various filters
+            nsamples : par.nf.frequency_bins,
+
             maskmap: { chirp: "bad", noisy: "bad" },
             channel_filters: [
                 wc.tn(bitshift),

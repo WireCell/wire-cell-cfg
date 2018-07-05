@@ -39,20 +39,59 @@ local params = import "params.jsonnet";
         data: { filename: params.files.wires }
     },
 
+    elec_resp : {
+        type: "ElecResponse",
+        data: {
+            shaping: params.elec.shaping,
+            gain: params.elec.gain,
+            postgain: params.elec.postgain,
+            nticks: params.sim.nticks,
+            tick: params.sim.tick,
+        },
+    },
+
+    rc_resp : {
+        type: "RCResponse",
+        data: {
+            width: 1.0*wc.ms,
+            nticks: params.sim.nticks,
+            tick: params.sim.tick,
+        }
+    },
+
+    // there is one trio of PIRs (one per plane) for each field response.
+    pirs : std.mapWithIndex(function (n, fr) [
+        {
+            type: "PlaneImpactResponse",
+            name : "PIR%splane%d" % [fr.name, plane],
+            data : {
+                plane: plane,
+                tick: params.sim.tick,
+                nticks: params.sim.nticks,
+                field_response: wc.tn(fr),
+                // note twice we give rc so we have rc^2 in the final convolution
+                other_responses: [wc.tn($.elec_resp), wc.tn($.rc_resp), wc.tn($.rc_resp)],
+            },
+            uses: [fr, $.elec_resp, $.rc_resp],
+        } for plane in [0,1,2]], $.fields),
+
     // 0:nominal, 1:uv-grounded, 2:vy-grounded
-    anodes : std.mapWithIndex(function (n, fr) {
+    anode : {
         type : "AnodePlane",
-        name : "anode%d" % n,
         data : params.elec + params.daq {
             ident : 0,              // must match what's in wires
-            field_response: wc.tn(fr),
             wire_schema: wc.tn($.wires),
-            cathode: [{x:params.detector.extent[0], y:0.0, z:0.0}],
+            faces : [
+                { 
+                    response: params.sim.response_plane,
+                    cathode: params.sim.cathode_plane,
+                },
+            ],
         },
-        uses: [fr, $.wires],
-    }, $.fields),
+        uses: [$.wires],
+    },
 
-    field: $.fields[0],
-    anode: $.anodes[0],         // one special/nominal anode
+    field: $.fields[0],         // the nominal field
+
 
 }

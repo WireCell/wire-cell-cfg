@@ -9,6 +9,7 @@ local com = import "common.jsonnet";
 
 {
     anode: wc.tn(com.anode),
+    field_response: wc.tn(com.field),
 
     tick: par.daq.sample_period,
 

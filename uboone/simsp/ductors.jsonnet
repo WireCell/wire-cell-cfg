@@ -7,17 +7,17 @@ local par = import "params.jsonnet";
 local com = import "common.jsonnet";
 
 
-// Ductors to span the possible anodes
-
-local ductors = std.mapWithIndex(function (n, anode) {
+// One ductor for each trio of pirs
+local ductors = std.mapWithIndex(function (n, pirs) {
     type: 'Ductor',
     name: 'ductor%d' % n,
     data: par.daq + par.lar + par.sim {
         rng: wc.tn(com.random),
-        anode: wc.tn(anode)
+        anode: wc.tn(com.anode),
+        pirs: std.map(function(pir) wc.tn(pir), pirs),
     },
-    uses: [com.random, anode],
-}, com.anodes);
+    uses: [com.random, com.anode] + pirs,
+}, com.pirs);
 
 // NOTE: these assume ultimately the anodes and their ductors are
 // ordered [nomina, uvground, vyground]
@@ -68,7 +68,7 @@ local uboone_shorted_chain =  [
 local multi_ductor = {
     type: "MultiDuctor",
     data : {
-        anode: wc.tn(com.anodes[0]),
+        anode: wc.tn(com.anode),
         continuous: par.sim.continuous,
         chains : [
             uboone_shorted_chain
