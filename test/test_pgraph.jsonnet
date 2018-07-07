@@ -24,4 +24,6 @@ local g = import "pgraph.jsonnet";
     ], name="n13"),
 
     n123inserted: g.insert_one($.n13, 0, $.n2, $.n2, name="n123inserted"),
+
+    pipe: g.pipeline([$.n1,$.n2,$.n3])
 }

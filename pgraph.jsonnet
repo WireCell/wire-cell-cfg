@@ -61,7 +61,7 @@ local wc = import "wirecell.jsonnet";
         type: "Pnode",
         name: wc.tn(inode),
         edges: [],
-        uses: $.resolve_uses([inode] + uses),
+        uses: $.resolve_uses(uses + [inode]),
         iports: [$.port(inode, n) for n in std.range(0,nin)][:nin],
         oports: [$.port(inode, n) for n in std.range(0,nout)][:nout],
     },
@@ -73,13 +73,29 @@ local wc = import "wirecell.jsonnet";
     // explicitly given, all iports of innodes become iports of the
     // new pnode, etc for output.
     intern(innodes=[], outnodes=[], centernodes=[], edges=[], iports=[], oports=[], name=""):: {
-        nodes::wc.unique_list(innodes+outnodes+centernodes),
+        local nodes = wc.unique_list(innodes+outnodes+centernodes),
         type: "Pnode",
         name: name,
         uses: $.resolve_uses(innodes+outnodes+centernodes),
-        edges: wc.unique_list(std.prune(edges + std.flattenArrays([n.edges for n in self.nodes]))),
+        edges: wc.unique_list(std.prune(edges + std.flattenArrays([n.edges for n in nodes]))),
         iports: if std.length(iports) == 0 then std.flattenArrays([n.iports for n in innodes]) else iports,
         oports: if std.length(oports) == 0 then std.flattenArrays([n.oports for n in outnodes]) else oports,
+    },
+
+
+    // Intern an ordered list of elements to form a linear pipeline by
+    // subsequently connecting one element's output port 0 to the next
+    // element's input port 0.  The first/last elements iport/oport
+    // will be used for the pipeline's iport/oport if existing.
+    pipeline(elements, name=""):: {
+        local nele = std.length(elements),
+        local pedges = [$.edge(elements[i], elements[i+1]) for i in std.range(0,nele-2)],
+        type: "Pnode",
+        name: name,
+        uses: $.resolve_uses(elements),
+        edges: wc.unique_list(std.prune(pedges + std.flattenArrays([n.edges for n in elements]))),
+        iports: if std.length(elements[0].iports) == 0 then [] else [elements[0].iports[0]],
+        oports: if std.length(elements[nele-1].oports) == 0 then [] else [elements[nele-1].oports[0]],
     },
 
 
