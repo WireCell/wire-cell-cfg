@@ -2,12 +2,23 @@
 
 * What is here
 
-This repository holds Wire Cell Toolkit configuration support files
-and some configuration sets.
+This repository holds a reference set of Wire Cell Toolkit
+configuration files, largely in the form of Jsonnet.
 
-For more information see the [[https://github.com/WireCell/wire-cell-docs/tree/master/manuals/configuration.org][WCT configuration manual]].
+The files at top level are general utilities are effort will be kept
+to maintain their stability. 
+
+Sub-directories can be expected to evolve (and disappear). Effort will
+be made to keep what is there current with the contemporaneous C++
+code.
+
+For more information on configuration see the [[https://github.com/WireCell/wire-cell-docs/tree/master/manuals/configuration.org][WCT configuration manual]]
+as well as [[https://wirecell.github.io/news/categories/config/][news posts tagged with config]].
 
 * Contents overview
+
+This describes what is available.  Be wary is may not always be up to
+date with the reality on the ground.
 
 ** General support files
 
@@ -24,34 +35,36 @@ Jsonnet functions to form some common configuration data structures.
 
 This holds some functions to assist in doing vector arithmetic in Jsonnet.
 
-** Configuration file sets
+- [[./pgraph.jsonnet]]
 
-A number of configuration file sets are provided in subdirectories.
-Some organizational guidelines:
+This holds functions to support building a processing graph for use by
+the ~Pgrapher~ WCT app component.  Some details are [[https://wirecell.github.io/news/posts/pgrapher-configuration-improvements/][here]].
 
-- Do keep file sets self contained to a sub-directory.
+** Pgrapher Modules
 
-- Do not cross-reference files in other sub-directories.
+Although there are several WCT app components, currently the most
+powerful and flexible is Pgrapher.  It's configuration is based on
+building a graph of nodes and with the help of ~pgraph.jsonnet~ it is
+possible to factor many of the possible graphs into common a set of
+subgraphs.  This allows a full configuration to be constructed at
+various levels of detail culminating on a simple high-level
+aggregation of nodes which is typically in the form of a simple linear
+pipeline.  
 
-- Do reference (~import~) general support files from the top level
-  directory.
+A factored collection of Pgrapher configuration is available under
+[[./pgrapher/]].  See [[./pgrapher/README.org][it's README]] for more info.
 
-- Feel free to organize into sub-sub-directories.
+** Obsolete
 
-Some examples include:
+Configuration can become obsolete when the C++ changes or when new
+paradigms of configuration organization are adopted.  That
+configuration may be moved to [[./obsolete/]] for some time before being
+dropped from the tip of the master branch.
 
-- [[./uboone/nfspl1/]] config for MicroBooNE noise filter and signal
-  process with support for grounded wires ("L1").  See also testing
-  config under [[./l1sp]].
-
-As jobs or configuration organization styles become outdated their
-sub-directories are moved under [[./obsolete/]].  Avoid using these but
-they may hold historical significance for past processing.
+* Tests
 
 There may be other Jsonnet files found in the ~/test/~ sub-directories
 of the various WCT packages.
-
-* Tests
 
 Running the configuration tests is done through the files under =test/=.  They rely on a simple ad-hoc test harness. All tests can be run from the top-level =wire-cell= source directory after a build like:
 
@@ -72,3 +85,5 @@ Each test has a =test_<testname>.jsonnet= file.
 #+END_EXAMPLE
 
 These main JSonnet files are typically composed of some chunks reused by the various different tests. The chunks are named like =cfg_*.jsonnet=.  The body of each main =test_<testname>.jsonnet= largely consists of the data flow graph definition for the =TbbFlow= Wire Cell application object.
+
+See also https://github.com/wirecell/wire-cell-tests.

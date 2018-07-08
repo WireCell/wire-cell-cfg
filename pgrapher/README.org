@@ -1,0 +1,55 @@
+#+title: Pgrapher Reference Configuration
+
+This area holds a set of configuration files spanning many targets.
+It is self-contained except for depending on the files at the top of
+the ~cfg~ package.
+
+* Organization
+
+Each Sub-directory holds some cohesive factorization of the
+configuration along lines of major concepts.
+
+- [[./common/]] :: base params and parameterized configuration objects for
+                   "tool" like components (ie, for non ~INode~
+                   components) that may be used by other component
+                   configuration objects.
+
+- [[./sim]] :: parameterized configuration objects for simulation related
+               nodes.
+
+- [[./sp]] :: ibid for signal processing
+
+- [[./cli]] :: configuration, including ~main-*.jsonnet~ files for final
+               consumption by the ~wire-cell~ command line interface.
+
+- [[./wcls]] :: configuration, including ~*.fcl~ files for final
+                consumption by the WireCell/LArSoft integration /art/
+                module.
+
+- [[./uboone/]] :: microboone specific parameters derived from
+                   common.params, as well as other data structures
+                   specific to this experiment's detector.  Currently
+                   this includes a lot of noise filter (nf) related
+                   stuff as it's all very microboone specific.
+
+
+Additional README files may be found in each sub directory.  
+
+* Usage
+
+** Command line
+
+In general, one runs a WCT command line interface job like:
+
+#+BEGIN_EXAMPLE
+  $ wire-cell [...] -c pgrapher/cli/main-<SOME-LABEL>.jsonnet
+#+END_EXAMPLE
+
+Depending on the ~cli/main*-.jsonnet~ file selected, some additional
+command line arguments may be required to set Jsonnet variables or
+supply Jsonnet code snippets.  See the comments at the top of the
+~main-*.jsonnet~ file selected.
+
+** WC/LS
+
+t.b.d.
