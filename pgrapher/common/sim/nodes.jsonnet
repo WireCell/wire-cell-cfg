@@ -4,6 +4,7 @@
 
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
+local depos = import "pgrapher/common/sim/depos.jsonnet";
 
 function(params, tools)
 {
@@ -23,7 +24,7 @@ function(params, tools)
     // anodes and all PIR trios.  For one element of that product this
     // function is called.  The name should be unique across all
     // anodes X PIR trios.
-    make_ductor: function(name, anode, pir_trio) g.pnode({
+    make_ductor:: function(name, anode, pir_trio) g.pnode({
         type: 'Ductor',
         name: name,
         data: {
@@ -35,7 +36,7 @@ function(params, tools)
     
 
     // make all ductors for given anode and for all PIR trios.
-    make_anode_ductors: function(anode)
+    make_anode_ductors:: function(anode)
     std.mapWithIndex(function(n, pir_trio)
                      $.make_ductor('ductor%d%s'%[n, anode.name], anode, pir_trio), tools.pirs),
 
@@ -44,7 +45,7 @@ function(params, tools)
     
     // make all ductors for a given PIR trio.  Basename should include
     // an identifier unique to the PIR trio.
-    make_detector_ductors: function(pirname, anodes, pir_trio)
+    make_detector_ductors:: function(pirname, anodes, pir_trio)
     std.mapWithIndex(function (n, anode)
                      $.make_ductor('%s%s' % [pirname, anode.name],
                                    anode, pir_trio), tools.anodes),
@@ -59,7 +60,7 @@ function(params, tools)
     // Make aone multiductor for a single anode from the primitive
     // ductors which are also featured in the given chain.  The chain
     // is left as an exercise to the caller.
-    multi_ductor: function(params, anode, ductors, chains, name="") g.pnode({
+    multi_ductor:: function(params, anode, ductors, chains, name="") g.pnode({
         type: "MultiDuctor",
         data : {
             anode: wc.tn(anode),
@@ -73,7 +74,7 @@ function(params, tools)
 
 
     // Make a digitizer bound to an anode.
-    digitizer: function(params, anode, name="") g.pnode({
+    digitizer:: function(anode, name="") g.pnode({
         type: "Digitizer",
         name: name,
         data : params.adc {
@@ -93,5 +94,5 @@ function(params, tools)
     //                  ]),
 
     
-}
+} + depos(params,tools)
     

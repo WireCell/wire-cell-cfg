@@ -1,0 +1,19 @@
+#+title: Wire-Cell Toolkit Reference Configuration for MicroBooNE 
+
+* Overview
+
+This area provides reference WCT configuration for MicroBooNE-specific
+but otherwise generic/unspecified jobs.  The configuration extends the
+general reference configuration and may provide a basis or example for
+further extension for specific jobs.
+
+Conventions:
+
+ - "main" configuration files intended for consumption by UI are named
+   ~wct-*~ for ~wire-cell~ command line consumption and ~wcls-~ for
+   consumption by the WC/LS interface module and tool provided by the
+   ~larwirecell~ package.
+
+ - the remainder of the "main" file name is made up as an abbreviation
+   for the top level pipeline.
+

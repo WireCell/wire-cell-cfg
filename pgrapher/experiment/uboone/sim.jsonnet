@@ -1,9 +1,9 @@
 // Microboone-specific functions for simulation related things.  The
 // structure of function is parameterized on params and tools.
 
-
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
+local simnodes = import "pgrapher/common/sim/nodes.jsonnet";
 
 function(params, tools)
 {
@@ -15,7 +15,7 @@ function(params, tools)
     //
     // Copy-paste the plane:0 and plane:2 in uv_ground and vy_ground, respectively
     // ductors is a trio of fundamental ductors corresponding to one anode plane
-    multi_ductor_chain: function(ductors) [
+    multi_ductor_chain:: function(ductors) [
         {
             ductor: ductors[1].name,
             rule: "wirebounds",
@@ -116,7 +116,7 @@ function(params, tools)
 
 
     // make a noise source.  A source is for a particular anode and noise model.
-    noise_source: function(anode, model) g.pnode({
+    noise_source:: function(anode, model) g.pnode({
         type: "NoiseSource",
         name: "%s%s"%[anode.name, model.name],
         data: params.daq {
@@ -143,7 +143,7 @@ function(params, tools)
 
 
     // A "frame filter" that adds in noise.  Can use $.noise_summer but once.
-    plus_noise: function(noise, summer) 
+    plus_noise:: function(noise, summer) 
     g.intern([summer],[summer],[noise],
              edges = [
                  g.edge(noise, summer, 0, 1),
@@ -151,4 +151,4 @@ function(params, tools)
 
 
 
-}
+} + simnodes(params, tools)

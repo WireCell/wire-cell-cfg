@@ -1,7 +1,7 @@
-local params = import "params.jsonnet";
-local tools_maker = import "../common/tools.jsonnet";
+local params = import "pgrapher/experiment/uboone/params.jsonnet";
+local tools_maker = import "pgrapher/common/tools.jsonnet";
 local tools = tools_maker(params);
-local chndb_maker = import "chndb.jsonnet";
+local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 local chndbs = chndb_maker(params, tools.anodes[0], tools.field);
 
 {
@@ -15,6 +15,3 @@ local chndbs = chndb_maker(params, tools.anodes[0], tools.field);
     },
     multi: chndbs.wcls_multi,
 }
-
-    
-    

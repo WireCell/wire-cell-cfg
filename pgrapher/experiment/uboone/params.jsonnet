@@ -2,7 +2,7 @@
 // object, inheriting from common.params.  
 
 local wc = import "wirecell.jsonnet";
-local base = import "../common/params.jsonnet";
+local base = import "pgrapher/common/params.jsonnet";
 
 base {
     lar: super.lar {
@@ -55,6 +55,14 @@ base {
                 faces: [ {response: 10*wc.cm-6*wc.mm, cathode: 2.5604*wc.m}, null ],
             },
         ],
+
+        // The active volume bounding box defined as the location of
+        // two extreme corners.  See above note for where these magic
+        // numbers come from.
+        bounds : {
+            tail: wc.point(  -6.0, -1155.30,    0.35, wc.mm),
+            head: wc.point(2560.4,  1174.7, 10369.65, wc.mm),
+        },
     },
     nf: super.nf {
 

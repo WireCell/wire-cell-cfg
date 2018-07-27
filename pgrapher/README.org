@@ -6,36 +6,102 @@ the ~cfg~ package.
 
 * Organization
 
-Each Sub-directory holds some cohesive factorization of the
-configuration along lines of major concepts.
+The *reference configuration* files are factored into sub-directories
+according to their scope of use.
 
-- [[./common/]] :: base params and parameterized configuration objects for
-                   "tool" like components (ie, for non ~INode~
-                   components) that may be used by other component
-                   configuration objects.
+- [[./ui/]] :: configuration which targets a specific user interface (eg
+               [[./ui/cli/]] and [[./ui/wcls]])
 
-- [[./sim]] :: parameterized configuration objects for simulation related
-               nodes.
+- [[./common/]] :: "base objects" and other structures and functions
+                   shared by the other scopes.
 
-- [[./sp]] :: ibid for signal processing
+- [[./experiment/]] :: reference configuration specific to one experiment
+     or detector (eg [[./experiment/uboone/]])
 
-- [[./cli]] :: configuration, including ~main-*.jsonnet~ files for final
-               consumption by the ~wire-cell~ command line interface.
-
-- [[./wcls]] :: configuration, including ~*.fcl~ files for final
-                consumption by the WireCell/LArSoft integration /art/
-                module.
-
-- [[./uboone/]] :: microboone specific parameters derived from
-                   common.params, as well as other data structures
-                   specific to this experiment's detector.  Currently
-                   this includes a lot of noise filter (nf) related
-                   stuff as it's all very microboone specific.
+- [[./test/]] :: it should be possible to individually compile all files
+                 above to JSON but this directory holds some
+                 additional files that test integrating files from the
+                 above directories.
 
 
-Additional README files may be found in each sub directory.  
+* Guidelines for developing specific configuration
+
+These reference configurations may be used as a basis for developing
+user and/or production configuration.  Some guidelines are given for
+their effective use
+
+- clone this ~wire-cell-cfg~ repository but otherwise leave its
+  contents unmodified
+
+- maintain a separate directory / repository holding *job-specific*
+  configuration which import and extend the ~/pgrapher/~ files.
+
+- mimic the organization patterns described above
+
+- where possible, if a ui, common or experiment file is extended,
+  avoid the need for higher levels to access the base.
+
+Note, the *reference configuration* given here is subject to change
+without warning in the ~master~ branch.  It will remain stable within
+a release branch.
+
+* Checking configuration 
+
+While developing a configuration it is useful to periodically test
+that it is correct.  There are several levels at which correctness can
+be checked.
+
+** Check syntax
+
+In principle, every Jsonnet file should compile as a "main" file and
+testing this is easy.  Simply run ~jsonnet~ specifying the top
+directory location for the ~wire-cell-cfg~ package.  Eg:
+
+#+BEGIN_EXAMPLE
+  $ jsonnet -J cfg cfg/pgrapher/uboone/test-nf.jsonnet > test-nf.json
+#+END_EXAMPLE
+
+If this spits out JSON then the Jsonnet is correctly formed.  Some
+common mistakes are:
+
+ - defining an attribute of an object as an exported function.  In
+   principle, function values are allowed as long as they are not
+   retained in the /configuration sequence/.  A simple fix that allows
+   intermediate testing is to define the attribute with ~::~ instead
+   of the singular ~:~.
+
+
+
+** Check graph
+
+Just having correct syntax goes a long way to having correct
+configuration but of course it does not guarantee correct content and
+semantics.
+
+Much of the configuration culminates in the Pgrapher component graph.
+The ~wire-cell-python~ package provides a utility to generate a visual
+representation of this graph which quickly allows problems to be
+identified.  Currently, this command needs to operate on precompiled
+JSON which can be generated as described by the syntax checking above.
+
+#+BEGIN_EXAMPLE
+  $ wirecell-pgraph dotify --jpath '.' test-nf.json test-nf.pdf
+#+END_EXAMPLE
+
+The use of ~--jpath '.'~ is to tell the command how to locate the
+~edges~ attribute.  By default the command assumes a full
+/configuration sequence/ with the ~Pgrapher~ configuration object as
+the last element.
+
+
+** Check usage
+
+Finally, one must use the configuration and validate results.  Usage
+is described above.
+
 
 * Usage
+
 
 ** Command line
 

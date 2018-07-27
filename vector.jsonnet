@@ -10,11 +10,17 @@
     // Return a vector displaced along direction of d by length l from v.
     vshift(v,d,l) :: $.vadd(v, $.scale($.vdir(d), l)),
 
-    // Sum elements of a vector
+    // Return new vector of absolute value of input elements 
+    vabs(v) :: std.map(std.abs, v),
+
+    // Reduce vector by summing elements.
     sum(v) :: std.foldl(function(n,x) n+x, v, 0),
 
     // Magnitude/length of a vector 
     mag(v) :: std.sqrt(self.sum(std.map(function(x) x*x, v))),
+
+    // Reduce vector by multiplication.
+    mul(v) :: std.foldl(function(n,x) n*x, v, 1),
 
     // Multiply a scalar to a vector, element by element
     scale(v,s) :: std.map(function(e) e*s, v),
@@ -28,4 +34,7 @@
     // return 3-vector given a "3D point" 
     frompoint(p) :: [ p.x, p.y, p.z ],
 
+    // Calculate the volume of a rectangular solid defined by two
+    // points giving extreme corners.
+    volume(v1, v2) :: $.mul($.vabs($.vsub(v1,v2))),
 }
