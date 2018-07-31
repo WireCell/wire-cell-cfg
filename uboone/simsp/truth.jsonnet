@@ -13,7 +13,7 @@ local fanout = g.pnode({
 
 
 local tductor = g.pnode({
-    type: "Truth",
+    type: "TruthTraceID",
     data: par.sim + par.daq + par.lar {
         anode: wc.tn(com.anode),        
     }
