@@ -87,3 +87,14 @@ Each test has a =test_<testname>.jsonnet= file.
 These main JSonnet files are typically composed of some chunks reused by the various different tests. The chunks are named like =cfg_*.jsonnet=.  The body of each main =test_<testname>.jsonnet= largely consists of the data flow graph definition for the =TbbFlow= Wire Cell application object.
 
 See also https://github.com/wirecell/wire-cell-tests.
+* JQ tricks
+
+The ~jq~ tool is like ~grep~ for JSON.  Here are some useful tricks to operate on a mongo big JSON file.
+
+** WCT JSON Config Files
+
+Find an element in the /configuration sequence/ by type
+
+#+BEGIN_EXAMPLE
+  $ jq '.[]| select(.type|contains("Drifter"))' wct.json 
+#+END_EXAMPLE

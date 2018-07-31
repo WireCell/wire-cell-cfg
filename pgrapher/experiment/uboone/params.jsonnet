@@ -52,7 +52,15 @@ base {
             {
                 wires: 0,
                 name: "uboone",
-                faces: [ {response: 10*wc.cm-6*wc.mm, cathode: 2.5604*wc.m}, null ],
+                faces: [
+                    {
+                        anode: 1.0*wc.cm, // drop any depos w/in 1 cm of U-wires
+                        response: 10*wc.cm-6*wc.mm,
+                        cathode: 2.5604*wc.m,
+                    },
+                    
+                    null
+                ],
             },
         ],
 
