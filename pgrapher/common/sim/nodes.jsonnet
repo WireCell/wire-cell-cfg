@@ -16,6 +16,7 @@ function(params, tools)
         data: params.lar {
             rng: wc.tn(tools.random),
             xregions: xregions,
+            time_offset: params.sim.trigger_offset,
         },
     }, nin=1, nout=1, uses=[tools.random]),
 

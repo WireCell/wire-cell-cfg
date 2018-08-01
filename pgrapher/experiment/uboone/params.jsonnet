@@ -56,7 +56,7 @@ base {
                     {
                         anode: 1.0*wc.cm, // drop any depos w/in 1 cm of U-wires
                         response: 10*wc.cm-6*wc.mm,
-                        cathode: 2.5604*wc.m,
+                        cathode: 2.5480*wc.m,// based dump of ubcore/v06_83_00/gdml/microboonev11.gdml by Matt Toups
                     },
                     
                     null
@@ -94,6 +94,10 @@ base {
             shaping: 1.1*wc.us,
         },
 
+    },
+
+    sim: super.sim {
+        trigger_offset: 1.6*wc.ms, // according to Tracy
     },
 
 
