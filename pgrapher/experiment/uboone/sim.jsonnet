@@ -7,6 +7,38 @@ local simnodes = import "pgrapher/common/sim/nodes.jsonnet";
 
 function(params, tools)
 {
+    // Extract these as they will be useful in multiple contexts
+    shorted_channels : {
+        uv: [ 
+            [ { plane:0, min:296, max:296 } ],
+            [ { plane:0, min:298, max:315 } ],
+            [ { plane:0, min:317, max:317 } ],
+            [ { plane:0, min:319, max:327 } ],
+            [ { plane:0, min:336, max:337 } ],
+            [ { plane:0, min:343, max:345 } ],
+            [ { plane:0, min:348, max:351 } ],
+            [ { plane:0, min:376, max:400 } ],
+            [ { plane:0, min:410, max:445 } ],
+            [ { plane:0, min:447, max:484 } ],
+            [ { plane:0, min:501, max:503 } ],
+            [ { plane:0, min:505, max:520 } ],
+            [ { plane:0, min:522, max:524 } ],
+            [ { plane:0, min:536, max:559 } ],
+            [ { plane:0, min:561, max:592 } ],
+            [ { plane:0, min:595, max:598 } ],
+            [ { plane:0, min:600, max:632 } ],
+            [ { plane:0, min:634, max:652 } ],
+            [ { plane:0, min:654, max:654 } ],
+            [ { plane:0, min:656, max:671 } ],
+        ],
+        vy: [
+            [ { plane:2, min:2336, max:2399 } ],
+            [ { plane:2, min:2401, max:2414 } ],
+            [ { plane:2, min:2416, max:2463 } ],
+        ],
+    },
+
+
     // The guts of this chain can be generated with:
     // $ wirecell-util convert-uboone-wire-regions \
     //                 microboone-celltree-wires-v2.1.json.bz2 \
@@ -19,38 +51,13 @@ function(params, tools)
         {
             ductor: ductors[1].name,
             rule: "wirebounds",
-            args: [ 
-                [ { plane:0, min:296, max:296 } ],
-                [ { plane:0, min:298, max:315 } ],
-                [ { plane:0, min:317, max:317 } ],
-                [ { plane:0, min:319, max:327 } ],
-                [ { plane:0, min:336, max:337 } ],
-                [ { plane:0, min:343, max:345 } ],
-                [ { plane:0, min:348, max:351 } ],
-                [ { plane:0, min:376, max:400 } ],
-                [ { plane:0, min:410, max:445 } ],
-                [ { plane:0, min:447, max:484 } ],
-                [ { plane:0, min:501, max:503 } ],
-                [ { plane:0, min:505, max:520 } ],
-                [ { plane:0, min:522, max:524 } ],
-                [ { plane:0, min:536, max:559 } ],
-                [ { plane:0, min:561, max:592 } ],
-                [ { plane:0, min:595, max:598 } ],
-                [ { plane:0, min:600, max:632 } ],
-                [ { plane:0, min:634, max:652 } ],
-                [ { plane:0, min:654, max:654 } ],
-                [ { plane:0, min:656, max:671 } ],
-            ],
+            args: $.shorted_channels.uv,
         },
 
         {
             ductor: ductors[2].name,
             rule: "wirebounds",
-            args: [
-                [ { plane:2, min:2336, max:2399 } ],
-                [ { plane:2, min:2401, max:2414 } ],
-                [ { plane:2, min:2416, max:2463 } ],
-            ],
+            args: $.shorted_channels.vy,
         },
         {               // catch all if the above do not match.
             ductor: ductors[0].name,
@@ -100,7 +107,7 @@ function(params, tools)
 
         
     // Make a noise model bound to an anode and a channel status
-    local make_noise_model = function(anode, csdb) {
+    make_noise_model: function(anode, csdb) {
         type: "EmpiricalNoiseModel",
         name: "empericalnoise%s"% csdb.name,
         data: {
@@ -118,7 +125,7 @@ function(params, tools)
     // make a noise source.  A source is for a particular anode and noise model.
     noise_source:: function(anode, model) g.pnode({
         type: "NoiseSource",
-        name: "%s%s"%[anode.name, model.name],
+        name: "noise%s%s"%[anode.name, model.name],
         data: params.daq {
             rng: wc.tn(tools.random),
             model: wc.tn(model),
@@ -149,6 +156,27 @@ function(params, tools)
                  g.edge(noise, summer, 0, 1),
              ]),
 
+
+
+    // Return a frame filter that adds noise.  Must use "return" attribute.
+    noise:: function(anode, model) {
+        local nsrc = $.noise_source(anode, model),
+        local nsum = g.pnode({
+            type: "FrameSummer",
+            name: "sum" + nsrc.name,
+            data: {
+                align: true,
+                offset: 0.0*wc.s,
+            }
+        }, nin=2, nout=1),
+
+        return : g.intern([nsum],[nsum],[nsrc],
+                          edges = [
+                              g.edge(nsrc, nsum, 0, 1),
+                          ]),
+    }
+    
+    
 
 
 } + simnodes(params, tools)

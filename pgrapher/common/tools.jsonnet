@@ -91,4 +91,6 @@ function(params)
         uses: [$.wires],
     } for vol in params.det.volumes],
 
+    // first anode is nominal
+    anode: $.anodes[0],
 }

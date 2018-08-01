@@ -5,18 +5,18 @@ local wc = import "wirecell.jsonnet";
 local base = import "chndb-base.jsonnet";
 local rms_cuts = import "chndb-rms-cuts.jsonnet";
 
-function(params, anode, field)
+function(params, tools)
 {
     wct: function(epoch="before") {
         type: "OmniChannelNoiseDB",
         name: "ocndb%s"%epoch,
-        data : base(params, anode, field, rms_cuts[epoch]),
+        data : base(params, tools.anode, tools.field, rms_cuts[epoch]),
     },
 
     wcls: function(epoch="before") {
         type: "wclsChannelNoiseDB",
         name: "wclscndb%s"%epoch,
-        data : base(params, anode, field, rms_cuts[epoch]) {
+        data : base(params, tools.anode, tools.field, rms_cuts[epoch]) {
             misconfig_channel: {
                 policy: "replace",
                 from: {gain:  params.nf.misconfigured.gain,

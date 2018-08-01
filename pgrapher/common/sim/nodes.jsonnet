@@ -61,7 +61,7 @@ function(params, tools)
     // Make aone multiductor for a single anode from the primitive
     // ductors which are also featured in the given chain.  The chain
     // is left as an exercise to the caller.
-    multi_ductor:: function(params, anode, ductors, chains, name="") g.pnode({
+    multi_ductor:: function(anode, ductors, chains, name="") g.pnode({
         type: "MultiDuctor",
         data : {
             anode: wc.tn(anode),

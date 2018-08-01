@@ -12,7 +12,7 @@ local anode = tools.anodes[0];
 local ductors = sim.make_anode_ductors(anode);
 
 local md_chain = sim.multi_ductor_chain(ductors);
-local md = sim.multi_ductor(params, anode, ductors, md_chain);
+local md = sim.multi_ductor(anode, ductors, md_chain);
 
 {
     uses: md.uses,

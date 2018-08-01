@@ -122,5 +122,5 @@ local wc = import "wirecell.jsonnet";
                                                    edges=std.mapWithIndex(function(ind,s) $.edge(s,joiner,0,ind),
                                                                           sources),
                                                   ),
-
+    
 }

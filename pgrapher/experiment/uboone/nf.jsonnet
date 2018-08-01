@@ -3,7 +3,7 @@
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 
-function(params, anode, chndbobj, name="")
+function(params, tools, chndbobj, name="")
 {
     local bitshift = {
         type: "mbADCBitShift",
@@ -23,7 +23,7 @@ function(params, anode, chndbobj, name="")
             Window: 5,
             Nbins: 250,
             Cut: 14,
-            anode: wc.tn(anode)
+            anode: wc.tn(tools.anode)
         },            
     },
     local single = {
@@ -31,7 +31,7 @@ function(params, anode, chndbobj, name="")
         name:name,
         data: {
             noisedb: wc.tn(chndbobj),
-            anode: wc.tn(anode)
+            anode: wc.tn(tools.anode)
         }
     },
     local grouped = {
@@ -39,7 +39,7 @@ function(params, anode, chndbobj, name="")
         name:name,
         data: {
             noisedb: wc.tn(chndbobj),
-            anode: wc.tn(anode)
+            anode: wc.tn(tools.anode)
         }
     },
 
@@ -66,7 +66,7 @@ function(params, anode, chndbobj, name="")
             intraces: "orig",
             outtraces: "quiet",
         }
-    }, uses=[chndbobj, anode, single, grouped, bitshift, status], nin=1, nout=1),
+    }, uses=[chndbobj, tools.anode, single, grouped, bitshift, status], nin=1, nout=1),
 
     local pmtfilter = g.pnode({
         type: "OmnibusPMTNoiseFilter",
@@ -74,9 +74,9 @@ function(params, anode, chndbobj, name="")
         data: {
             intraces: "quiet",
             outtraces: "raw",
-            anode: wc.tn(anode),
+            anode: wc.tn(tools.anode),
         }
-    }, nin=1, nout=1, uses=[anode]),
+    }, nin=1, nout=1, uses=[tools.anode]),
 
     pipe:  g.pipeline([obnf, pmtfilter], name=name),
 }.pipe
