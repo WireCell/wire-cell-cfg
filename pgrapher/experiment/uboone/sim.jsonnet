@@ -163,7 +163,7 @@ function(params, tools)
         local nsrc = $.noise_source(anode, model),
         local nsum = g.pnode({
             type: "FrameSummer",
-            name: "sum" + nsrc.name,
+            name: "noisesum",
             data: {
                 align: true,
                 offset: 0.0*wc.s,

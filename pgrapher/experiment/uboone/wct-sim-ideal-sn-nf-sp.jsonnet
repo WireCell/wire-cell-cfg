@@ -28,14 +28,20 @@ local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 
 local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
+local stubby = {
+    tail: wc.point(1000.0, 0.0, 5000.0, wc.mm),
+    head: wc.point(1010.0, 0.0, 5010.0, wc.mm),
+};
+
 local tracklist = [
     {
         time: 1*wc.ms,
         charge: -5000,          // negative means per step
-        ray: params.det.bounds,
+        ray: stubby,
+        //ray: params.det.bounds,
     },
 ];
-local output = "wct-sim-ideal-sig.npz";
+local output = "wct-sim-ideal-sn-nf-sp.npz";
     
 local anode = tools.anodes[0];
 
@@ -50,7 +56,7 @@ local drifter = sim.drifter;
 
 local ductors = sim.make_anode_ductors(anode);
 local md_chain = sim.multi_ductor_chain(ductors);
-local ductor = sim.multi_ductor(anode, ductors, md_chain);
+local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
 
 // fixme: insert misconfigureer
 
@@ -58,7 +64,7 @@ local ductor = sim.multi_ductor(anode, ductors, md_chain);
 local noise_model = sim.make_noise_model(anode, sim.miscfg_csdb);
 local noise = sim.noise(anode, noise_model).return;
 
-local digitizer = sim.digitizer(anode);
+local digitizer = sim.digitizer(anode, tag="orig");
 
 local chndb = chndb_maker(params, tools).wct("after");
 local nf = nf_maker(params, tools, chndb);

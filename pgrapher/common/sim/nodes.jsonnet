@@ -75,12 +75,12 @@ function(params, tools)
 
 
     // Make a digitizer bound to an anode.
-    digitizer:: function(anode, name="") g.pnode({
+    digitizer:: function(anode, name="", tag="") g.pnode({
         type: "Digitizer",
         name: name,
         data : params.adc {
             anode: wc.tn(anode),
-            frame_tag: ""
+            frame_tag: tag
         }
     }, nin=1, nout=1, uses=[anode]),
 
