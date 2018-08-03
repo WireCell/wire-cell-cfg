@@ -62,8 +62,7 @@ local md_chain = sim.multi_ductor_chain(ductors);
 local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
 //local ductor = sim.make_ductor("nominal", anode, tools.pirs[0]);
 
-// fixme: insert misconfigureer
-
+local miscon = sim.misconfigure(params);
 
 local noise_model = sim.make_noise_model(anode, sim.miscfg_csdb);
 local noise = sim.noise(anode, noise_model).return;
@@ -91,7 +90,8 @@ local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
 
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, ductor, noise, digitizer, sim_frameio, magnifio,
+local graph = g.pipeline([depos, deposio, drifter, ductor, miscon, noise, digitizer,
+                          sim_frameio, magnifio,
                           nf, nf_frameio, sp, sp_frameio, sink]);
 
 local app = {

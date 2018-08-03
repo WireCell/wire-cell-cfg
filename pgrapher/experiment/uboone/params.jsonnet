@@ -16,6 +16,7 @@ base {
     },        
     adc: super.adc {
         // There are post-FE amplifiers
+        // fixme: should this be elec.postgain?
         gain: 1.2,
 
         // fixme: need double checking

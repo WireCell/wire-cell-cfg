@@ -74,6 +74,64 @@ function(params, tools)
     }, nin=1, nout=1, uses = [anode] + ductors),
 
 
+    // This operates on all channels so needs a channel selector bypass.
+    // Maybe fixme: there are tag-aware nodes inside.
+    misconfigure:: function(params) {
+
+        local split = g.pnode({
+            type: "FrameSplitter",
+            name: "misconsplit"
+        }, nin=1, nout=2),
+
+        local chsel = g.pnode({
+            type: "ChannelSelector",
+            name: "misconsel",
+            data: {
+                channels: params.nf.misconfigured.channels,
+            }
+        }, nin=1, nout=1),
+
+        local miscon = g.pnode({
+            type: "Misconfigure",
+            name: "sigmisconfig",
+            data: {
+                // Must match what was actually used to start with
+                from: {
+                    gain: params.elec.gain,
+                    shaping: params.elec.shaping,
+                },
+                to: {
+                    gain: params.nf.misconfigured.gain,
+                    shaping: params.nf.misconfigured.shaping,
+                },
+                nsamples: 50,   // number of samples of the response
+                tick: params.daq.tick, // sample period of the response
+                truncate:true // result is extended by nsamples, tuncate clips that off
+            }
+        }, nin=1, nout=1),
+
+        local merge = g.pnode({
+            type: "FrameMerger",
+            name: "misconmerge",
+            data: {
+                rule: "replace",
+                // note: the first two need to match the order of what data is
+                // fed to ports 0 and 1 of this component in the pgraph below!
+                mergemap: [
+                ],
+            }
+        }, nin=2, nout=1),
+
+        return : g.intern([split], [merge], [chsel, miscon],
+                          edges=[
+                              g.edge(split, chsel),
+                              g.edge(chsel, miscon),
+                              g.edge(miscon, merge, 0, 0),
+                              g.edge(split, merge, 1, 1),
+                          ],
+                          name="misconfigure"),
+    }.return,
+
     // Make a digitizer bound to an anode.
     digitizer:: function(anode, name="", tag="") g.pnode({
         type: "Digitizer",
