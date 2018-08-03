@@ -97,7 +97,8 @@ base {
     },
 
     sim: super.sim {
-        trigger_offset: 1.6*wc.ms, // according to Tracy
+        //        trigger_offset: 1.6*wc.ms, // according to Tracy
+        trigger_offset: 0,
     },
 
 
