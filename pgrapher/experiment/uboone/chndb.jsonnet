@@ -3,6 +3,7 @@
 local wc = import "wirecell.jsonnet";
 
 local base = import "chndb-base.jsonnet";
+local perfect = import "chndb-perfect.jsonnet";
 local rms_cuts = import "chndb-rms-cuts.jsonnet";
 
 function(params, tools)
@@ -10,7 +11,10 @@ function(params, tools)
     wct: function(epoch="before") {
         type: "OmniChannelNoiseDB",
         name: "ocndb%s"%epoch,
-        data : base(params, tools.anode, tools.field, rms_cuts[epoch]),
+        data :
+        if epoch == "perfect"
+        then perfect(params, tools.anode, tools.field)
+        else base(params, tools.anode, tools.field, rms_cuts[epoch]),
     },
 
     wcls: function(epoch="before") {

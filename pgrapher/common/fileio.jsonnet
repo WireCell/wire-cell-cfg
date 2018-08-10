@@ -11,12 +11,15 @@ local g = import "pgraph.jsonnet";
     // if that is not desired.
     numpy: {
 
-        // Inject this between two ports passing a frame to save it in a file.
-        frames :: function(fname, name="") g.pnode({
+        // Inject this between two ports passing a frame to save it in
+        // a file.  Tags can be a list of strings or a list as a comma
+        // separated string.
+        frames :: function(fname, name="", tags="") g.pnode({
             type: "NumpyFrameSaver",
             name: name,
             data: {
-                filename: fname
+                filename: fname,
+                frame_tags: if std.type(tags) == 'string' then std.split(tags,",") else tags,
             }
         }, nin=1, nout=1),
                                                  

@@ -30,7 +30,7 @@ local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
 local stubby = {
     tail: wc.point(1000.0, 0.0, 5000.0, wc.mm),
-    head: wc.point(1010.0, 0.0, 5010.0, wc.mm),
+    head: wc.point(1100.0, 0.0, 5100.0, wc.mm),
 };
 
 local tracklist = [
@@ -42,13 +42,16 @@ local tracklist = [
     },
 ];
 local output = "wct-sim-ideal-sn-nf-sp.npz";
+local magout = "wct-sim-ideal-sn-nf-sp.root";
     
 local anode = tools.anodes[0];
 
 local sim = sim_maker(params, tools);
 
-local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
-                             [sim.ar39(), sim.tracks(tracklist)]);
+//local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
+//                             [sim.ar39(), sim.tracks(tracklist)]);
+local depos = sim.tracks(tracklist);
+
 
 local deposio = io.numpy.depos(output);
 
@@ -57,23 +60,39 @@ local drifter = sim.drifter;
 local ductors = sim.make_anode_ductors(anode);
 local md_chain = sim.multi_ductor_chain(ductors);
 local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
+//local ductor = sim.make_ductor("nominal", anode, tools.pirs[0]);
 
-// fixme: insert misconfigureer
-
+local miscon = sim.misconfigure(params);
 
 local noise_model = sim.make_noise_model(anode, sim.miscfg_csdb);
 local noise = sim.noise(anode, noise_model).return;
 
 local digitizer = sim.digitizer(anode, tag="orig");
+local sim_frameio = io.numpy.frames(output, "simframeio", tags="orig");
+local magnifio = g.pnode({
+    type: "MagnifySink",
+    data: {
+        output_filename: magout,
+        frames: ["orig","raw"],
+        anode: wc.tn(anode),
+    },
+}, nin=1, nout=1);
 
-local chndb = chndb_maker(params, tools).wct("after");
+
+//local noise_epoch = "perfect";
+local noise_epoch = "after";
+local chndb = chndb_maker(params, tools).wct(noise_epoch);
 local nf = nf_maker(params, tools, chndb);
-local sp = sp_maker(params, tools);
+local nf_frameio = io.numpy.frames(output, "nfframeio", tags="raw");
 
-local frameio = io.numpy.frames(output);
+local sp = sp_maker(params, tools);
+local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
+
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, ductor, noise, digitizer, nf, sp, frameio, sink]);
+local graph = g.pipeline([depos, deposio, drifter, ductor, miscon, noise, digitizer,
+                          sim_frameio, magnifio,
+                          nf, nf_frameio, sp, sp_frameio, sink]);
 
 local app = {
     type: "Pgrapher",

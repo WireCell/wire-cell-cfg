@@ -18,6 +18,7 @@ base {
     },        
     adc: super.adc {
         // There are post-FE amplifiers
+        // fixme: should this be elec.postgain?
         gain: 1.2,
 
         // fixme: need double checking
@@ -99,7 +100,8 @@ base {
     },
 
     sim: super.sim {
-        trigger_offset: 1.6*wc.ms, // according to Tracy
+        //        trigger_offset: 1.6*wc.ms, // according to Tracy
+        trigger_offset: 0,
     },
 
 

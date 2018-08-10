@@ -154,7 +154,7 @@ local wc = import "wirecell.jsonnet";
         // overriden in the experiment specific parameters.  Where
         // they differ then truncation or extension of waveforms may
         // occur.
-        nssamples: $.daq.nticks, 
+        nsamples: $.daq.nticks, 
 
         
     },    
