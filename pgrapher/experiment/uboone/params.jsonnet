@@ -6,6 +6,8 @@ local base = import "pgrapher/common/params.jsonnet";
 
 base {
     lar: super.lar {
+        DL : 6.4 * wc.cm2/wc.s,
+        DT : 9.8 * wc.cm2/wc.s,
         drift_speed : 1.1*wc.mm/wc.us,
     },
 
@@ -104,8 +106,8 @@ base {
     files : {
         wires:"microboone-celltree-wires-v2.1.json.bz2",
         fields:["ub-10-half.json.bz2",
-                "ub-10-uv-ground-half.json.bz2",
-                "ub-10-vy-ground-half.json.bz2"],
+                "ub-10-uv-ground-tuned-half.json.bz2",
+                "ub-10-vy-ground-tuned-half.json.bz2"],
         noise: "microboone-noise-spectra-v2.json.bz2",
         chresp: "microboone-channel-responses-v1.json.bz2",
     },
