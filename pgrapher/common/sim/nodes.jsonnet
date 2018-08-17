@@ -16,7 +16,15 @@ function(params, tools)
         data: params.lar {
             rng: wc.tn(tools.random),
             xregions: xregions,
-            time_offset: params.sim.trigger_offset,
+            time_offset: params.sim.depo_toffset,
+
+            drift_speed: params.lar.drift_speed,
+            fluctuate: params.sim.fluctuate,
+
+            DL: params.lar.DL,
+            DT: params.lar.DT,
+            lifetime: params.lar.lifetime,
+
         },
     }, nin=1, nout=1, uses=[tools.random]),
 
@@ -32,6 +40,15 @@ function(params, tools)
             rng: wc.tn(tools.random),
             anode: wc.tn(anode),
             pirs: std.map(function(pir) wc.tn(pir), pir_trio),
+
+            continuous: params.sim.continuous,
+            fluctuate: params.sim.fluctuate,
+            drift_speed: params.lar.drift_speed,
+            first_frame_number: params.daq.first_frame_number,
+            readout_time: params.daq.readout_time,
+            start_time: params.daq.start_time,
+            tick: params.daq.tick,
+            nsigma: 3,
         },
     }, nin=1,nout=1,uses=[tools.random, anode] + pir_trio),
     
@@ -104,8 +121,10 @@ function(params, tools)
                     gain: params.nf.misconfigured.gain,
                     shaping: params.nf.misconfigured.shaping,
                 },
-                nsamples: 50,   // number of samples of the response
                 tick: params.daq.tick, // sample period of the response
+
+                // fixme: these should probably be set from params.
+                nsamples: 50,   // number of samples of the response
                 truncate:true // result is extended by nsamples, tuncate clips that off
             }
         }, nin=1, nout=1),

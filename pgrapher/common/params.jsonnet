@@ -138,12 +138,9 @@ local wc = import "wirecell.jsonnet";
 
         // A fixed time offset added to all drifted depo times which
         // can be useful if the origin depo source fails to provide
-        // correct times.  So called "trigger" as it can be used to
-        // align the resulting activitity in the final simulated frame
-        // to some point in time corresponding to an external trigger
-        // which is somehow coincident with the production of the
-        // original depositions.
-        trigger_offset: 0.0,
+        // correct times.  
+        depo_toffset: 0.0,
+        
     },
 
     // Parameters related to noise filtering.  

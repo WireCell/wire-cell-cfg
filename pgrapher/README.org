@@ -70,7 +70,51 @@ common mistakes are:
    intermediate testing is to define the attribute with ~::~ instead
    of the singular ~:~.
 
+** Check content
 
+There are many ways to check if the configuration is what you expect.  
+
+*** Read the JSON file
+
+The JSON can get big but it's where the truth is.  Remember that units
+have been resolved so any quantities are expressed implicitly in the
+system of units.
+
+*** Query the JSON file
+
+Lots of tricks can be played with [[https://stedolan.github.io/jq/][jq]].  For example, print out all
+configurations for a particular component ~type~:
+
+#+BEGIN_EXAMPLE
+$ jq '.[] | select(.type | contains("Ductor"))' < ../foo.json
+{
+  "data": {
+    "anode": "AnodePlane:uboone",
+    "pirs": [
+      "PlaneImpactResponse:PIRfield0plane0",
+      "PlaneImpactResponse:PIRfield0plane1",
+      "PlaneImpactResponse:PIRfield0plane2"
+    ],
+    "rng": "Random"
+  },
+  "name": "nominal",
+  "type": "Ductor"
+}
+#+END_EXAMPLE
+
+Find every object that is configured with a ~filename~ attribute set
+to some value:
+
+#+BEGIN_EXAMPLE
+$ jq '.[] | select(.data.filename == "ub-10-half.json.bz2")' < ../foo.json
+{
+  "data": {
+    "filename": "ub-10-half.json.bz2"
+  },
+  "name": "field0",
+  "type": "FieldResponse"
+}
+#+END_EXAMPLE
 
 ** Check graph
 
@@ -93,6 +137,43 @@ The use of ~--jpath '.'~ is to tell the command how to locate the
 /configuration sequence/ with the ~Pgrapher~ configuration object as
 the last element.
 
+** Check C++ defaults
+
+The C++ components hard-code some default configuration.  See [[https://wirecell.github.io/news/posts/default-config-dumper/][this blog entry]].
+
+#+BEGIN_EXAMPLE
+$ wire-cell -p WireCellApps -p WireCellGen -a ConfigDumper > foo.json
+$ jq '.[]|select(.type|contains("Ductor"))' < ../foo.json
+{
+  "data": {
+    "anode": "AnodePlane",
+    "continuous": true,
+    "drift_speed": 0.001,
+    "first_frame_number": 0,
+    "fluctuate": true,
+    "nsigma": 3,
+    "pirs": [],
+    "readout_time": 5000000,
+    "rng": "Random",
+    "start_time": 0,
+    "tick": 500
+  },
+  "name": "",
+  "type": "Ductor"
+}
+{
+  "data": {
+    "anode": "AnodePlane",
+    "chain": [],
+    "continuous": false,
+    "first_frame_number": 0,
+    "readout_time": 5000000,
+    "start_time": 0
+  },
+  "name": "",
+  "type": "MultiDuctor"
+}
+#+END_EXAMPLE
 
 ** Check usage
 
