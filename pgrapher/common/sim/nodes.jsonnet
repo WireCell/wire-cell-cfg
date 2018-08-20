@@ -84,6 +84,7 @@ function(params, tools)
             anode: wc.tn(anode),
             continuous: params.sim.continuous,
             chains : chains,
+            tick: params.daq.tick,
             start_time : params.daq.start_time,
             readout_time: params.daq.readout_time, 
             first_frame_number: params.daq.first_frame_number,
