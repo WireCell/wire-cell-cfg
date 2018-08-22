@@ -69,7 +69,7 @@ local g = import "pgraph.jsonnet";
         data: {
             nominal_gain: params.elec.gain,
             nominal_shaping: params.elec.shaping,
-            deviant_status: [
+            deviants: [
                 //// This is what elements of this array look like:
                 //// One entry per "deviant" channel.
                 // {
@@ -89,7 +89,7 @@ local g = import "pgraph.jsonnet";
         data: {
             nominal_gain: params.elec.gain,
             nominal_shaping: params.elec.shaping,
-            deviant_status: [ { chid: ch,
+            deviants: [ { chid: ch,
                                 gain: params.nf.misconfigured.gain,
                                 shaping: params.nf.misconfigured.shaping,
                               } for ch in params.nf.misconfigured.channels ],
