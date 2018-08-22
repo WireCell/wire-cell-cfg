@@ -1,3 +1,5 @@
+// Fixme: transition this to using graph-based multi ductors instead of MultiDuctor.
+//
 // This configures a WCT job for a pipeline that includes full MB
 // signal and noise effects in the simulation. and the NF/SP
 // components to correct them.  The kinematics here are a mixture of
@@ -16,7 +18,7 @@ local g = import "pgraph.jsonnet";
 local cli = import "pgrapher/ui/cli/nodes.jsonnet";
 
 local io = import "pgrapher/common/fileio.jsonnet";
-local params = import "pgrapher/experiment/uboone/params.jsonnet";
+local params = import "pgrapher/experiment/uboone/simparams.jsonnet";
 local tools_maker = import "pgrapher/common/tools.jsonnet";
 
 local tools = tools_maker(params);

@@ -14,7 +14,7 @@ local g = import "pgraph.jsonnet";
 local cli = import "pgrapher/ui/cli/nodes.jsonnet";
 
 local io = import "pgrapher/common/fileio.jsonnet";
-local params = import "pgrapher/experiment/uboone/params.jsonnet";
+local params = import "pgrapher/experiment/uboone/simparams.jsonnet";
 local tools_maker = import "pgrapher/common/tools.jsonnet";
 
 local tools = tools_maker(params);
