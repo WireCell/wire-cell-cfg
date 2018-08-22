@@ -5,7 +5,7 @@ local g = import "pgraph.jsonnet";
 
 function(params, tools) {
 
-    local sigproc = g.pnode({
+    local sigproc_perchan = g.pnode({
         type: "OmnibusSigProc",
         data: {
             // This class has a HUGE set of parameters.  See
@@ -19,7 +19,18 @@ function(params, tools) {
             per_chan_resp: wc.tn(tools.perchanresp),
         }
     }, nin=1,nout=1, uses=[tools.anode, tools.field, tools.perchanresp] + import "sp-filters.jsonnet"),
-
+local sigproc_uniform = g.pnode({
+        type: "OmnibusSigProc",
+        data: {
+            anode: wc.tn(tools.anode),
+            field_response: wc.tn(tools.field),
+            per_chan_resp: "",
+        }
+    }, nin=1,nout=1,uses=[tools.anode, tools.field] + import "sp-filters.jsonnet"),
+// ch-by-ch response correction in SP turn off by setting null input
+local sigproc = if std.type(params.files.chresp)=='null'
+                    then sigproc_uniform
+                    else sigproc_perchan,
 
     // The L1 SP is a follow-on frame filter but it only takes channels
     // that are considered to be subject to the shorted wire region fields
