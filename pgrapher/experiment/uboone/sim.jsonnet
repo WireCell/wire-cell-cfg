@@ -7,36 +7,27 @@ local simnodes = import "pgrapher/common/sim/nodes.jsonnet";
 
 function(params, tools)
 {
-    // Extract these as they will be useful in multiple contexts
-    shorted_channels : {
-        uv: [ 
-            [ { plane:0, min:296, max:296 } ],
-            [ { plane:0, min:298, max:315 } ],
-            [ { plane:0, min:317, max:317 } ],
-            [ { plane:0, min:319, max:327 } ],
-            [ { plane:0, min:336, max:337 } ],
-            [ { plane:0, min:343, max:345 } ],
-            [ { plane:0, min:348, max:351 } ],
-            [ { plane:0, min:376, max:400 } ],
-            [ { plane:0, min:410, max:445 } ],
-            [ { plane:0, min:447, max:484 } ],
-            [ { plane:0, min:501, max:503 } ],
-            [ { plane:0, min:505, max:520 } ],
-            [ { plane:0, min:522, max:524 } ],
-            [ { plane:0, min:536, max:559 } ],
-            [ { plane:0, min:561, max:592 } ],
-            [ { plane:0, min:595, max:598 } ],
-            [ { plane:0, min:600, max:632 } ],
-            [ { plane:0, min:634, max:652 } ],
-            [ { plane:0, min:654, max:654 } ],
-            [ { plane:0, min:656, max:671 } ],
-        ],
-        vy: [
-            [ { plane:2, min:2336, max:2399 } ],
-            [ { plane:2, min:2401, max:2414 } ],
-            [ { plane:2, min:2416, max:2463 } ],
-        ],
-    },
+
+    local sr = params.shorted_regions,
+
+    // for multi_ductor_graph
+    local wbdepos = [
+        self.make_wbdepo(tools.anode, sr.uv,
+                          "accept", "shorteduv"),
+        self.make_wbdepo(tools.anode, sr.vy,
+                         "accept", "shortedvy"),
+        self.make_wbdepo(tools.anode, sr.uv + sr.vy,
+                         "reject", "nominal"),
+    ],
+
+    // this is for a multi Ductor sub-graph what the chain is for the
+    // monolythic MultiDuctor component.
+    multi_ductor_pipes:: function(ductors) [
+        {
+            wbdepos: wbdepos[n],
+            ductor: ductors[n],
+            tag: "duct%d" % n,
+        } for n in std.range(0, std.length(ductors)-1)],
 
 
     // The guts of this chain can be generated with:
@@ -51,13 +42,13 @@ function(params, tools)
         {
             ductor: ductors[1].name,
             rule: "wirebounds",
-            args: $.shorted_channels.uv,
+            args: sr.uv,
         },
 
         {
             ductor: ductors[2].name,
             rule: "wirebounds",
-            args: $.shorted_channels.vy,
+            args: sr.vy,
         },
         {               // catch all if the above do not match.
             ductor: ductors[0].name,

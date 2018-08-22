@@ -134,13 +134,33 @@ local wc = import "wirecell.jsonnet";
         fluctuate: true,
         // if continuous or discontinuous mode is is used.  See, eg
         // https://wirecell.github.io/news/posts/simulation-updates/
-        continuous: false,
+        continuous: true,
+
+        // Fixed overrides continuous and simply makes frames at a fixed time.
+        fixed: false,
 
         // A fixed time offset added to all drifted depo times which
         // can be useful if the origin depo source fails to provide
         // correct times.  
         depo_toffset: 0.0,
         
+        // A ductor's acceptance in time is at the response plane.  It
+        // may be useful/needed to have this response be different
+        // than the readout's acceptance.  But, by default we keep
+        // them the same.  Experiment level params may wish to override.
+        ductor : {
+            readout_time: $.daq.readout_time,
+            start_time: $.daq.start_time,
+        },
+
+        // If a ductor's time acceptance is increased then a Reframer
+        // can be used to chop off the early excess to meet readout
+        // assumptions.  Depending on the form of the ductor, the
+        // reframer will likely need it's "tags" configured.
+        reframer: {
+            tbin: 0,
+            nticks: $.daq.nticks,
+        }
     },
 
     // Parameters related to noise filtering.  

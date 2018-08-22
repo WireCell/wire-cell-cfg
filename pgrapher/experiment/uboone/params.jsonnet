@@ -14,6 +14,7 @@ base {
     daq: super.daq {
         // The real detector DAQ produces an odd number of ticks.
         // Note, this is different from nsamples defined below!
+        // It's different still from nticks used in simulation.
         nticks: 9595,
     },        
     adc: super.adc {
@@ -32,9 +33,13 @@ base {
         gain : 14.0*wc.mV/wc.fC,
         shaping : 2.2*wc.us,
         postgain: 1.0,
+
     },
 
     det : {
+        // The start of the field response paths in X.
+        response_plane: 10*wc.cm-6*wc.mm,
+
         volumes: [
             // only 1 response plane for uboone, this location is in the
             // wires coordinate system and specifies where Garfield starts
@@ -58,7 +63,7 @@ base {
                 faces: [
                     {
                         anode: 1.0*wc.cm, // drop any depos w/in 1 cm of U-wires
-                        response: 10*wc.cm-6*wc.mm,
+                        response: $.det.response_plane,
                         cathode: 2.5480*wc.m,// based dump of ubcore/v06_83_00/gdml/microboonev11.gdml by Matt Toups
                     },
                     
@@ -74,6 +79,8 @@ base {
             tail: wc.point(  -6.0, -1155.30,    0.35, wc.mm),
             head: wc.point(2560.4,  1174.7, 10369.65, wc.mm),
         },
+
+        
     },
     nf: super.nf {
 
@@ -99,9 +106,8 @@ base {
 
     },
 
-    sim: super.sim {
-    },
-
+    // Don't bother adding sim overrides here, instead see and use simparams.jsonnet.
+    // sim: super.sim {}
 
     files : {
         wires:"microboone-celltree-wires-v2.1.json.bz2",

@@ -45,8 +45,8 @@ function(params, tools)
             fluctuate: params.sim.fluctuate,
             drift_speed: params.lar.drift_speed,
             first_frame_number: params.daq.first_frame_number,
-            readout_time: params.daq.readout_time,
-            start_time: params.daq.start_time,
+            readout_time: params.sim.ductor.readout_time,
+            start_time: params.sim.ductor.start_time,
             tick: params.daq.tick,
             nsigma: 3,
         },
@@ -74,6 +74,69 @@ function(params, tools)
     ductors: std.mapWithIndex(function (n, pir_trio)
                               $.make_detector_ductors("ductor%d"%[n], tools.anodes, pir_trio), tools.pirs),
 
+
+    // Make a WireBoundedDepos
+    make_wbdepo:: function(anode, regions, mode="accept", name="")
+    g.pnode({
+        type: 'WireBoundedDepos',
+        name: name,
+        data: {
+            anode: wc.tn(anode),
+            regions: regions,
+            mode: mode,
+        },
+    }, nin=1, nout=1, uses = [anode]),
+
+    // Make a multiductor as a subgraph.
+    // pipes = [{wbdepos:..., ductor:..., tag:...}, ...]
+    multi_ductor_graph:: function(anode, pipes, name="") {
+        size: std.length(pipes),
+        fanout: g.pnode({
+            type: 'DepoFanout',
+            name: name + 'fanout',
+            data: {
+                multiplicity: std.length(pipes),
+            },
+        }, nin=1, nout=self.size),
+        pipelines: [g.pipeline([pipes[n].wbdepos, pipes[n].ductor], name=name+'pipe'+std.toString(n))
+                    for n in std.range(0, self.size-1)],
+        fanin: g.pnode({
+            type: 'FrameFanin',
+            name: name+'fanin',
+            data: {
+                multiplicity: std.length(pipes),
+                tags: [p.tag for p in pipes],
+            },
+        }, nin=self.size, nout=1),
+        reframer: g.pnode({
+            type: 'Reframer',
+            name: name+'reframer',
+            data: {
+                anode: wc.tn(anode),
+                tags: [p.tag for p in pipes],
+                fill: 0.0,
+                tbin: params.sim.reframer.tbin,
+                toffset: 0,
+                nticks: params.sim.reframer.nticks,
+            },
+        }, nin=1, nout=1),
+
+        outpipe: g.pipeline([self.fanin, self.reframer], name=name+'outpipe'),
+
+        // the thing you want
+        //graph: g.pipeline([self.fanout, self.fanin, self.reframer], name+'graph'),
+        graph: g.intern(innodes=[self.fanout],
+                        outnodes=[self.outpipe],
+                        centernodes=self.pipelines,
+                        edges=
+                        [g.edge(self.fanout, self.pipelines[n], n, 0)
+                         for n in std.range(0,self.size-1)] +
+                        [g.edge(self.pipelines[n], self.fanin, 0, n)
+                         for n in std.range(0,self.size-1)],
+                        name=name+'graph'),
+    }.graph,
+           
+        
 
     // Make aone multiductor for a single anode from the primitive
     // ductors which are also featured in the given chain.  The chain
