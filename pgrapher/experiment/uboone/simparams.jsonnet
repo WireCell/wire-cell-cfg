@@ -80,7 +80,7 @@ base {
         // time offset we must both enlarge the Ductor's number of
         // ticks and then truncate the resulting frame by this
         // same amount.
-        local response_nticks = wc.roundToInt(response_time_offset/$.daq.tick),
+        local response_nticks = wc.roundToInt(response_time_offset / $.daq.tick),
 
 
         // For running in LArSoft, the simulation must be in fixed time mode. 
@@ -94,7 +94,7 @@ base {
             nticks: $.daq.nticks + response_nticks,
 
             // The readout duration.
-            readout_time: self.nticks*$.daq.tick,
+            readout_time: self.nticks * $.daq.tick,
 
             // The start time for the Ductor must take into account the
             // "trigger" time plus the fact that induction start time is
