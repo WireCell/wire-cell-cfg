@@ -12,11 +12,12 @@ local g = import "pgraph.jsonnet";
     numpy: {
 
         // Inject this between two ports passing a frame to save it in a file.
-        frame :: function(fname, name="") g.pnode({
+        frame :: function(fname, tags=[], name="") g.pnode({
             type: "NumpyFrameSaver",
             name: name,
             data: {
-                filename: fname
+                filename: fname,
+                frame_tags: tags,
             }
         }, nin=1, nout=1),
                                                  

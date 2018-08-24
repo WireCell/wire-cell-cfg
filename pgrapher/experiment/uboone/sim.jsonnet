@@ -113,6 +113,17 @@ function(params, tools)
     },
 
 
+    // this is a frame filter that adds noise
+    add_noise:: function(model) g.pnode({
+        type: "AddNoise",
+        name: "addnoise%s"%[model.name],
+        data: params.daq {
+            rng: wc.tn(tools.random),
+            model: wc.tn(model),
+            replacement_percentage: 0.02, // random optimization
+        }}, nin=1, nout=1, uses=[model]),
+
+
     // make a noise source.  A source is for a particular anode and noise model.
     noise_source:: function(anode, model) g.pnode({
         type: "NoiseSource",
@@ -148,9 +159,7 @@ function(params, tools)
              ]),
 
 
-
-    // Return a frame filter that adds noise.  Must use "return" attribute.
-    noise:: function(anode, model) {
+    noise_source_and_sum:: function(anode, model) {
         local nsrc = $.noise_source(anode, model),
         local nsum = g.pnode({
             type: "FrameSummer",
