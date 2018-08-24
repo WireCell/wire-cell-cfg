@@ -42,6 +42,8 @@ function(params, tools)
             pirs: std.map(function(pir) wc.tn(pir), pir_trio),
 
             continuous: params.sim.continuous,
+            fixed: params.sim.fixed,
+
             fluctuate: params.sim.fluctuate,
             drift_speed: params.lar.drift_speed,
             first_frame_number: params.daq.first_frame_number,
