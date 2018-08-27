@@ -12,12 +12,12 @@ function(params, tools)
 
     // for multi_ductor_graph
     local wbdepos = [
+        self.make_wbdepo(tools.anode, sr.uv + sr.vy,
+                         "reject", "nominal"),
         self.make_wbdepo(tools.anode, sr.uv,
                           "accept", "shorteduv"),
         self.make_wbdepo(tools.anode, sr.vy,
                          "accept", "shortedvy"),
-        self.make_wbdepo(tools.anode, sr.uv + sr.vy,
-                         "reject", "nominal"),
     ],
 
     // this is for a multi Ductor sub-graph what the chain is for the
