@@ -59,10 +59,13 @@ local deposio = io.numpy.depos(output);
 
 local drifter = sim.drifter;
 
+// Signal simulation.
 local ductors = sim.make_anode_ductors(anode);
-local md_chain = sim.multi_ductor_chain(ductors);
-local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
-//local ductor = sim.make_ductor("nominal", anode, tools.pirs[0]);
+local md_pipes = sim.multi_ductor_pipes(ductors);
+local ductor = sim.multi_ductor_graph(anode, md_pipes, "mdg");
+// old monolythic MultiDuctor.
+//local md_chain = sim.multi_ductor_chain(ductors);
+//local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
 
 local miscon = sim.misconfigure(params);
 
