@@ -26,14 +26,36 @@ local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
     
-// This gets used as an art::Event tag and the final output frame
-// needs to be tagged likewise.  Note, art does not allow some
-// characters, in particular: [_-]
-local digit_tag = "orig";
+// This tags the output frame of the WCT simulation and is used in a
+// couple places so define it once.
+local sim_adc_frame_tag = "orig";
 
-// make sure name matches calling FHiCL
-local depos = wcls.input.depos(name="");
-local frames = wcls.output.digits(name="", tags=[digit_tag]);
+// Collect the WC/LS input converters for use below.  Make sure the
+// "name" matches what is used in the FHiCL that loads this file.
+local wcls_input = {
+    depos: wcls.input.depos(name=""),
+};
+
+// Collect all the wc/ls output converters for use below.  Note the
+// "name" MUST match what is used in theh "outputers" parameter in the
+// FHiCL that loads this file.
+local wcls_output = {
+    // ADC output from simulation
+    sim_digits: wcls.output.digits(name="simdigits", tags=[sim_adc_frame_tag]),
+    
+    // The noise filtered "ADC" values.  These are truncated for
+    // art::Event but left as floats for the WCT SP.  Note, the tag
+    // "raw" is somewhat historical as the output is not equivalent to
+    // "raw data".
+    nf_digits: wcls.output.digits(name="nfdigits", tags=["raw"]),
+
+    // The output of signal processing.  Note, there are two signal
+    // sets each created with its own filter.  The "gauss" one is best
+    // for charge reconstruction, the "wiener" is best for S/N
+    // separation.  Both are used in downstream WC code.
+    sp_signals: wcls.output.signals(name="spsignals", tags=["gauss"]),
+};
+
 
 local anode = tools.anodes[0];
 local drifter = sim.drifter;
@@ -49,7 +71,7 @@ local miscon = sim.misconfigure(params);
 local noise_model = sim.make_noise_model(anode, sim.empty_csdb);
 local noise = sim.add_noise(noise_model);
 
-local digitizer = sim.digitizer(anode, tag=digit_tag);
+local digitizer = sim.digitizer(anode, tag="orig");
 
 
 
@@ -57,22 +79,20 @@ local digitizer = sim.digitizer(anode, tag=digit_tag);
 local noise_epoch = "after";
 local chndb = chndb_maker(params, tools).wct(noise_epoch);
 local nf = nf_maker(params, tools, chndb);
-//local nf_frameio = io.numpy.frames(output, "nfframeio", tags="raw");
 
+// signal processing
 local sp = sp_maker(params, tools);
-//local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
 
 
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos,
-//                          deposio,
+local graph = g.pipeline([wcls_input.depos,
                           drifter, ductor, miscon, noise, digitizer,
-//                          sim_frameio, magnifio,
+                          wcls_output.sim_digits,
                           nf,
-//                          nf_frameio,
+                          wcls_output.nf_digits,
                           sp,
-//                          sp_frameio,
+                          wcls_output.sp_signals,
                           sink]);
 
 
