@@ -117,7 +117,7 @@ function(params, tools)
     add_noise:: function(model) g.pnode({
         type: "AddNoise",
         name: "addnoise%s"%[model.name],
-        data: params.daq {
+        data: {
             rng: wc.tn(tools.random),
             model: wc.tn(model),
             replacement_percentage: 0.02, // random optimization
@@ -128,11 +128,11 @@ function(params, tools)
     noise_source:: function(anode, model) g.pnode({
         type: "NoiseSource",
         name: "noise%s%s"%[anode.name, model.name],
-        data: params.daq {
+        data:  {
             rng: wc.tn(tools.random),
             model: wc.tn(model),
 	    anode: wc.tn(anode),
-
+            replacement_percentage: 0.02,
             start_time: params.daq.start_time,
             stop_time: params.daq.stop_time,
             readout_time: params.daq.readout_time,

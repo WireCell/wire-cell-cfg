@@ -67,7 +67,7 @@ local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
 local miscon = sim.misconfigure(params);
 
 local noise_model = sim.make_noise_model(anode, sim.miscfg_csdb);
-local noise = sim.noise(anode, noise_model).return;
+local noise = sim.add_noise(noise_model);
 
 local digitizer = sim.digitizer(anode, tag="orig");
 local sim_frameio = io.numpy.frames(output, "simframeio", tags="orig");
