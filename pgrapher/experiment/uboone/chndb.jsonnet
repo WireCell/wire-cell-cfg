@@ -15,6 +15,7 @@ function(params, tools)
         if epoch == "perfect"
         then perfect(params, tools.anode, tools.field)
         else base(params, tools.anode, tools.field, rms_cuts[epoch]),
+        uses: [tools.anode, tools.field],    // pnode extension
     },
 
     wcls: function(epoch="before") {
@@ -29,13 +30,14 @@ function(params, tools)
                        shaping: params.elec.shaping},
             },
         },
+        uses: [tools.anode, tools.field],    // pnode extension
     },
 
-    wcls_multi: {
+    wcls_multi: function(name="") {
         local bef = $.wcls("before"),
         local aft = $.wcls("after"),
         type: "wclsMultiChannelNoiseDB",
-        // note, if a name is given here, it must match what is used in the .fcl for inputers.
+        name: name,
         data: {
             rules: [
                 {

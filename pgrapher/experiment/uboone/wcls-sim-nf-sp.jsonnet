@@ -1,7 +1,8 @@
-// This is a WCT configuration file for use in a WC/LS job.  It is
-// expected to be named inside a FHiCL configuration.  That
-// configuration must supply the names of converter components as
-// "depo_source" and "frame_sink" external variables.
+// This is a WCT configuration file for use in a WC/LS simulation job.
+// 
+// It is expected to be named inside a FHiCL configuration.  The names
+// for the "inputer" and "outputer" converter components MUST match
+// what is used here in wcls_input and wcls_output objects.
 //
 
 local wc = import "wirecell.jsonnet";

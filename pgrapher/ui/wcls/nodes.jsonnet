@@ -17,7 +17,23 @@ function(params, tools)
                 model: model,
                 scale: scale,
             },
+        }, nin=0, nout=1),      // fixme: should add model to uses?
+
+        digits : function(artlabel, name="adcdigits", tags=["orig"], nticks=params.nf.nsamples) g.pnode({
+            type: 'wclsRawFrameSource',
+            name: name,
+            data: {
+                // The art::Event label that locates the input raw::RawDigit collection.
+                source_label: artlabel,
+
+                // These tags will be placed on the resulting frame.
+                frame_tags: tags,
+
+                // This component can pad/trunc traces as it converts
+                nticks: nticks,
+            },
         }, nin=0, nout=1),
+
     },
 
     // converters for data which is output from WCT
@@ -46,7 +62,26 @@ function(params, tools)
                 nticks: params.daq.nticks,
                 chanmaskmaps: cmm,
             },
-        },nin=1, nout=1, uses=[tools.anode])
+        },nin=1, nout=1, uses=[tools.anode]),
+
+        // Save thresholds
+        thresholds: function(tags=["threshold"], name="thsaver", cmm=[]) g.pnode({
+            type: "wclsFrameSaver",
+            name: name,
+            data: {
+                anode: wc.tn(tools.anode),
+                digitize: false,
+                sparse: true,
+                frame_tags: [],
+                frame_scale: null,      // this turns off saving frames
+                nticks: params.daq.nticks,
+                summary_tags: tags,
+                summary_scale: 1.0,
+            },
+        }, nin=1, nout=1, uses=[tools.anode]),
+        
+        // fixme: https://github.com/WireCell/larwirecell/issues/3
+
     },
 
 }
