@@ -44,10 +44,30 @@ local wc = import "wirecell.jsonnet";
     // Strip any pnodes    
     strip_pnodes(arr):: std.filter(function(x) x.type != "Pnode", arr),
 
+    // Return true if is not null/empty
+    isSomething(val) ::
+    if val == null then false
+    else if std.type(val) == "array" then std.length(val) > 0
+    else if std.type(val) == "object" then std.length(val) > 0
+    else true,
+
+    // Return a new object with key removed, if it exists.
+    // Note, there is std.prune() but it's pretty slow on big objects as it recurs
+    prune_key(obj, key) ::
+    if std.objectHas(obj, key)
+    then {
+        [k]: obj[k]
+        for k in std.objectFields(obj) if k != key
+    }
+    else obj,
+
+    // Return a new list made from the input with any elmenets which are null or empty lists removed
+    prune_array(arr) :: [ x for x in arr if $.isSomething(x) ],
+
     // Helper recursively find all objects in "uses" array, removing
     // the array asit goes.  Return catenation of list "l" and all "uses" found.
-    popuses(l, obj):: if std.objectHas(obj, "uses")
-    then l + std.foldl($.popuses, obj.uses, []) + [std.prune(std.mapWithKey(function (k,v) if k == "uses" then null else v, obj))]
+    popuses(l, obj):: if std.objectHas(obj, 'uses')
+    then l + std.foldl($.popuses, obj.uses, []) + [$.prune_key(obj, 'uses')]
     else l + [obj],
 
     // Return all "uses" objects.
@@ -77,7 +97,7 @@ local wc = import "wirecell.jsonnet";
         type: "Pnode",
         name: name,
         uses: $.resolve_uses(innodes+outnodes+centernodes),
-        edges: wc.unique_list(std.prune(edges + std.flattenArrays([n.edges for n in nodes]))),
+        edges: wc.unique_list($.prune_array(edges + std.flattenArrays([n.edges for n in nodes]))),
         iports: if std.length(iports) == 0 then std.flattenArrays([n.iports for n in innodes]) else iports,
         oports: if std.length(oports) == 0 then std.flattenArrays([n.oports for n in outnodes]) else oports,
     },
@@ -93,7 +113,7 @@ local wc = import "wirecell.jsonnet";
         type: "Pnode",
         name: name,
         uses: $.resolve_uses(elements),
-        edges: wc.unique_list(std.prune(pedges + std.flattenArrays([n.edges for n in elements]))),
+        edges: wc.unique_list($.prune_array(pedges + std.flattenArrays([n.edges for n in elements]))),
         iports: if std.length(elements[0].iports) == 0 then [] else [elements[0].iports[0]],
         oports: if std.length(elements[nele-1].oports) == 0 then [] else [elements[nele-1].oports[0]],
     },
@@ -105,7 +125,7 @@ local wc = import "wirecell.jsonnet";
     // the original pnode is kept.
     insert_one(pnode, index, newhead, newtail, iport=0, oport=0, name=null):: {
         type: "Pnode",
-        name: std.prune([name, pnode.name])[0],
+        name: $.prune_array([name, pnode.name])[0],
         uses: $.resolve_uses([pnode,newhead,newtail]),
         edges: wc.unique_list($.break_insert_edge(index, pnode.edges, newhead.iports[iport], newtail.oports[oport]) + newhead.edges + newtail.edges),
         iports: pnode.iports,
