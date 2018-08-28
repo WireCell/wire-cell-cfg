@@ -17,3 +17,24 @@ Conventions:
  - the remainder of the "main" file name is made up as an abbreviation
    for the top level pipeline.
 
+* Tour of mains
+
+- [[./wct-sim-ideal-sn-nf-sp.jsonnet]] :: configure for WCT signal/noise simulation using ideal line tracks and then run NF and SP
+
+- [[./wcls-sim-nf-sp.jsonnet]] :: configure for WC/LS signal/noise simulation using depos from ~art::Event~ and then run NF and SP.  This is expected to be referenced in [[./wcls-sim-nf-sp.fcl]] (or similar).
+
+- [[./wcls-data-nf-sp.jsonnet]] :: configure to run NF + SP on ~raw::RawDigit~ from ~art::Event~. This is expected to be referenced in [[./wcls-data-nf-sp.fcl]] (or similar).  Not in particular the options available for setting in that FHiCL file:
+
+  - for "dynamic" configuration of NF via larsoft services as well as
+    run-dependent static configuration you must simultaneously add
+    ~wclsMultiChannelNoiseDB~ to the list of ~inputers~ and set the
+    ~epoch~ to ~dynamic~.  For such a job to work your environment
+    must include the /art/ service ~geo::Geometry~ which is not
+    available in a base-~larsoft~ environment.
+
+  - for all other epochs ("before", "after" or "perfect") there is no
+    need for ~geo::Geometry~ or other larsoft services and the
+    ~wclsMultiChannelNoiseDB~ must *not* be listed in the ~inputers~
+    list.
+
+
