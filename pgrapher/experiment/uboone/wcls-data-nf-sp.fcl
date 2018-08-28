@@ -21,10 +21,10 @@ physics :{
 
             // The tool marshals the art::Event to these visitors before.
             // See notes below in params.
-            inputers: ["wclsRawFrameSource",
+            inputers: ["wclsRawFrameSource"
                // To use wclsMultiChannelNoiseDB you must also put epoch:dynamic below
                // and you must have geo::Geometry service in your environment.
-               // "wclsMultiChannelNoiseDB"  
+               // ,"wclsMultiChannelNoiseDB"  
             ]
 
             // or after the WCT app is run.  These names MUST be used identically in the Jsonnet
