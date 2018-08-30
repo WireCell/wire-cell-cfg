@@ -38,3 +38,7 @@ Conventions:
     list.
 
 
+- [[./wcls-sim-drift.jsonnet]] :: (and [[./wcls-sim-drift.fcl][fcl]]) a partial example config for a
+     small job that takes in depos from ~art::Event~, drifts them, and
+     then converts them to ~sim::SimChannel~'s and saves the result
+     back to ~art::Event~

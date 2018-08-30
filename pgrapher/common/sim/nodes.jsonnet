@@ -227,8 +227,11 @@ function(params, tools)
         }
     }, nin=1, nout=1, uses=[anode]),
 
-    // cap off the end of the graph
+    // Sinks cap off the end of the graph.
     frame_sink: g.pnode({ type: "DumpFrames" }, nin=1, nout=0),
+
+    // Note, this is "noisy" and only useful for debugging/developing.
+    depo_sink: g.pnode({ type: "DumpDepos" }, nin=1, nout=0),
 
 
     // drifter + ductor + digitizer = signal

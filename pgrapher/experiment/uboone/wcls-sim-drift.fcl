@@ -1,0 +1,42 @@
+process_name: wclssim
+physics :{
+   producers: {
+      plopper : {
+         module_type : BlipMaker
+      }
+      simmer : {
+         module_type : WireCellToolkit
+         wcls_main: {
+            tool_type: WCLS
+            apps: ["Pgrapher"]
+
+            plugins: ["WireCellPgraph", "WireCellGen","WireCellSio","WireCellLarsoft"]
+
+            // needs to be found via your WIRECELL_PATH 
+            configs: ["pgrapher/experiment/uboone/wcls-sim-drift.jsonnet"]
+
+
+            // Contract note: these exact "type:name" must be used to identify
+            // the configuration data structures for these components in the Jsonnet.
+
+            inputers: [ "wclsSimDepoSource:electrons" ]
+            outputers: [ "wclsSimChannelSaver:postdrift"]
+
+            // Make available parameters via Jsonnet's std.extVar()
+            params: {
+            }
+         }
+      }
+   }
+   p1        : [ plopper, simmer ]
+   outputFiles : [ out ]
+   
+   trigger_paths : [ p1 ]
+   end_paths: [ outputFiles ]
+}
+outputs: {
+   out: {
+      module_type: RootOutput
+      fileName: "output.root"
+   }
+}
