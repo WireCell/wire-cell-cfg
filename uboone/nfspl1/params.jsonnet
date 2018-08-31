@@ -59,6 +59,6 @@ local defaults = {
 
 // If testing with "jsonnet" CLI, must use --ext-code 'overide={...}' (not -V).
 // Etc, if compiling with libjsonnet++.
-local override = std.extVar("override")
+local override = std.extVar("override");
 
 std.mergePatch(override, defaults)

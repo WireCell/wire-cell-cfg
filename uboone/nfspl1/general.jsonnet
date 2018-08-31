@@ -35,7 +35,7 @@ local anode = {
 	// sample period
 	tick: par.sample_period,
 	// field response functions.
-        field_response: wc.tn(fields)
+        field_response: wc.tn(fields),
 	// wire geometry
         wire_schema: wc.tn(wires)
     },
