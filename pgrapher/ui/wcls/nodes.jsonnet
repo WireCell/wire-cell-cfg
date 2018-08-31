@@ -10,12 +10,14 @@ function(params, tools)
 {
     // converters from data which is input to WCT
     input : {
-        depos : function(name="deposource", model="", scale=1.0) g.pnode({
+        depos : function(name="deposource", model="", scale=1.0, art_label="plopper", art_instance="bogus") g.pnode({
             type: 'wclsSimDepoSource',
             name: name,
             data: {
                 model: model,
                 scale: scale,
+                art_label: art_label,
+                art_instance: art_instance,
             },
         }, nin=0, nout=1),      // fixme: should add model to uses?
 
