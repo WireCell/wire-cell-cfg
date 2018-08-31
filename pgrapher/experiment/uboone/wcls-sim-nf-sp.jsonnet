@@ -33,6 +33,7 @@ local sim_adc_frame_tag = "orig";
 
 // Collect the WC/LS input converters for use below.  Make sure the
 // "name" matches what is used in the FHiCL that loads this file.
+// art_label (producer, e.g. plopper) and art_instance (e.g. bogus) may be needed
 local wcls_input = {
     depos: wcls.input.depos(name=""),
 };
@@ -69,15 +70,16 @@ local ductor = sim.multi_ductor_graph(anode, md_pipes, "mdg");
 local miscon = sim.misconfigure(params);
 
 // Noise simulation adds to signal.
-local noise_model = sim.make_noise_model(anode, sim.empty_csdb);
+//local noise_model = sim.make_noise_model(anode, sim.empty_csdb);
+local noise_model = sim.make_noise_model(anode, sim.miscfg_csdb);
 local noise = sim.add_noise(noise_model);
 
 local digitizer = sim.digitizer(anode, tag="orig");
 
 
 
-//local noise_epoch = "perfect";
-local noise_epoch = "after";
+local noise_epoch = "perfect";
+//local noise_epoch = "after";
 local chndb = chndb_maker(params, tools).wct(noise_epoch);
 local nf = nf_maker(params, tools, chndb);
 

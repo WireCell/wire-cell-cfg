@@ -84,8 +84,8 @@ local magnifio = g.pnode({
 }, nin=1, nout=1);
 
 
-//local noise_epoch = "perfect";
-local noise_epoch = "after";
+local noise_epoch = "perfect";
+//local noise_epoch = "after";
 local chndb = chndb_maker(params, tools).wct(noise_epoch);
 local nf = nf_maker(params, tools, chndb);
 local nf_frameio = io.numpy.frames(output, "nfframeio", tags="raw");

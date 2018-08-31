@@ -16,8 +16,8 @@ function(params, tools)
             data: {
                 model: model,
                 scale: scale,
-                art_label: art_label,
-                art_instance: art_instance,
+                art_label: art_label, // name of upstream art producer of the depos
+                art_instance: art_instance, // name given to the object instance of the depo collection
             },
         }, nin=0, nout=1),      // fixme: should add model to uses?
 
