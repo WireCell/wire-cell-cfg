@@ -61,4 +61,4 @@ local defaults = {
 // Etc, if compiling with libjsonnet++.
 local override = std.extVar("override");
 
-std.mergePatch(override, defaults)
+std.mergePatch(defaults, override)
