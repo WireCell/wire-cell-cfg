@@ -152,4 +152,8 @@ base {
         chresp: null,
     },
 
+    // for SimEnergyDeposit -- number of electrons should have a gain of -1.0 to indicate the sign of the charge
+    elec: super.elec{
+        postgain: -1.0,
+    },
 }
