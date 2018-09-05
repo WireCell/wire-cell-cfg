@@ -105,7 +105,6 @@ function(raw_input_label, epoch = "dynamic") {
 
 
     local anode = tools.anodes[0],
-    local drifter = sim.drifter,
 
     local nf = nf_maker(params, tools, chndb),
 
