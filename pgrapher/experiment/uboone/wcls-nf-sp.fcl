@@ -34,7 +34,7 @@ physics :{
             // This sets the "main" Jsonnet file which provides the 
             // configuration for the Wire-Cell Toolkit components.  It is
             // take as relative to entries in WIRECELL_PATH.
-            configs: ["pgrapher/experiment/uboone/wcls-data-nf-sp.jsonnet"]
+            configs: ["pgrapher/experiment/uboone/wcls-nf-sp.jsonnet"]
 
             // Set the "external variables" required by the Jsonnet.
             params : {
@@ -43,13 +43,14 @@ physics :{
 
                // Set "data" vs. "sim".  The epoch below probably should follow suit.
                reality: "data"
+               // reality: "sim"
 
-               // if epoch is "dynamic" you MUST add "wclsMultiChannelNoiseDB" to "inputers"
-               epoch: "dynamic"
-
-               // if epoch is not "dynamic" you MUST NOT add "wclsMultiChannelNoiseDB" to "inputers"
+               // if epoch is "dynamic" you MUST add
+               // "wclsMultiChannelNoiseDB" to "inputers" and must NOT
+               // add it if not "dynamic"
+               // epoch: "dynamic"
                // epoch: "perfect"
-
+               epoch: "after"
             }
          }
       }
