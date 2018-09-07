@@ -7,8 +7,9 @@ base {
 
     daq: super.daq {
 
+        // Number of readout ticks.  See also sim.response.nticks.
         // In MB LArSoft simulation, they expect a different number of
-        // ticks than acutal data.
+        // ticks than acutal data. 
         nticks: 9600,
     },        
 
@@ -64,51 +65,14 @@ base {
     },
 
     sim: super.sim {
-
         
-        // The Ductor start_time is measured at the response plane
-        // and the readout time (for MB/LArSoft running) is
-        // measured at the collection plane (I Gess????).  The
-        // response time offset is then the readout time at which
-        // a deposition passes the response plane.  It is
-        // estimated assuming the depo travels along the nominal
-        // drift velocity (which in fact it doesn't).  It's around
-        // 85.5us before the final readout time
-        local response_time_offset = $.det.response_plane / $.lar.drift_speed,
-
-        // But, then to get the first tick to be at the trigger
-        // time offset we must both enlarge the Ductor's number of
-        // ticks and then truncate the resulting frame by this
-        // same amount.
-        local response_nticks = wc.roundToInt(response_time_offset / $.daq.tick),
-
-
         // For running in LArSoft, the simulation must be in fixed time mode. 
         fixed: true,
+        continuous: false,
 
-        // The ductor needs to have its time acceptance enlarged to
-        // account for the fact that its clock runs at the response
-        // plane and final readout clock assumed to run at the
-        // colleciton plane.
-        ductor : {
-            nticks: $.daq.nticks + response_nticks,
-
-            // The readout duration.
-            readout_time: self.nticks * $.daq.tick,
-
-            // The start time for the Ductor must take into account the
-            // "trigger" time plus the fact that induction start time is
-            // measured at the response plane while the readout time is
-            // measured at the collection plane (I guess????).
-            start_time: $.trigger.time - response_time_offset,
+        ductor : super.ductor {
+            start_time: $.daq.start_time - $.elec.fields.drift_dt + $.trigger.time,
         },
-
-        // To counter the enlarged duration of the ductor, a Reframer
-        // chops off the little early, extra time.  Note, tags depend on how 
-        reframer: {
-            tbin: response_nticks,
-            nticks: $.daq.nticks,
-        }
 
     },
     // This is a non-standard, MB-specific variable.  Each object
@@ -152,7 +116,8 @@ base {
         chresp: null,
     },
 
-    // for SimEnergyDeposit -- number of electrons should have a gain of -1.0 to indicate the sign of the charge
+    // for SimEnergyDeposit -- number of electrons should have a gain
+    // of -1.0 to indicate the sign of the charge
     elec: super.elec{
         postgain: -1.0,
     },

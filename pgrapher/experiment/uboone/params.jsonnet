@@ -37,21 +37,15 @@ base {
     },
 
     det : {
-        // The start of the field response paths in X.
-        response_plane: 10*wc.cm-6*wc.mm,
 
         volumes: [
-            // only 1 response plane for uboone, this location is in the
-            // wires coordinate system and specifies where Garfield starts
-            // its the drift paths.
-            //
             // Note:
-            // $ wirecell-util wires-info /opt/bviren/wct-dev/share/wirecell/data/microboone-celltree-wires-v2.1.json.bz2
+            // $ wirecell-util wires-info microboone-celltree-wires-v2.1.json.bz2
             // anode:0 face:0 X=[-6.00,0.00]mm Y=[-1155.30,1174.70]mm Z=[0.35,10369.60]mm
             //      0: x=-0.00mm dx=6.0000mm
             //      1: x=-3.00mm dx=3.0000mm
             //      2: x=-6.00mm dx=0.0000mm
-            // $ wirecell-sigproc response-info /opt/bviren/wct-dev/share/wirecell/data/ub-10-half.json.bz2 
+            // $ wirecell-sigproc response-info ub-10-half.json.bz2 
             // origin:10.00 cm, period:0.10 us, tstart:0.00 us, speed:1.11 mm/us, axis:(1.00,0.00,0.00)
             //      plane:0, location:6.0000mm, pitch:3.0000mm
             //      plane:1, location:3.0000mm, pitch:3.0000mm
@@ -62,9 +56,20 @@ base {
                 name: "uboone",
                 faces: [
                     {
-                        anode: 1.0*wc.cm, // drop any depos w/in 1 cm of U-wires
-                        response: $.det.response_plane,
-                        cathode: 2.5480*wc.m,// based dump of ubcore/v06_83_00/gdml/microboonev11.gdml by Matt Toups
+                        // drop any depos w/in this plane.  The exact
+                        // choice represents some trade off in
+                        // approximations.
+                        anode: 1.0*wc.cm, 
+                        // plane, arbitrary choice.  Microboone wires
+                        // put collection plane at absolute x=-6mm,
+                        // response.plane_dx is measured relative to
+                        // collection plane wires.
+                        response: $.elec.fields.start_dx - 6*wc.mm,
+                        // Location of cathode measured from
+                        // collection is based on a dump of
+                        // ubcore/v06_83_00/gdml/microboonev11.gdml by
+                        // Matt Toups
+                        cathode: 2.5480*wc.m,
                     },
                     
                     null
@@ -92,7 +97,7 @@ base {
         // Add some extra parameters that only make sense for other
         // structures built in uboone/.
 
-        // also add this wart which separates "before" and "after"
+        // Also, add this wart which separates "before" and "after"
         // hardware noise fix epochs.  This is used when WCT is run
         // from WCLS.
         run12boundary: 7000,  

@@ -22,19 +22,46 @@ local tools = tools_maker(params);
 local sim_maker = import "pgrapher/experiment/uboone/sim.jsonnet";
 local sim = sim_maker(params, tools);
 
+
+local close = {
+    tail: wc.point(100-6, 0.0, 5000, wc.mm),
+    head: wc.point(103-6, 0.0, 5000, wc.mm),
+};
+
+// The earliest/latest time that activity at the response plane can be readout
+local earliest_time = params.sim.ductor.start_time;
+local latest_time = earliest_time + params.sim.ductor.readout_time;
+
 local tracklist = [
     {
-        time: 1*wc.ms,
+        //time: -1.6*wc.ms - 10*wc.cm/(1.1*wc.mm/wc.us),
+        time: earliest_time,
         charge: -5000,          // negative means per step
-        ray: params.det.bounds,
+        ray: close,
+    },
+    {
+        time: -1.6*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: close,
+    },
+    {
+        time: 0*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: close,
+    },
+    {
+        time: latest_time-100*wc.us,
+        charge: -5000,          // negative means per step
+        ray: close,
     },
 ];
 local output = "wct-sim-ideal-sig.npz";
 
     
 local anode = tools.anodes[0];
-local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
-                             [sim.ar39(), sim.tracks(tracklist)]);
+//local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
+//                             [sim.ar39(), sim.tracks(tracklist)]);
+local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
@@ -43,7 +70,9 @@ local digitizer = sim.digitizer(anode);
 local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, ductor, digitizer, frameio, sink]);
+local graph = g.pipeline([depos, deposio, drifter, ductor,
+                          digitizer,
+                          frameio, sink]);
 
 local app = {
     type: "Pgrapher",

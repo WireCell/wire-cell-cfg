@@ -27,12 +27,27 @@ local stubby = {
     head: wc.point(1100.0, 0.0, 5100.0, wc.mm),
 };
 
+local close = {
+    tail: wc.point(10.0, 0.0, 5000.0, wc.mm),
+    head: wc.point(11.0, 0.0, 5100.0, wc.mm),
+};
+
 local tracklist = [
     {
         time: 1*wc.ms,
         charge: -5000,          // negative means per step
         ray: stubby,
         //ray: params.det.bounds,
+    },
+    {
+        time: -1.6*wc.ms,       // just at the start
+        charge: -5000,          // negative means per step
+        ray: close,
+    },
+    {
+        time: -1.6*wc.ms + 3.2*wc.ms - 2*wc.us, // just at the end
+        charge: -5000,          // negative means per step
+        ray: close,
     },
 ];
 local output = "wct-sim-ideal-sig.npz";

@@ -25,6 +25,18 @@ function(params)
 
     field: $.fields[0],         // the nominal field
 
+    // The number of ticks for response waveforms.  For simulation
+    // this must be enlarged beyond what is wanted in the output
+    // readout in order to accept catch early activity into the first
+    // few readout ticks.  When responses are used to deconvolve then
+    // this should best be shortened.  Note: sigproc at time of
+    // writing did not use components for Elec or RC so are not
+    // currently subject to this config.
+    local sim_response_binning = {
+        tick: params.daq.tick,
+        nticks: params.sim.ductor.nticks, // MUST match ductor
+    },
+
     perchanresp : {
         type: "PerChannelResponse",
         data: {
@@ -39,21 +51,17 @@ function(params)
 
     elec_resp : {
         type: "ElecResponse",
-        data: {
+        data: sim_response_binning {
             shaping: params.elec.shaping,
             gain: params.elec.gain,
             postgain: params.elec.postgain,
-            nticks: params.daq.nticks,
-            tick: params.daq.tick,
         },
     },
 
     rc_resp : {
         type: "RCResponse",
-        data: {
+        data: sim_response_binning {
             width: 1.0*wc.ms,
-            tick: params.daq.tick,
-            nticks: params.daq.nticks,
         }
     },
 
@@ -63,10 +71,8 @@ function(params)
         {
             type: "PlaneImpactResponse",
             name : "PIR%splane%d" % [fr.name, plane],
-            data : {
+            data : sim_response_binning {
                 plane: plane,
-                tick: params.daq.tick,
-                nticks: params.daq.nticks,
                 field_response: wc.tn(fr),
                 // note twice we give rc so we have rc^2 in the final convolution
                 other_responses: [wc.tn($.elec_resp), wc.tn($.rc_resp), wc.tn($.rc_resp)],

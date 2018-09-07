@@ -31,6 +31,7 @@ local wc = import "wirecell.jsonnet";
     },
 
     det: {
+
         // The detector volumes are defined as a set of planes
         // organized into a "front" and "back" face of an AnodePlane
         // and also used by the Drifter.  Each volume defined will map
@@ -64,10 +65,11 @@ local wc = import "wirecell.jsonnet";
         // One digitization sampling period
         tick: 0.5*wc.us,
 
-        // Number of ticks in one readout period.  Note, some
-        // components take an "nsamples".  This can be not need not be
-        // the same as "nticks".  For example, NF will typicall
-        // differ.
+        // Number of ticks in one DAQ readout.  Note, some components
+        // take an "nsamples".  This can be but need not be the same
+        // as "nticks".  For example, NF will typicall differ.  Also,
+        // in general this is not the number used for the Ductor for
+        // simulation.
         nticks: 10000,
 
         // Readout period in units of time
@@ -119,6 +121,29 @@ local wc = import "wirecell.jsonnet";
 
         // An realtive gain applied after shaping.
         postgain: 1.0,
+
+        fields : {
+            
+            // The start of the field response paths in X, measured from
+            // the collection wires.  This is a positive, relative
+            // distance.  It is set by the configuration that went into
+            // the field response calcualtion (usually Garfield).  
+            start_dx: 10*wc.cm,
+
+            // The time it takes for "a" point deposition to drift
+            // from teh reponse plane to a collection wire.  This
+            // actually can vary over ~5us as a function of transverse
+            // starting point (impact position) so it's only
+            // approximated assuming nominal drift speed.  The nominal
+            // 10cm and 1.1 mm/us gives 90.9us.  1.6mm/us is 62.5us.
+            drift_dt: self.start_dx / $.lar.drift_speed,
+
+            // The number of ticks that go by during the drift time
+            // from the response plane to the collection plane.  Eg,
+            // 182 and 125 for the example speeds above.
+            nticks: wc.roundToInt(self.drift_dt / $.daq.tick),
+        },
+
     },
 
     // Parameters related to simulation, not given elsewhere.
@@ -143,14 +168,15 @@ local wc = import "wirecell.jsonnet";
         // can be useful if the origin depo source fails to provide
         // correct times.  
         depo_toffset: 0.0,
-        
-        // A ductor's acceptance in time is at the response plane.  It
-        // may be useful/needed to have this response be different
-        // than the readout's acceptance.  But, by default we keep
-        // them the same.  Experiment level params may wish to override.
+
+
+        // Default ductor parameters.  If your detector (eg MB) has
+        // reason for a readout to start earlier, better override
+        // this.
         ductor : {
-            readout_time: $.daq.readout_time,
-            start_time: $.daq.start_time,
+            nticks: $.daq.nticks + $.elec.fields.nticks,
+            readout_time: self.nticks * $.daq.tick,
+            start_time: $.daq.start_time - $.elec.fields.drift_dt,
         },
 
         // If a ductor's time acceptance is increased then a Reframer
@@ -158,7 +184,7 @@ local wc = import "wirecell.jsonnet";
         // assumptions.  Depending on the form of the ductor, the
         // reframer will likely need it's "tags" configured.
         reframer: {
-            tbin: 0,
+            tbin: $.elec.fields.nticks,
             nticks: $.daq.nticks,
         }
     },
@@ -172,7 +198,6 @@ local wc = import "wirecell.jsonnet";
         // they differ then truncation or extension of waveforms may
         // occur.
         nsamples: $.daq.nticks, 
-
         
     },    
 
@@ -198,7 +223,9 @@ local wc = import "wirecell.jsonnet";
         // component.  The first field file is considered "nominal".
         // The info in these files are typically produced by Garfield
         // initially and then converted to WCT format using the
-        // "wirecell-sigproc convert-garfield" command.
+        // "wirecell-sigproc convert-garfield" command.  NOTE: you
+        // must assure that elec.response.plane_dx is consistent with
+        // what was used to generate the field files.
         fields: [],
 
         // A noise file provides a spectral lookup table.  This info

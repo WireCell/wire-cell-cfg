@@ -1,8 +1,9 @@
 #+title: Pgrapher Reference Configuration
 
-This area holds a set of configuration files spanning many targets.
-It is self-contained except for depending on the files at the top of
-the ~cfg~ package.
+This area holds a set of *reference configuration* files spanning many
+targets.  It is self-contained except for depending on the files at
+the top of the ~cfg~ package.  These are expected to provide a set of
+examples or a starting point for deriving production configuration.
 
 * Organization
 
@@ -13,7 +14,9 @@ according to their scope of use.
                [[./ui/cli/]] and [[./ui/wcls]])
 
 - [[./common/]] :: "base objects" and other structures and functions
-                   shared by the other scopes.
+                   shared by the other scopes.  Be very careful
+                   changing things here as it will impact each
+                   experiments output.
 
 - [[./experiment/]] :: reference configuration specific to one experiment
      or detector (eg [[./experiment/uboone/]])
@@ -38,12 +41,9 @@ their effective use
 
 - mimic the organization patterns described above
 
-- where possible, if a ui, common or experiment file is extended,
-  avoid the need for higher levels to access the base.
-
 Note, the *reference configuration* given here is subject to change
-without warning in the ~master~ branch.  It will remain stable within
-a release branch.
+without warning in the ~master~ branch.  It will remain more stable
+within a release branch.
 
 * Checking configuration 
 
@@ -116,6 +116,20 @@ $ jq '.[] | select(.data.filename == "ub-10-half.json.bz2")' < ../foo.json
 }
 #+END_EXAMPLE
 
+Rejigger the output to see what things have some value:
+
+#+BEGIN_EXAMPLE
+jq '.[] | select(.data.nticks==9600) | {type:.type}' < wcls-sim-nf-sp.json | grep type|sort |uniq
+  "type": "Reframer"
+  "type": "wclsFrameSaver"
+jq '.[] | select(.data.nticks > 9600) | {type:.type,nticks:.data.nticks}' < wcls-sim-nf-sp.json | grep type|sort |uniq
+  "type": "ElecResponse",
+  "type": "PlaneImpactResponse",
+  "type": "RCResponse",
+jq '.[] | select(.data.nticks > 9600) | {type:.type,nticks:.data.nticks}' < wcls-sim-nf-sp.json | grep nticks|sort |uniq
+  "nticks": 9782
+#+END_EXAMPLE
+
 ** Check graph
 
 Just having correct syntax goes a long way to having correct
@@ -178,25 +192,13 @@ $ jq '.[]|select(.type|contains("Ductor"))' < ../foo.json
 ** Check usage
 
 Finally, one must use the configuration and validate results.  Usage
-is described above.
+of WCT is described in detail in the manual and news blog and
+elsewhere.  The only thing to add here is that this file naming
+convention is followed for the main entry points:
 
+- ~wct-*.jsonnet~ :: files intended for use in stand-alone ~wire-cell~ command line interface.
 
-* Usage
+- ~wcls-*.jsonnet~ :: files intended for use in WC/LS /art/ jobs.
+     Reference FHiCL is provided in files of the same name but with
+     ~.fcl~ extension.
 
-
-** Command line
-
-In general, one runs a WCT command line interface job like:
-
-#+BEGIN_EXAMPLE
-  $ wire-cell [...] -c pgrapher/cli/main-<SOME-LABEL>.jsonnet
-#+END_EXAMPLE
-
-Depending on the ~cli/main*-.jsonnet~ file selected, some additional
-command line arguments may be required to set Jsonnet variables or
-supply Jsonnet code snippets.  See the comments at the top of the
-~main-*.jsonnet~ file selected.
-
-** WC/LS
-
-t.b.d.
