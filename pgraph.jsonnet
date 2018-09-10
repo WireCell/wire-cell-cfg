@@ -70,8 +70,8 @@ local wc = import "wirecell.jsonnet";
     then l + std.foldl($.popuses, obj.uses, []) + [$.prune_key(obj, 'uses')]
     else l + [obj],
 
-    // Return all "uses" objects.  Seq is assumed a unique list!
-    //resolve_uses(seq):: $.strip_pnodes(wc.unique_list(std.foldl($.popuses, seq, []))),
+    // Return all "uses" objects.  Note, the returned list may need to
+    // be passed to wc.unique_list().
     resolve_uses(seq):: $.strip_pnodes(std.foldl($.popuses, seq, [])),
     
     // Make a pnode from an inode, giving its input and output port
@@ -82,7 +82,7 @@ local wc = import "wirecell.jsonnet";
         type: "Pnode",
         name: wc.tn(inode),
         edges: [],
-        uses: $.resolve_uses(uses + [inode]),
+        uses: uses + [inode],
         iports: [$.port(inode, n) for n in std.range(0,nin)][:nin],
         oports: [$.port(inode, n) for n in std.range(0,nout)][:nout],
     },
@@ -94,11 +94,11 @@ local wc = import "wirecell.jsonnet";
     // explicitly given, all iports of innodes become iports of the
     // new pnode, etc for output.
     intern(innodes=[], outnodes=[], centernodes=[], edges=[], iports=[], oports=[], name=""):: {
-        local nodes = wc.unique_list(innodes+outnodes+centernodes),
+        local nodes = innodes+outnodes+centernodes,
         type: "Pnode",
         name: name,
-        uses: $.resolve_uses(nodes),
-        edges: wc.unique_list($.prune_array(edges + std.flattenArrays([n.edges for n in nodes]))),
+        uses: nodes,
+        edges: $.prune_array(edges + std.flattenArrays([n.edges for n in nodes])),
         iports: if std.length(iports) == 0 then std.flattenArrays([n.iports for n in innodes]) else iports,
         oports: if std.length(oports) == 0 then std.flattenArrays([n.oports for n in outnodes]) else oports,
     },
@@ -113,8 +113,8 @@ local wc = import "wirecell.jsonnet";
         local pedges = [$.edge(elements[i], elements[i+1]) for i in std.range(0,nele-2)],
         type: "Pnode",
         name: name,
-        uses: $.resolve_uses(elements),
-        edges: wc.unique_list($.prune_array(pedges + std.flattenArrays([n.edges for n in elements]))),
+        uses: elements,
+        edges: $.prune_array(pedges + std.flattenArrays([n.edges for n in elements])),
         iports: if std.length(elements[0].iports) == 0 then [] else [elements[0].iports[0]],
         oports: if std.length(elements[nele-1].oports) == 0 then [] else [elements[nele-1].oports[0]],
     },
@@ -127,8 +127,8 @@ local wc = import "wirecell.jsonnet";
     insert_one(pnode, index, newhead, newtail, iport=0, oport=0, name=null):: {
         type: "Pnode",
         name: $.prune_array([name, pnode.name])[0],
-        uses: $.resolve_uses([pnode,newhead,newtail]),
-        edges: wc.unique_list($.break_insert_edge(index, pnode.edges, newhead.iports[iport], newtail.oports[oport]) + newhead.edges + newtail.edges),
+        uses: [pnode,newhead,newtail],
+        edges: $.break_insert_edge(index, pnode.edges, newhead.iports[iport], newtail.oports[oport]) + newhead.edges + newtail.edges,
         iports: pnode.iports,
         oports: pnode.oports,
     },
@@ -143,5 +143,19 @@ local wc = import "wirecell.jsonnet";
                                                    edges=std.mapWithIndex(function(ind,s) $.edge(s,joiner,0,ind),
                                                                           sources),
                                                   ),
+    
+
+    // Call this to return the edges from a graph (a pnode).  It takes
+    // care to remove any duplicates which can be slow so do NOT call
+    // this except when getting a final list of edges.
+    edges(graph) :: wc.unique_list(graph.edges),
+
+    // Call this to return the final "uses" list which can be used as
+    // part of the final wire cell configuration sequence.  It
+    // recursively finds the uses of all uses (dawg) and returns a
+    // unique list.  Do NOT call this except at high level as it's
+    // somewhat expensive and need not be called on intermediate uses
+    // lists.
+    uses(graph) :: wc.unique_list(self.resolve_uses(graph.uses)),
     
 }

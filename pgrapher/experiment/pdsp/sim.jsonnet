@@ -22,6 +22,7 @@ function(params, tools)
     // I rue the day that we must have an (anode) X (field) cross product!
     local ductors = sim.make_detector_ductors("nominal", tools.anodes, tools.pirs[0]),
 
+
     local digitizers = [
         sim.digitizer(tools.anodes[n], name="digitizer%d"%n)
         for n in std.range(0,nanodes-1)],
@@ -68,6 +69,7 @@ function(params, tools)
     },
     local noise_models = [make_noise_model(anode) for anode in tools.anodes],
 
+
     local add_noise = function(model) g.pnode({
         type: "AddNoise",
         name: "addnoise%s"%[model.name],
@@ -78,8 +80,31 @@ function(params, tools)
         }}, nin=1, nout=1, uses=[model]),
 
     local noises = [add_noise(model) for model in noise_models],
-    local splusn_pipelines = [g.pipeline([ductors[n], digitizers[n], reframers[n], noises[n]],
-                                         name="simsignoipipe%d"%n) for n in std.range(0, nanodes-1)],
+
+    // Try "pipeline major" ordering of construction to see if we can speed up.
+    // By itself, no difference.
+    local make_sim_sn_pipeline = function(num, csdb=null) g.pipeline([
+        sim.make_ductor("ductor%d"%num, tools.anodes[num], tools.pirs[0]),
+        sim.digitizer(tools.anodes[num], name="digitizer%d"%num),
+        g.pnode({
+            type: 'Reframer',
+            name: 'reframer%d'%num,
+            data: {
+                anode: wc.tn(tools.anodes[num]),
+                tags: [],           // ?? what do?
+                fill: 0.0,
+                tbin: params.sim.reframer.tbin,
+                toffset: 0,
+                nticks: params.sim.reframer.nticks,
+            },
+        }, nin=1, nout=1, uses=[tools.anodes[num]]),
+        add_noise(make_noise_model(tools.anodes[num], csdb))
+    ], name="simsignoipipe%d"%num),
+
+    local splusn_pipelines_element_major = [g.pipeline([ductors[n], digitizers[n], reframers[n], noises[n]],
+                                                       name="simsignoipipe%d"%n) for n in std.range(0, nanodes-1)],
+    local splusn_pipelines_pipeline_major = [make_sim_sn_pipeline(n) for n in std.range(0, nanodes-1)],
+    local splusn_pipelines = splusn_pipelines_element_major,
     
     local simgraph = function(pipelines, name="simgraph")
     g.intern(innodes=[fanout],
