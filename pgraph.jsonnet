@@ -70,8 +70,9 @@ local wc = import "wirecell.jsonnet";
     then l + std.foldl($.popuses, obj.uses, []) + [$.prune_key(obj, 'uses')]
     else l + [obj],
 
-    // Return all "uses" objects.
-    resolve_uses(seq):: $.strip_pnodes(wc.unique_list(std.foldl($.popuses, seq, []))),
+    // Return all "uses" objects.  Seq is assumed a unique list!
+    //resolve_uses(seq):: $.strip_pnodes(wc.unique_list(std.foldl($.popuses, seq, []))),
+    resolve_uses(seq):: $.strip_pnodes(std.foldl($.popuses, seq, [])),
     
     // Make a pnode from an inode, giving its input and output port
     // multiplicity.  Use this instead of creating a pnode by hand.
@@ -96,7 +97,7 @@ local wc = import "wirecell.jsonnet";
         local nodes = wc.unique_list(innodes+outnodes+centernodes),
         type: "Pnode",
         name: name,
-        uses: $.resolve_uses(innodes+outnodes+centernodes),
+        uses: $.resolve_uses(nodes),
         edges: wc.unique_list($.prune_array(edges + std.flattenArrays([n.edges for n in nodes]))),
         iports: if std.length(iports) == 0 then std.flattenArrays([n.iports for n in innodes]) else iports,
         oports: if std.length(oports) == 0 then std.flattenArrays([n.oports for n in outnodes]) else oports,
