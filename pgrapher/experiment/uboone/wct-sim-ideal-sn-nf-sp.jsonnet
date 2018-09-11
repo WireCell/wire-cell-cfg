@@ -102,10 +102,10 @@ local graph = g.pipeline([depos, deposio, drifter, ductor, miscon, noise, digiti
 local app = {
     type: "Pgrapher",
     data: {
-        edges: graph.edges,
+        edges: g.edges(graph),
     },
 };
 
 // Finally, the configuration sequence which is emitted.
 
-[cli.cmdline] + graph.uses + [app]
+[cli.cmdline] + g.uses(graph) + [app]

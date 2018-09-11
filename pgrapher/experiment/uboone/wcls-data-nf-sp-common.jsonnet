@@ -125,12 +125,12 @@ function(raw_input_label, epoch = "dynamic") {
     local app = {
         type: "Pgrapher",
         data: {
-            edges: graph.edges,
+            edges: g.edges(graph),
         },
     },
 
     // Finally, the configuration sequence which is emitted.
 
-    seq: graph.uses + [app]
+    seq: g.uses(graph) + [app]
 }.seq
 

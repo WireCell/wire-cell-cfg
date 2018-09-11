@@ -122,9 +122,9 @@ local graph = g.pipeline([wcls_input.adc_digits,
 local app = {
     type: "Pgrapher",
     data: {
-        edges: graph.edges,
+        edges: g.edges(graph),
     },
 };
 
 // Finally, the configuration sequence 
-graph.uses + [app]
+g.uses(graph) + [app]

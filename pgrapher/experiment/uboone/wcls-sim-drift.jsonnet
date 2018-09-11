@@ -42,10 +42,10 @@ local graph = g.pipeline([wcls_depo_source,
 local app = {
     type: "Pgrapher",
     data: {
-        edges: graph.edges,
+        edges: g.edges(graph),
     },
 };
 
 // Finally, the configuration sequence which is emitted.
 
-graph.uses + [app]
+g.uses(graph) + [app]
