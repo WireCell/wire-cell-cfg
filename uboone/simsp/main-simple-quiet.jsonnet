@@ -57,9 +57,9 @@ local graph = g.intern(
 local app = {
     type: "Pgrapher",
     data: {
-        edges: graph.edges,
+        edges: g.edges(graph),
     }
 };
 
 // final configuration sequence.
-[com.cmdline] + graph.uses + [app]
+[com.cmdline] + g.uses(graph) + [app]
