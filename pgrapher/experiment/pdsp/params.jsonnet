@@ -160,7 +160,11 @@ base {
             "garfield-1d-3planes-21wires-6impacts-dune-v1.json.bz2",
         ],
 
-        noise: null,
+        // fixme: this is for microboone and probably bogus for
+        // protodune because (at least) the span of MB wire lengths do
+        // not cover pdsp's.
+        noise: "microboone-noise-spectra-v2.json.bz2",
+
 
         chresp: null,
     },
