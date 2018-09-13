@@ -74,6 +74,18 @@ base {
             start_time: $.daq.start_time - $.elec.fields.drift_dt + $.trigger.time,
         },
 
+        // Additional e.g. 10 us time difference is due to the larger drift velocity 
+        // in Garfield field response where the collection plane peak
+        // at around 81 us instead of response_plane (10 cm to Y plane) /drift_speed.
+        // Assuming a constant drift velocity, this correction is needed.
+        // Interplane timeoffset still holds and will be intrinsically taken into account
+        // in the 2D decon. 
+        reframer: super.reframer{
+            tbin: 81*wc.us/$.daq.tick,
+            nticks: $.daq.nticks,
+            toffset: $.elec.fields.drift_dt - 81*wc.us,
+        },
+
     },
     // This is a non-standard, MB-specific variable.  Each object
     // attribute holds an array of regions corresponding to a
@@ -121,4 +133,6 @@ base {
     elec: super.elec{
         postgain: -1.0,
     },
+
+
 }

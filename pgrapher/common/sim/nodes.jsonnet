@@ -118,7 +118,7 @@ function(params, tools)
                 tags: [p.tag for p in pipes],
                 fill: 0.0,
                 tbin: params.sim.reframer.tbin,
-                toffset: 0,
+                toffset: params.sim.reframer.toffset,
                 nticks: params.sim.reframer.nticks,
             },
         }, nin=1, nout=1),
