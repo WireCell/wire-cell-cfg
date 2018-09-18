@@ -69,6 +69,7 @@ base {
         // For running in LArSoft, the simulation must be in fixed time mode. 
         fixed: true,
         continuous: false,
+        fluctuate: true,
 
         ductor : super.ductor {
             start_time: $.daq.start_time - $.elec.fields.drift_dt + $.trigger.time,
@@ -81,7 +82,7 @@ base {
         // Interplane timeoffset still holds and will be intrinsically taken into account
         // in the 2D decon. 
         reframer: super.reframer{
-            tbin: 81*wc.us/$.daq.tick,
+            tbin: 81*wc.us/($.daq.tick),
             nticks: $.daq.nticks,
             toffset: $.elec.fields.drift_dt - 81*wc.us,
         },
