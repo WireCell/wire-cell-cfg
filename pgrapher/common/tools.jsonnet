@@ -43,6 +43,16 @@ function(params)
             filename: params.files.chresp,
         }
     },
+    // It's a little awkward to NOT use PerChannelResponse because you
+    // need to give an empty string to a component that wants to use
+    // it an an empty list to the "uses".  Here we package that little
+    // "if" branch.  It's a general pattern not specific to this
+    // object.  Might want to make wc.tn() convert "null" into "" and
+    // g.uses() convert [null] into [].
+    perchanresp_nameuses : if std.type(params.files.chresp) == 'null'
+    then {name:"", uses:[]}
+    else {name:wc.tn(self.perchanresp), uses:[self.perchanresp]},
+
 
     wires : {
         type: "WireSchemaFile",
