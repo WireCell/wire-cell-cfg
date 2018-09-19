@@ -9,6 +9,7 @@
 
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
+local f = import "pgrapher/common/funcs.jsonnet";
 
 local cli = import "pgrapher/ui/cli/nodes.jsonnet";
 
@@ -16,7 +17,10 @@ local io = import "pgrapher/common/fileio.jsonnet";
 local params = import "pgrapher/experiment/pdsp/params.jsonnet";
 local tools_maker = import "pgrapher/common/tools.jsonnet";
 local sim_maker = import "pgrapher/experiment/pdsp/sim.jsonnet";
-local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
+// Fixme: currently, no noise filter.  Need to at least add a "null" NF to produce thresholds.
+// Or, maybe better, move that into OSP.  W/out it, behavior is undefined.
+// local nf = ...
+local sp_maker = import "pgrapher/experiment/pdsp/sp.jsonnet";
 
 local tools = tools_maker(params);
 
@@ -26,51 +30,57 @@ local sp = sp_maker(params, tools);
 
 
 local stubby = {
-    tail: wc.point(1000.0, 0.0, 5000.0, wc.mm),
-    head: wc.point(1100.0, 0.0, 5100.0, wc.mm),
+    tail: wc.point(1000.0, 3.0, 100.0, wc.mm),
+    head: wc.point(1100.0, 3.0, 200.0, wc.mm),
 };
 
-local close = {
-    tail: wc.point(10.0, 0.0, 5000.0, wc.mm),
-    head: wc.point(11.0, 0.0, 5100.0, wc.mm),
+// Something close to APA 0 (smallest Y,Z)
+local close0 = {
+    tail: wc.point(-3.000, 3.0, 1.000, wc.m),
+    head: wc.point(-3.100, 3.0, 1.100, wc.m),
 };
 
 
 local tracklist = [
+    // {
+    //     time: 1*wc.ms,
+    //     charge: -5000,         
+    //     ray: stubby,
+    // },
     {
-        time: 1*wc.ms,
-        charge: -5000,         
-        ray: stubby,
+        time: 0*wc.ms,
+        charge: -5000,
+        ray: close0,
     },
-    {
-        time: 2*wc.ms,
-        charge: -5000,         
-        ray: close,
-    },
-//    {
-//        time: 0,
-//        charge: -5000,         
-//        ray: params.det.bounds,
-//    },
-
-
+   // {
+   //     time: 0,
+   //     charge: -5000,         
+   //     ray: params.det.bounds,
+   // },
 ];
+
 local output = "wct-pdsp-sim-ideal-sn-nf-sp.npz";
     
-local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
-                             [sim.ar39(), sim.tracks(tracklist)]);
+//local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
+//                             [sim.ar39(), sim.tracks(tracklist)]);
+local depos = sim.tracks(tracklist);
+
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
 
-// signal plus noise sim sub-graph
-local splusn = sim.splusn;
+// signal plus noise pipelines
+local sn_pipes = sim.splusn_pipelines;
+local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
+local sn_sp = [g.pipeline([sn_pipes[n], sp_pipes[n]], "sn_sp_pipe_%d" % n)
+               for n in std.range(0, std.length(tools.anodes)-1)];
+local snsp_graph = f.fanpipe(sn_sp, "snsp");
 
 local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
 
-local graph = g.pipeline([depos, deposio, drifter, splusn, sp, frameio, sink]);
+local graph = g.pipeline([depos, deposio, drifter, snsp_graph, frameio, sink]);
 
 local app = {
     type: "Pgrapher",

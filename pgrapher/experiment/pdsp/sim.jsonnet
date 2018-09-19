@@ -1,23 +1,14 @@
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
-
+local f = import "pgrapher/common/funcs.jsonnet";
 local sim_maker = import "pgrapher/common/sim/nodes.jsonnet";
 
 
 // return some nodes, includes base sim nodes.
-function(params, tools)
-{
+function(params, tools) {
     local sim = sim_maker(params, tools),
 
     local nanodes = std.length(tools.anodes),
-
-    local fanout = g.pnode({
-        type: 'DepoFanout',
-        name: 'depofanout',
-        data: {
-            multiplicity: nanodes,
-        },
-    }, nin=1, nout=nanodes),
 
     // I rue the day that we must have an (anode) X (field) cross product!
     local ductors = sim.make_detector_ductors("nominal", tools.anodes, tools.pirs[0]),
@@ -41,19 +32,8 @@ function(params, tools)
             },
         }, nin=1, nout=1) for n in std.range(0, nanodes-1)],
 
-    local signal_pipelines = [g.pipeline([ductors[n], digitizers[n], reframers[n]],
-                                         name="simsigpipe%d"%n) for n in std.range(0, nanodes-1)],
 
-    local fanin = g.pnode({
-        type: 'FrameFanin',
-        name: 'framefanin',
-        data: {
-            multiplicity: nanodes,
-            tags: [],
-        },
-    }, nin=nanodes, nout=1),
-
-
+    // fixme: see https://github.com/WireCell/wire-cell-gen/issues/29
     local make_noise_model = function(anode, csdb=null) {
         type: "EmpiricalNoiseModel",
         name: "empericalnoise%s"% anode.name,
@@ -81,41 +61,16 @@ function(params, tools)
 
     local noises = [add_noise(model) for model in noise_models],
 
-    // Try "pipeline major" ordering of construction to see if we can speed up.
-    // By itself, no difference.
-    local make_sim_sn_pipeline = function(num, csdb=null) g.pipeline([
-        sim.make_ductor("ductor%d"%num, tools.anodes[num], tools.pirs[0]),
-        sim.digitizer(tools.anodes[num], name="digitizer%d"%num),
-        g.pnode({
-            type: 'Reframer',
-            name: 'reframer%d'%num,
-            data: {
-                anode: wc.tn(tools.anodes[num]),
-                tags: [],           // ?? what do?
-                fill: 0.0,
-                tbin: params.sim.reframer.tbin,
-                toffset: 0,
-                nticks: params.sim.reframer.nticks,
-            },
-        }, nin=1, nout=1, uses=[tools.anodes[num]]),
-        add_noise(make_noise_model(tools.anodes[num], csdb))
-    ], name="simsignoipipe%d"%num),
+    ret : {
 
-    local splusn_pipelines_element_major = [g.pipeline([ductors[n], digitizers[n], reframers[n], noises[n]],
-                                                       name="simsignoipipe%d"%n) for n in std.range(0, nanodes-1)],
-    local splusn_pipelines_pipeline_major = [make_sim_sn_pipeline(n) for n in std.range(0, nanodes-1)],
-    local splusn_pipelines = splusn_pipelines_element_major,
+        signal_pipelines: [g.pipeline([ductors[n], reframers[n],  digitizers[n]],
+                                      name="simsigpipe%d"%n) for n in std.range(0, nanodes-1)],
+
+        splusn_pipelines:  [g.pipeline([ductors[n], reframers[n], noises[n], digitizers[n]],
+                                       name="simsignoipipe%d"%n) for n in std.range(0, nanodes-1)],
     
-    local simgraph = function(pipelines, name="simgraph")
-    g.intern(innodes=[fanout],
-             outnodes=[fanin],
-             centernodes=pipelines,
-             edges=
-             [g.edge(fanout, pipelines[n], n, 0) for n in std.range(0, nanodes-1)] +
-             [g.edge(pipelines[n], fanin, 0, n) for n in std.range(0, nanodes-1)],
-             name=name),
+        signal: f.fanpipe(self.signal_pipelines, "simsignalgraph"),
+        splusn: f.fanpipe(self.splusn_pipelines, "simsplusngraph"),
 
-    signal: simgraph(signal_pipelines, "simsignalgraph"),
-    splusn: simgraph(splusn_pipelines, "simsplusngraph"),
-
-} + sim_maker(params, tools)    // we do this twice, but it's not cause of slow down
+    } + sim,                    // tack on base for user sugar.
+}.ret

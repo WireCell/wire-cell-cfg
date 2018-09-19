@@ -8,6 +8,7 @@
 
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
+local f = import "pgrapher/common/funcs.jsonnet";
 
 local cli = import "pgrapher/ui/cli/nodes.jsonnet";
 
@@ -49,7 +50,7 @@ local tracklist = [
    //     ray: params.det.bounds,
    // },
 ];
-local output = "wct-sim-ideal-sig.npz";
+local output = "wct-pdsp-sim-ideal-sn.npz";
 
     
 //local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
@@ -60,12 +61,14 @@ local depos = sim.tracks(tracklist);
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
 
-local signal = sim.signal;
+local sn_pipes = sim.splusn_pipelines;
+local sn_graph = f.fanpipe(sn_pipes, "sn");
+
 
 local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, signal, frameio, sink]);
+local graph = g.pipeline([depos, deposio, drifter, sn_graph, frameio, sink]);
 
 local app = {
     type: "Pgrapher",
