@@ -68,19 +68,20 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
+local bagger = sim.bagger;
 
 // signal plus noise pipelines
 local sn_pipes = sim.splusn_pipelines;
 local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
 local sn_sp = [g.pipeline([sn_pipes[n], sp_pipes[n]], "sn_sp_pipe_%d" % n)
                for n in std.range(0, std.length(tools.anodes)-1)];
-local snsp_graph = f.fanpipe(sn_sp, "snsp");
+local snsp_graph = f.fanpipe('DepoSetFanout', sn_sp, 'FrameFanin', "snsp");
 
 local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
 
-local graph = g.pipeline([depos, deposio, drifter, snsp_graph, frameio, sink]);
+local graph = g.pipeline([depos, deposio, drifter, bagger, snsp_graph, frameio, sink]);
 
 local app = {
     type: "Pgrapher",

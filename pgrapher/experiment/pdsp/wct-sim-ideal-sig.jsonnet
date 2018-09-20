@@ -59,13 +59,13 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
-
+local bagger = sim.bagger;
 local signal = sim.signal;
 
 local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, signal, frameio, sink]);
+local graph = g.pipeline([depos, deposio, drifter, bagger, signal, frameio, sink]);
 
 local app = {
     type: "Pgrapher",

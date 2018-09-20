@@ -110,8 +110,8 @@ function(params, tools) {
         splusn_pipelines:  [g.pipeline([depos2traces[n], reframers[n], noises[n], digitizers[n]],
                                        name="simsignoipipe%d"%n) for n in std.range(0, nanodes-1)],
     
-        signal: f.fanpipe(self.signal_pipelines, "simsignalgraph", fouttype='DepoSetFanout'),
-        splusn: f.fanpipe(self.splusn_pipelines, "simsplusngraph", fouttype='DepoSetFanout'),
+        signal: f.fanpipe('DepoSetFanout', self.signal_pipelines, 'FrameFanin', "simsignalgraph"),
+        splusn: f.fanpipe('DepoSetFanout', self.splusn_pipelines, 'FrameFanin', "simsplusngraph"),
 
     } + sim,                    // tack on base for user sugar.
 }.ret

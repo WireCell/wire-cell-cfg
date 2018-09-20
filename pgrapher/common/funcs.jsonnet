@@ -5,12 +5,12 @@ local g = import "pgraph.jsonnet";
 {
     // Build a fanout-[pipelines]-fanin graph.  pipelines is a list of
     // pnode objects, one for each spine of the fan.
-    fanpipe :: function(pipelines, name="fanpipe", outtags=[], fouttype='DepoFanout', fintype='FrameFanin') {
+    fanpipe :: function(fout, pipelines, fin, name="fanpipe", outtags=[]) {
 
         local fanmult = std.length(pipelines),
 
         local fanout = g.pnode({
-            type: fouttype,
+            type: fout,
             name: name,
             data: {
                 multiplicity: fanmult,
@@ -19,7 +19,7 @@ local g = import "pgraph.jsonnet";
 
 
         local fanin = g.pnode({
-            type: fintype,
+            type: fin,
             name: name,
             data: {
                 multiplicity: fanmult,
@@ -35,7 +35,6 @@ local g = import "pgraph.jsonnet";
                       [g.edge(pipelines[n], fanin, 0, n) for n in std.range(0, fanmult-1)],
                       name=name),
     }.ret,
-
 
 
 }

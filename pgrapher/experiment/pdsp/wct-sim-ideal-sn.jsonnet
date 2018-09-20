@@ -62,7 +62,7 @@ local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
 local bagger = sim.bagger;
 local sn_pipes = sim.splusn_pipelines;
-local sn_graph = f.fanpipe(sn_pipes, "sn", fouttype='DepoSetFanout');
+local sn_graph = f.fanpipe('DepoSetFanout', sn_pipes, 'FrameFanin', "sn");
 
 
 local frameio = io.numpy.frames(output);
