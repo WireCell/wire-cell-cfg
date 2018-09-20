@@ -13,6 +13,45 @@ function(params, tools) {
     // I rue the day that we must have an (anode) X (field) cross product!
     local ductors = sim.make_detector_ductors("nominal", tools.anodes, tools.pirs[0]),
 
+    local bagger = g.pnode({
+        type:'DepoBagger',
+        name:'bagger',
+        data: {
+            gate: [params.sim.ductor.start_time,
+                   params.sim.ductor.start_time+params.sim.ductor.readout_time],
+        },
+    }, nin=1, nout=1),
+
+    local dsfanout = g.pnode({
+        type:"DepoSetFanout",
+        name:"fanout",
+        data:{
+            multiplicity: nanodes,
+        },
+    }, nin=1, nout=nanodes),
+
+    local make_zipper = function(name, anode, pirs, type='DepoZipper') g.pnode({
+        type:type,
+        name:name,
+        data: {
+            rng: wc.tn(tools.random),
+            anode: wc.tn(anode),
+            pirs: std.map(function(pir) wc.tn(pir), pirs),
+            fluctuate: params.sim.fluctuate,
+            drift_speed: params.lar.drift_speed,
+            first_frame_number: params.daq.first_frame_number,
+            readout_time: params.sim.ductor.readout_time,
+            start_time: params.sim.ductor.start_time,
+            tick: params.daq.tick,
+            nsigma: 3,
+        },
+    }, nin=1, nout=1, uses=[anode] + pirs),
+    local zippers = [make_zipper("depozipper%d"%n, tools.anodes[n], tools.pirs[0])
+                     for n in std.range(0, nanodes-1)],
+    local transforms = [make_zipper("depotransform%d"%n, tools.anodes[n], tools.pirs[0], 'DepoTransform')
+                     for n in std.range(0, nanodes-1)],
+    local depos2traces = transforms,
+
 
     local digitizers = [
         sim.digitizer(tools.anodes[n], name="digitizer%d"%n)
@@ -63,14 +102,16 @@ function(params, tools) {
 
     ret : {
 
-        signal_pipelines: [g.pipeline([ductors[n], reframers[n],  digitizers[n]],
+        bagger: bagger, 
+
+        signal_pipelines: [g.pipeline([depos2traces[n], reframers[n],  digitizers[n]],
                                       name="simsigpipe%d"%n) for n in std.range(0, nanodes-1)],
 
-        splusn_pipelines:  [g.pipeline([ductors[n], reframers[n], noises[n], digitizers[n]],
+        splusn_pipelines:  [g.pipeline([depos2traces[n], reframers[n], noises[n], digitizers[n]],
                                        name="simsignoipipe%d"%n) for n in std.range(0, nanodes-1)],
     
-        signal: f.fanpipe(self.signal_pipelines, "simsignalgraph"),
-        splusn: f.fanpipe(self.splusn_pipelines, "simsplusngraph"),
+        signal: f.fanpipe(self.signal_pipelines, "simsignalgraph", fouttype='DepoSetFanout'),
+        splusn: f.fanpipe(self.splusn_pipelines, "simsplusngraph", fouttype='DepoSetFanout'),
 
     } + sim,                    // tack on base for user sugar.
 }.ret

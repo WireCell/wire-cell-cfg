@@ -60,15 +60,15 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
-
+local bagger = sim.bagger;
 local sn_pipes = sim.splusn_pipelines;
-local sn_graph = f.fanpipe(sn_pipes, "sn");
+local sn_graph = f.fanpipe(sn_pipes, "sn", fouttype='DepoSetFanout');
 
 
 local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, sn_graph, frameio, sink]);
+local graph = g.pipeline([depos, deposio, drifter, bagger, sn_graph, frameio, sink]);
 
 local app = {
     type: "Pgrapher",
