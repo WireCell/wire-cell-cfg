@@ -65,12 +65,13 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
-local ductor = sim.make_ductor("nominal", anode, tools.pirs[0]);
+local bagger = sim.bagger;
+local transform = sim.make_depotransform("nominal", anode, tools.pirs[0]);
 local digitizer = sim.digitizer(anode);
 local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, ductor,
+local graph = g.pipeline([depos, deposio, drifter, bagger, transform,
                           digitizer,
                           frameio, sink]);
 

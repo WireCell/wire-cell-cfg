@@ -54,18 +54,11 @@ local sim = sim_maker(params, tools);
 //                             [sim.ar39(), sim.tracks(tracklist)]);
 local depos = sim.tracks(tracklist);
 
-
 local deposio = io.numpy.depos(output);
 
 local drifter = sim.drifter;
 
-// Signal simulation.
-local ductors = sim.make_anode_ductors(anode);
-local md_pipes = sim.multi_ductor_pipes(ductors);
-local ductor = sim.multi_ductor_graph(anode, md_pipes, "mdg");
-// old monolythic MultiDuctor.
-//local md_chain = sim.multi_ductor_chain(ductors);
-//local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
+local signal = sim.signal;
 
 local miscon = sim.misconfigure(params);
 
@@ -81,7 +74,7 @@ local magnifio = g.pnode({
         frames: ["orig","raw"],
         anode: wc.tn(anode),
     },
-}, nin=1, nout=1);
+}, nin=1, nout=1, uses=[anode]);
 
 
 local noise_epoch = "perfect";
@@ -95,7 +88,7 @@ local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
 
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, ductor, miscon, noise, digitizer,
+local graph = g.pipeline([depos, deposio, drifter, signal, miscon, noise, digitizer,
                           sim_frameio, magnifio,
                           nf, nf_frameio, sp, sp_frameio, sink]);
 

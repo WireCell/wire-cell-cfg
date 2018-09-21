@@ -28,7 +28,17 @@ function(params, tools)
         },
     }, nin=1, nout=1, uses=[tools.random]),
 
-    
+    // Implement "fixed" depo mode like LArG4 uses
+    make_bagger :: function(name="bagger") g.pnode({
+        type:'DepoBagger',
+        name:name,
+        data: {
+            gate: [params.sim.ductor.start_time,
+                   params.sim.ductor.start_time+params.sim.ductor.readout_time],
+        },
+    }, nin=1, nout=1),
+
+
     // The set of all ductors are formed as the "cross product" of all
     // anodes and all PIR trios.  For one element of that product this
     // function is called.  The name should be unique across all
@@ -54,6 +64,54 @@ function(params, tools)
         },
     }, nin=1,nout=1,uses=[tools.random, anode] + pir_trio),
     
+    make_depotransform :: function(name, anode, pirs) g.pnode({
+        type:'DepoTransform',
+        name:name,
+        data: {
+            rng: wc.tn(tools.random),
+            anode: wc.tn(anode),
+            pirs: std.map(function(pir) wc.tn(pir), pirs),
+            fluctuate: params.sim.fluctuate,
+            drift_speed: params.lar.drift_speed,
+            first_frame_number: params.daq.first_frame_number,
+            readout_time: params.sim.ductor.readout_time,
+            start_time: params.sim.ductor.start_time,
+            tick: params.daq.tick,
+            nsigma: 3,
+        },
+    }, nin=1, nout=1, uses=[anode] + pirs),
+
+    // This may look similar to above but above is expected to diverge
+    make_depozipper :: function(name, anode, pirs) g.pnode({
+        type:'DepoZipper',
+        name:name,
+        data: {
+            rng: wc.tn(tools.random),
+            anode: wc.tn(anode),
+            pirs: std.map(function(pir) wc.tn(pir), pirs),
+            fluctuate: params.sim.fluctuate,
+            drift_speed: params.lar.drift_speed,
+            first_frame_number: params.daq.first_frame_number,
+            readout_time: params.sim.ductor.readout_time,
+            start_time: params.sim.ductor.start_time,
+            tick: params.daq.tick,
+            nsigma: 3,
+        },
+    }, nin=1, nout=1, uses=[anode] + pirs),
+
+    make_reframer :: function(name, anode, tags=[]) g.pnode({
+        type: 'Reframer',
+        name: name,
+        data: {
+            anode: wc.tn(anode),
+            tags: tags,
+            fill: 0.0,
+            tbin: params.sim.reframer.tbin,
+            toffset: params.sim.reframer.toffset,
+            nticks: params.sim.reframer.nticks,
+        },
+    }, nin=1, nout=1, uses=[anode]),
+
 
     // make all ductors for given anode and for all PIR trios.
     make_anode_ductors:: function(anode)
