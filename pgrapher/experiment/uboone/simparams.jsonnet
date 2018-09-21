@@ -131,8 +131,12 @@ base {
 
     // for SimEnergyDeposit -- number of electrons should have a gain
     // of -1.0 to indicate the sign of the charge
+    // This sets a relative gain at the input to the ADC.  Note, if
+    // you are looking to fix SimDepoSource, you are in the wrong
+    // place.  See the "scale" parameter of wcls.input.depos() defined
+    // in pgrapher/ui/wcls/nodes.jsonnet.
     elec: super.elec{
-        postgain: -1.0,
+        postgain: 1.0,
     },
 
 
