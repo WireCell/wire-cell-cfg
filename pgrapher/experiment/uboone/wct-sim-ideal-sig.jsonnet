@@ -65,7 +65,7 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
-local bagger = sim.bagger;
+local bagger = sim.make_bagger();
 local transform = sim.make_depotransform("nominal", anode, tools.pirs[0]);
 local digitizer = sim.digitizer(anode);
 local frameio = io.numpy.frames(output);
