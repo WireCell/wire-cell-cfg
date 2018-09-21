@@ -1,5 +1,3 @@
-// Fixme: transition this to using graph-based multi ductors instead of MultiDuctor.
-//
 // This configures a WCT job for a pipeline that includes full MB
 // signal and noise effects in the simulation. and the NF/SP
 // components to correct them.  The kinematics here are a mixture of
