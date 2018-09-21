@@ -10,7 +10,10 @@ function(params, tools)
 {
     // converters from data which is input to WCT
     input : {
-        depos : function(name="deposource", model="", scale=1.0, art_label="plopper", art_instance="bogus") g.pnode({
+        // Note: scale is -1 to correct a sign error in the SimDepoSource converter.
+        // https://github.com/WireCell/larwirecell/issues/7
+        depos : function(name="deposource", model="", scale=-1.0,
+                         art_label="plopper", art_instance="bogus") g.pnode({
             type: 'wclsSimDepoSource',
             name: name,
             data: {

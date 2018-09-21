@@ -20,7 +20,10 @@ local wcls_depo_source = g.pnode({
     name: 'electrons',          // remind that we expect electrons
     data: {
         model: "",              // but could calculate electrons ourselves
-        scale: 1.0,             // can apply some arbitrary scale to charge
+        scale: -1.0,            // Can apply some arbitrary scale to
+        // charge.  This needs to be negative until this is fixed:
+        // https://github.com/WireCell/larwirecell/issues/7
+        
     },
 }, nin=0, nout=1); 
 
