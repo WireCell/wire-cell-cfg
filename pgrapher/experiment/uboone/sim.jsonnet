@@ -99,7 +99,8 @@ function(params, tools)
         data: {
             rng: wc.tn(tools.random),
             model: wc.tn(model),
-            replacement_percentage: 0.02, // random optimization
+	    nsamples: params.daq.nticks,
+	    replacement_percentage: 0.02, // random optimization
         }}, nin=1, nout=1, uses=[model]),
 
     ret: {
