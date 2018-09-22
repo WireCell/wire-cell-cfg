@@ -68,7 +68,7 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
-local bagger = sim.bagger;
+local bagger = sim.make_bagger();
 
 // signal plus noise pipelines
 local sn_pipes = sim.splusn_pipelines;

@@ -60,7 +60,7 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
-local bagger = sim.bagger;
+local bagger = sim.make_bagger();
 local sn_pipes = sim.splusn_pipelines;
 local sn_graph = f.fanpipe('DepoSetFanout', sn_pipes, 'FrameFanin', "sn");
 

@@ -59,7 +59,7 @@ local depos = sim.tracks(tracklist);
 
 local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
-local bagger = sim.bagger;
+local bagger = sim.make_bagger();
 local signal = sim.signal;
 
 local frameio = io.numpy.frames(output);
