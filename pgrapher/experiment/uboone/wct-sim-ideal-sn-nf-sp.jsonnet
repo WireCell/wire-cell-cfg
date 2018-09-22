@@ -1,5 +1,3 @@
-// Fixme: transition this to using graph-based multi ductors instead of MultiDuctor.
-//
 // This configures a WCT job for a pipeline that includes full MB
 // signal and noise effects in the simulation. and the NF/SP
 // components to correct them.  The kinematics here are a mixture of
@@ -31,16 +29,16 @@ local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
 local stubby = {
-    tail: wc.point(1000.0, 0.0, 5000.0, wc.mm),
-    head: wc.point(1100.0, 0.0, 5100.0, wc.mm),
+    tail: wc.point(1000.0, 0.0, 100.0, wc.mm),
+    head: wc.point(1100.0, 0.0, 200.0, wc.mm),
 };
 
 local tracklist = [
     {
         time: 1*wc.ms,
         charge: -5000,          // negative means per step
-        ray: stubby,
-        //ray: params.det.bounds,
+        //ray: stubby,
+        ray: params.det.bounds,
     },
 ];
 local output = "wct-sim-ideal-sn-nf-sp.npz";
@@ -88,9 +86,12 @@ local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
 
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, signal, miscon, noise, digitizer,
+local graph = g.pipeline([depos, deposio, drifter, signal,
+                          miscon,
+                          noise, digitizer,
                           sim_frameio, magnifio,
-                          nf, nf_frameio, sp, sp_frameio, sink]);
+                          nf, nf_frameio,
+                          sp, sp_frameio, sink]);
 
 local app = {
     type: "Pgrapher",

@@ -62,10 +62,7 @@ local wcls_output = {
 local anode = tools.anodes[0];
 local drifter = sim.drifter;
 
-// Signal simulation.
-local ductors = sim.make_anode_ductors(anode);
-local md_pipes = sim.multi_ductor_pipes(ductors);
-local ductor = sim.multi_ductor_graph(anode, md_pipes, "mdg");
+local signal = sim.signal;
 
 local miscon = sim.misconfigure(params);
 
@@ -90,7 +87,7 @@ local sp = sp_maker(params, tools);
 local sink = sim.frame_sink;
 
 local graph = g.pipeline([wcls_input.depos,
-                          drifter, ductor, miscon, noise, digitizer,
+                          drifter, signal, miscon, noise, digitizer,
                           wcls_output.sim_digits,
                           nf,
                           wcls_output.nf_digits,

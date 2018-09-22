@@ -119,7 +119,11 @@ local wc = import "wirecell.jsonnet";
         // The shaping (aka peaking) time of the amplifier shaper.
         shaping : 2.0*wc.us,
 
-        // An realtive gain applied after shaping.
+        // An realtive gain applied after shaping and before ADC.
+        // Don't use this to fix wrong sign depos.  If you neeed to
+        // fix sign of larsoft depos, use:
+        // wcls.input.depos([...], scale=-1)
+        // or better, fix the C++ that sets the wrong sign to begin with.
         postgain: 1.0,
 
         fields : {
