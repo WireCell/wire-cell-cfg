@@ -37,8 +37,10 @@ local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
 local stubby = {
+    // tail: wc.point(1000, -1000, 0.0, wc.mm),
     tail: wc.point(1000, -1000, 5000.0, wc.mm),
     head: wc.point(1000, -1000, 10300.0, wc.mm),
+    //head: wc.point(1000, -1000, 5000.00001, wc.mm),	
 };
 
 local tracklist = [
@@ -87,7 +89,7 @@ local tracklist3 = [
 ];
 
 local output = "wct-sim-ideal-sn-nf-sp.npz";
-local magout = "wct-sim-ideal-sn-nf-sp.root";
+local magout = "wct-sim-temp.root";
     
 local anode = tools.anodes[0];
 
@@ -102,13 +104,20 @@ local deposio = io.numpy.depos(output);
 
 local drifter = sim.drifter;
 
-//local ductors = sim.make_anode_ductors(anode);
-//local md_chain = sim.multi_ductor_chain(ductors);
-//local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
-//local md_pipes = sim.multi_ductor_pipes(ductors);
-//local ductor = sim.multi_ductor_graph(anode, md_pipes, "mdg");
-//local ductor = sim.make_ductor("nominal", anode, tools.pirs[0]);
-local ductor = sim.signal;
+local signal = sim.signal;
+
+local bagger = sim.make_bagger();
+local transform = sim.make_depotransform("nominal", anode, tools.pirs[0]);
+local zipper = sim.make_depozipper("nominal", anode, tools.pirs[0]);
+
+local reframer = sim.make_reframer("nominal", anode);
+
+// local ductors = sim.make_anode_ductors(anode);
+// local md_chain = sim.multi_ductor_chain(ductors);
+// local ductor = sim.multi_ductor(anode, ductors, [md_chain]);
+// local md_pipes = sim.multi_ductor_pipes(ductors);
+// local ductor = sim.multi_ductor_graph(anode, md_pipes, "mdg");
+// local ductor = sim.make_ductor("nominal", anode, tools.pirs[0]);
 
 local miscon = sim.misconfigure(params);
 
@@ -124,7 +133,7 @@ local magnifio = g.pnode({
     name: "origmag",
     data: {
         output_filename: magout,
-        root_file_mode: "UPDATE",
+//        root_file_mode: "UPDATE",
         frames: ["orig"],
         anode: wc.tn(anode),
     },
@@ -135,7 +144,7 @@ local magnifio2 = g.pnode({
     name: "rawmag",
     data: {
         output_filename: magout,
-        root_file_mode: "UPDATE",
+//        root_file_mode: "UPDATE",
         frames: ["raw"],
         cmmtree: [["bad", "T_bad"], ["lf_noisy", "T_lf"]], // maskmap in nf.jsonnet 
         anode: wc.tn(anode),
@@ -147,7 +156,7 @@ local magnifio3 = g.pnode({
     name: "deconmag",
     data: {
         output_filename: magout,
-        root_file_mode: "UPDATE",
+//        root_file_mode: "UPDATE",
         frames: ["raw", "gauss", "wiener", "threshold"],
         //cmmtree: [["bad", "T_bad"], ["lf_noisy", "T_lf"]], 
         anode: wc.tn(anode),
@@ -166,8 +175,10 @@ local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
 
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, drifter, ductor, miscon, noise, digitizer, magnifio, nf, magnifio2, sp, magnifio3, sink]);
-//local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, magnifio, nf, magnifio2, sink]);
+local graph = g.pipeline([depos, drifter, bagger, transform, reframer, noise, digitizer, magnifio, sink]);
+
+// local graph = g.pipeline([depos, drifter, ductor, digitizer, magnifio, sink]);
+// local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, magnifio, nf, magnifio2, sink]);
 
 local app = {
     type: "Pgrapher",
