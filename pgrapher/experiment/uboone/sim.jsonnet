@@ -23,7 +23,8 @@ function(params, tools)
         
     local zippers = [sim.make_depozipper("depozip%d"%n, tools.anode, tools.pirs[n]) for n in [0,1,2]],
     local transforms = [sim.make_depotransform("depotran%d"%n, tools.anode, tools.pirs[n]) for n in [0,1,2]],
-    local depos2frames = zippers,
+    //local depos2frames = zippers,
+    local depos2frames = transforms,
 
     local pipelines = [g.pipeline([wbdepos[n], baggers[n], depos2frames[n]], "ubsigpipe%d"%n)
                        for n in [0,1,2]],

@@ -85,8 +85,11 @@ function(params)
                 plane: plane,
                 field_response: wc.tn(fr),
                 // note twice we give rc so we have rc^2 in the final convolution
-                other_responses: [wc.tn($.elec_resp), wc.tn($.rc_resp), wc.tn($.rc_resp)],
-            },
+                short_responses: [wc.tn($.elec_resp)],
+		overall_short_padding: 0.1*wc.ms,
+		long_responses: [wc.tn($.rc_resp), wc.tn($.rc_resp)],
+		long_padding: 1.5*wc.ms,
+	    },
             uses: [fr, $.elec_resp, $.rc_resp],
         } for plane in [0,1,2]], $.fields),
 
