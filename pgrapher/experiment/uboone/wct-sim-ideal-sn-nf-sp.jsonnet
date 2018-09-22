@@ -74,6 +74,31 @@ local magnifio = g.pnode({
     },
 }, nin=1, nout=1, uses=[anode]);
 
+local magnifio2 = g.pnode({
+    type: "MagnifySink",
+    name: "rawmag",
+    data: {
+        output_filename: magout,
+        root_file_mode: "UPDATE",
+        frames: ["raw"],
+        cmmtree: [["bad", "T_bad"], ["lf_noisy", "T_lf"]], // maskmap in nf.jsonnet 
+        anode: wc.tn(anode),
+    },
+}, nin=1, nout=1);
+
+local magnifio3 = g.pnode({
+    type: "MagnifySink",
+    name: "deconmag",
+    data: {
+        output_filename: magout,
+        root_file_mode: "UPDATE",
+        frames: ["raw", "gauss", "wiener", "threshold"],
+        //cmmtree: [["bad", "T_bad"], ["lf_noisy", "T_lf"]], 
+        anode: wc.tn(anode),
+        //summaries: ["threshold"],
+    },
+}, nin=1, nout=1);
+
 
 local noise_epoch = "perfect";
 //local noise_epoch = "after";
@@ -90,8 +115,8 @@ local graph = g.pipeline([depos, deposio, drifter, signal,
                           miscon,
                           noise, digitizer,
                           sim_frameio, magnifio,
-                          nf, nf_frameio,
-                          sp, sp_frameio, sink]);
+                          nf, nf_frameio, magnifio2,
+                          sp, sp_frameio, magnifio3, sink]);
 
 local app = {
     type: "Pgrapher",
