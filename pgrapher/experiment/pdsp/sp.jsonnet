@@ -25,7 +25,7 @@ function(params, tools) {
             anode: wc.tn(anode),
             field_response: wc.tn(tools.field),
             per_chan_resp: pc.name,
-	    fft_flag: 1,   // 1 is faster but higher memory, 0 is slightly slower but lower memory
+	    fft_flag: 0,   // 1 is faster but higher memory, 0 is slightly slower but lower memory
 	   },
     }, nin=1, nout=1, uses=[anode, tools.field] + pc.uses + spfilt),
 
