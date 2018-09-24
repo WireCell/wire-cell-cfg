@@ -26,6 +26,7 @@ local sigproc_uniform = g.pnode({
             anode: wc.tn(tools.anode),
             field_response: wc.tn(tools.field),
             per_chan_resp: "",
+            shaping: params.elec.shaping,
 	    fft_flag: 0,    // 1 is faster but higher memory, 0 is slightly slower but lower memory	
         }
     }, nin=1,nout=1,uses=[tools.anode, tools.field] + import "sp-filters.jsonnet"),
