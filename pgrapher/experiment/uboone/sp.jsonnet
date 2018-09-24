@@ -25,6 +25,7 @@ local sigproc_uniform = g.pnode({
             anode: wc.tn(tools.anode),
             field_response: wc.tn(tools.field),
             per_chan_resp: "",
+            shaping: params.elec.shaping,
         }
     }, nin=1,nout=1,uses=[tools.anode, tools.field] + import "sp-filters.jsonnet"),
 // ch-by-ch response correction in SP turn off by setting null input
