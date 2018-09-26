@@ -4,6 +4,9 @@ local wc = import "wirecell.jsonnet";
 local base = import "pgrapher/experiment/uboone/params.jsonnet";
 
 base {
+    lar: super.lar {
+        lifetime: 1000.0*wc.ms,
+    },
 
     daq: super.daq {
 
