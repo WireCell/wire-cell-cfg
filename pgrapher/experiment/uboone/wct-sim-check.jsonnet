@@ -38,13 +38,13 @@ local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
 local stubby = {
     tail: wc.point(1000, -1000, 5000.0, wc.mm),
-    head: wc.point(1000, -1000, 10300.0, wc.mm),
+    head: wc.point(1500, -1000, 6000.0, wc.mm),
 };
 
 local tracklist = [
     {
         time: 0.0*wc.ms,
-        charge: -20000,          // negative means per step
+        charge: -5000,          // negative means per step
         ray: stubby,
         //ray: params.det.bounds,
     },
@@ -151,7 +151,7 @@ local magnifio3 = g.pnode({
         frames: ["raw", "gauss", "wiener", "threshold"],
         //cmmtree: [["bad", "T_bad"], ["lf_noisy", "T_lf"]], 
         anode: wc.tn(anode),
-        //summaries: ["threshold"],
+        summaries: ["threshold"],
     },
 }, nin=1, nout=1);
 
