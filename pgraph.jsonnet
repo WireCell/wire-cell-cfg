@@ -133,6 +133,19 @@ local wc = import "wirecell.jsonnet";
         oports: pnode.oports,
     },
 
+    // Return a list of indices where item is found in list
+    find_indices(list, item):: std.filter(std.isNumber, 
+                                           std.mapWithIndex(function(ind,ele)
+                                                            if ele == item
+                                                            then ind
+                                                            else null,
+                                                            list)),
+
+    // Like insert_one() but give edge to break instead of index
+    insert_node(pnode, edge_to_break, newhead, newtail, iport=0, oport=0, name=null):: 
+    self.insert_one(pnode, self.find_indices(pnode.edges, edge_to_break)[0], newhead, newtail, iport, oport, name),
+
+
     // Joint N sources using joiner, return pnode that looks like a
     // single source.  The joiner must be capable of handling and
     // N-join.  Each source is connected to joiner's input ports in
