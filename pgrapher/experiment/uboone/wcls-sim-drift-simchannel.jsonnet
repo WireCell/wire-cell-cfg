@@ -10,7 +10,6 @@ local g = import "pgraph.jsonnet";
 //local v_offset = std.extVar("v_time_offset");
 //local y_offset = std.extVar("y_time_offset");
 
-local readout = import "pgrapher/experiment/uboone/params.jsonnet";
 local params = import "pgrapher/experiment/uboone/simparams.jsonnet";
 local tools_maker = import "pgrapher/common/tools.jsonnet";
 local tools = tools_maker(params);
@@ -51,7 +50,7 @@ local wcls_simchannel_sink = g.pnode({
 	start_time: -1.6*wc.ms, //0.0*wc.s,
 	readout_time: self.tick*9600,
 	nsigma: 3.0,
-	drift_speed: readout.lar.drift_speed,
+	drift_speed: params.lar.drift_speed,
 	uboone_u_to_rp:	100*wc.mm,
 	uboone_v_to_rp:	100*wc.mm,
 	uboone_y_to_rp:	100*wc.mm,

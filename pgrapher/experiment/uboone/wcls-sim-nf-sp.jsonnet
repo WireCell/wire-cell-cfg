@@ -55,12 +55,41 @@ local wcls_output = {
     // sets each created with its own filter.  The "gauss" one is best
     // for charge reconstruction, the "wiener" is best for S/N
     // separation.  Both are used in downstream WC code.
-    sp_signals: wcls.output.signals(name="spsignals", tags=["gauss"]),
+    sp_signals: wcls.output.signals(name="spsignals", tags=["gauss", "wiener"]),
+
+    // save "threshold" from normal decon for each channel noise
+    // used in imaging
+    sp_thresholds: wcls.output.thresholds(name="spthresholds", tags=["threshold"]),
 };
 
-
 local anode = tools.anodes[0];
+local rng = tools.random; // BR insert
 local drifter = sim.drifter;
+
+// fill SimChannel
+local wcls_simchannel_sink = g.pnode({
+    type: 'wclsSimChannelSink',
+    name: 'postdrift',
+    data: {
+        artlabel: "drifted",    // where to save in art::Event
+ 	anode: wc.tn(anode), 
+	rng: wc.tn(rng),
+	tick: 0.5*wc.us,
+	start_time: -1.6*wc.ms, //0.0*wc.s,
+	readout_time: self.tick*9600,
+	nsigma: 3.0,
+	drift_speed: params.lar.drift_speed,
+	uboone_u_to_rp:	100*wc.mm,
+	uboone_v_to_rp:	100*wc.mm,
+	uboone_y_to_rp:	100*wc.mm,
+	u_time_offset: 0.0*wc.us,
+	v_time_offset: 0.0*wc.us,
+	y_time_offset: 0.0*wc.us,
+	use_energy: true,
+    },
+}, nin=1, nout=1, uses=[tools.anode]);
+
+
 
 local signal = sim.signal;
 
@@ -87,7 +116,9 @@ local sp = sp_maker(params, tools);
 local sink = sim.frame_sink;
 
 local graph = g.pipeline([wcls_input.depos,
-                          drifter, signal, miscon, noise, digitizer,
+                          drifter, 
+                          wcls_simchannel_sink,
+                          signal, miscon, noise, digitizer,
                           wcls_output.sim_digits,
                           nf,
                           wcls_output.nf_digits,
@@ -95,14 +126,16 @@ local graph = g.pipeline([wcls_input.depos,
                           wcls_output.sp_signals,
                           sink]);
 
+local graph2 = g.insert_node(graph, g.edge_labels("OmnibusSigProc", "FrameSplitter:sigsplitter"), wcls_output.sp_thresholds, wcls_output.sp_thresholds, name="graph2");
+
 
 local app = {
     type: "Pgrapher",
     data: {
-        edges: g.edges(graph),
+        edges: g.edges(graph2),
     },
 };
 
 // Finally, the configuration sequence which is emitted.
 
-g.uses(graph) + [app]
+g.uses(graph2) + [app]
