@@ -101,6 +101,10 @@ function(raw_input_label, epoch = "dynamic") {
                 chanmaskmaps: [],
             },
         },nin=1, nout=1, uses=[tools.anode]),
+
+        // save "threshold" from normal decon for each channel noise
+        // used in imaging
+        sp_thresholds: wcls.output.thresholds(name="spthresholds", tags=["threshold"]),
     },
 
 
@@ -121,16 +125,17 @@ function(raw_input_label, epoch = "dynamic") {
                               wcls_output.sp_signals,
                               sink]),
 
+local graph2 = g.insert_node(graph, g.edge_labels("OmnibusSigProc", "FrameSplitter:sigsplitter"), wcls_output.sp_thresholds, wcls_output.sp_thresholds, name="graph2");
 
     local app = {
         type: "Pgrapher",
         data: {
-            edges: g.edges(graph),
+            edges: g.edges(graph2),
         },
     },
 
     // Finally, the configuration sequence which is emitted.
 
-    seq: g.uses(graph) + [app]
+    seq: g.uses(graph2) + [app]
 }.seq
 

@@ -149,6 +149,22 @@ local magnifio3 = g.pnode({
         output_filename: magout,
         root_file_mode: "UPDATE",
         frames: ["gauss", "wiener"],
+        //cmmtree: [["bad", "T_bad"], ["lf_noisy", "T_lf"]], 
+        anode: wc.tn(anode),
+        //summaries: ["threshold"], 
+        // not saved in FrameMerger
+        // a dedicated FrameSaver breaks into the subpgraph
+        // using g.insert_node()
+    },
+}, nin=1, nout=1);
+
+
+local magnifio4 = g.pnode({
+    type: "MagnifySink",
+    name: "thresholdmag",
+    data: {
+        output_filename: magout,
+        root_file_mode: "UPDATE",
         anode: wc.tn(anode),
         summaries: ["threshold"],
     },
@@ -168,13 +184,20 @@ local sink = sim.frame_sink;
 local graph = g.pipeline([depos, drifter, ductor, miscon, noise, digitizer, magnifio, nf, magnifio2, sp, magnifio3, sink]);
 //local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, magnifio, nf, magnifio2, sink]);
 
+
+// break into subpgraph and insert a new node
+// unable to access subgraph pnodes directly
+// "cheat": type:name labels the pnode
+// g.edge_labels()
+// MagnifySink to dump "threshold" after normal SigProc
+local graph2 = g.insert_node(graph, g.edge_labels("OmnibusSigProc", "FrameSplitter:sigsplitter"), magnifio4, magnifio4, name="graph2");
+
 local app = {
     type: "Pgrapher",
     data: {
-        edges: g.edges(graph),
+        edges: g.edges(graph2),
     },
 };
 
 // Finally, the configuration sequence which is emitted.
-
-[cli.cmdline] + g.uses(graph) + [app]
+[cli.cmdline] + g.uses(graph2) + [app]

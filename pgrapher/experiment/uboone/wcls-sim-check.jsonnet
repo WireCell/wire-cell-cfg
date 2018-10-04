@@ -56,6 +56,10 @@ local wcls_output = {
     // for charge reconstruction, the "wiener" is best for S/N
     // separation.  Both are used in downstream WC code.
     sp_signals: wcls.output.signals(name="spsignals", tags=["gauss", "wiener"]),
+
+    // save "threshold" from normal decon for each channel noise
+    // used in imaging
+    sp_thresholds: wcls.output.thresholds(name="spthresholds", tags=["threshold"]),
 };
 
 
@@ -126,24 +130,26 @@ local sink = sim.frame_sink;
 
 local graph = g.pipeline([wcls_input.depos,
                           drifter, signal, miscon, noise, digitizer,
-                          //wcls_output.sim_digits,
-                          magnifio,
-                          //nf,
-                          //wcls_output.nf_digits,
+                          wcls_output.sim_digits,
+                          //magnifio,
+                          nf,
+                          wcls_output.nf_digits,
                           //magnifio2,
-                          //sp,
-                          //wcls_output.sp_signals,
+                          sp,
+                          wcls_output.sp_signals,
                           //magnifio3,
                           sink]);
+
+local graph2 = g.insert_node(graph, g.edge_labels("OmnibusSigProc", "FrameSplitter:sigsplitter"), wcls_output.sp_thresholds, wcls_output.sp_thresholds, name="graph2");
 
 
 local app = {
     type: "Pgrapher",
     data: {
-        edges: g.edges(graph),
+        edges: g.edges(graph2),
     },
 };
 
 // Finally, the configuration sequence which is emitted.
 
-g.uses(graph) + [app]
+g.uses(graph2) + [app]

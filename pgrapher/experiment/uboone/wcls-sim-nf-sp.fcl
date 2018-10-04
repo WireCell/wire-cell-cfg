@@ -21,9 +21,11 @@ physics :{
 
             inputers: ["wclsSimDepoSource"]
             outputers: [
+               "wclsSimChannelSink:postdrift",
                "wclsFrameSaver:simdigits",
                "wclsFrameSaver:nfdigits",
-               "wclsFrameSaver:spsignals"
+               "wclsFrameSaver:spsignals",
+               "wclsFrameSaver:spthresholds"
             ]
 
             // Make available parameters via Jsonnet's std.extVar()
