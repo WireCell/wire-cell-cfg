@@ -43,9 +43,9 @@ local wcls = wcls_maker(params, tools);
 local io = import "pgrapher/common/fileio.jsonnet";
 
 local nf_maker = import "pgrapher/experiment/uboone/nf.jsonnet";
-local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
+local chndb_maker = import "pgrapher/experiment/uboone/chndb-nonwcsim.jsonnet";
 
-local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
+local sp_maker = import "pgrapher/experiment/uboone/sp-nonwcsim.jsonnet";
 
 local chndbm = chndb_maker(params, tools);
 local chndb = if epoch == "dynamic" then chndbm.wcls_multi(name="") else chndbm.wct(epoch);

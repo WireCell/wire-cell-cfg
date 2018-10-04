@@ -82,7 +82,7 @@ function(params, anode, field)
         },
 
         {                       // these are before hardware fix 
-            channels: params.nf.misconfigured.channels,
+            channels: null, //params.nf.misconfigured.channels,
             reconfig: {
                 from: {gain:  params.nf.misconfigured.gain,
                        shaping: params.nf.misconfigured.shaping},

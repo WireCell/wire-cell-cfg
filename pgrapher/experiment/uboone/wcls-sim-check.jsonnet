@@ -62,6 +62,8 @@ local wcls_output = {
 local anode = tools.anodes[0];
 local drifter = sim.drifter;
 
+// new "Transforms" in sim.jsonnet
+// speed up compared to OLD "Zippers"
 local signal = sim.signal;
 
 local miscon = sim.misconfigure(params);
@@ -73,6 +75,42 @@ local noise = sim.add_noise(noise_model);
 
 local digitizer = sim.digitizer(anode, tag="orig");
 
+
+local magout = "wcls-sim-check.root";
+local magnifio = g.pnode({
+    type: "MagnifySink",
+    name: "origmag",
+    data: {
+        output_filename: magout,
+        root_file_mode: "UPDATE",
+        frames: ["orig"],
+        anode: wc.tn(anode),
+    },
+}, nin=1, nout=1);
+
+local magnifio2 = g.pnode({
+    type: "MagnifySink",
+    name: "rawmag",
+    data: {
+        output_filename: magout,
+        root_file_mode: "UPDATE",
+        frames: ["raw"],
+        cmmtree: [["bad", "T_bad"], ["lf_noisy", "T_lf"]], // maskmap in nf.jsonnet 
+        anode: wc.tn(anode),
+    },
+}, nin=1, nout=1);
+
+local magnifio3 = g.pnode({
+    type: "MagnifySink",
+    name: "deconmag",
+    data: {
+        output_filename: magout,
+        root_file_mode: "UPDATE",
+        frames: ["gauss", "wiener"],
+        anode: wc.tn(anode),
+        summaries: ["threshold"],
+    },
+}, nin=1, nout=1);
 
 
 local noise_epoch = "perfect";
@@ -88,11 +126,14 @@ local sink = sim.frame_sink;
 
 local graph = g.pipeline([wcls_input.depos,
                           drifter, signal, miscon, noise, digitizer,
-                          wcls_output.sim_digits,
-                          nf,
-                          wcls_output.nf_digits,
-                          sp,
-                          wcls_output.sp_signals,
+                          //wcls_output.sim_digits,
+                          magnifio,
+                          //nf,
+                          //wcls_output.nf_digits,
+                          //magnifio2,
+                          //sp,
+                          //wcls_output.sp_signals,
+                          //magnifio3,
                           sink]);
 
 
