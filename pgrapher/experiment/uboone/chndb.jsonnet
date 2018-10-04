@@ -21,7 +21,8 @@ function(params, tools)
     wcls: function(epoch="before") {
         type: "wclsChannelNoiseDB",
         name: "wclscndb%s"%epoch,
-        data : base(params, tools.anode, tools.field, rms_cuts[epoch]) {
+        // "false": static list of misconfig channels invalid
+        data : base(params, tools.anode, tools.field, rms_cuts[epoch], "false") {
             misconfig_channel: {
                 policy: "replace",
                 from: {gain:  params.nf.misconfigured.gain,

@@ -5,7 +5,7 @@
 local wc = import "wirecell.jsonnet";
 local handmade = import "chndb-resp.jsonnet";
 
-function(params, anode, field, rms_cuts=[])
+function(params, anode, field, rms_cuts=[], static_miscfg="true")
 {
     anode: wc.tn(anode),
     field_response: wc.tn(field),
@@ -113,7 +113,9 @@ function(params, anode, field, rms_cuts=[])
         },
 
         {                       // these are before hardware fix 
-            channels: params.nf.misconfigured.channels,
+            channels: if static_miscfg == "true" 
+                        then params.nf.misconfigured.channels 
+                        else null,
             reconfig: {
                 from: {gain:  params.nf.misconfigured.gain,
                        shaping: params.nf.misconfigured.shaping},
