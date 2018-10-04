@@ -44,6 +44,19 @@ local g = import "pgraph.jsonnet";
     pn1243_uses: g.uses(self.pn1243),
     pn1243_edges: g.edges(self.pn1243),
 
+    // here we "cheat" by using out-of-band knowledge of node
+    // type:name labels in order to form the edge to break without
+    // having access to the fundamental pnodes that comprise the edge
+    // endpoints.
+    edge_to_break: g.edge_labels("Node:n2","Node:n3"),
+    cheat: g.insert_node(self.pipe, self.edge_to_break,
+                         self.n4, self.n4, name="n1243"),
+
+    // note: this check is rather expensive as it recurses both data
+    // structures.  one run of this file takes 0.2s w/out this line
+    // and 4.1 s with.
+    assert self.cheat == self.pn1243,
+
 }
 
 // Here is one way to turn this file into something that looks like a
