@@ -57,7 +57,7 @@ function(raw_input_label, epoch = "dynamic") {
             type: 'wclsRawFrameSource',
             name: "",
             data: {
-                source_label: raw_input_label,
+                art_tag: raw_input_label,
                 frame_tags: ["orig"],
                 nticks: params.daq.nticks,
             },

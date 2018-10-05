@@ -21,12 +21,12 @@ function(params, tools)
             },
         }, nin=0, nout=1),      // fixme: should add model to uses?
 
-        digits : function(artlabel, name="adcdigits", tags=["orig"], nticks=params.nf.nsamples) g.pnode({
+        digits : function(arttag, name="adcdigits", tags=["orig"], nticks=params.nf.nsamples) g.pnode({
             type: 'wclsRawFrameSource',
             name: name,
             data: {
-                // The art::Event label that locates the input raw::RawDigit collection.
-                source_label: artlabel,
+                // The art::Event inputTag that locates the input raw::RawDigit collection.
+                art_tag: arttag,
 
                 // These tags will be placed on the resulting frame.
                 frame_tags: tags,

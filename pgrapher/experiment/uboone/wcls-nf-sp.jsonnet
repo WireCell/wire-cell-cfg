@@ -5,7 +5,7 @@
 //
 // epoch: the hardware noise fix expoch: "before", "after", "dynamic" or "perfect"
 // reality: whether we are running on "data" or "sim"ulation.
-// raw_input_label: the art::Event label for the input RawDigit
+// raw_input_label: the art::Event inputTag for the input RawDigit
 //
 // see the .fcl of the same name for an example
 //
@@ -60,7 +60,7 @@ local wcls_input = {
         type: 'wclsRawFrameSource',
         name: "",
         data: {
-            source_label: raw_input_label,
+            art_tag: raw_input_label,
             frame_tags: ["orig"], // this is a WCT designator
             nticks: params.daq.nticks,
         },
