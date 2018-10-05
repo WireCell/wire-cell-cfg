@@ -66,7 +66,7 @@ local sink = sim.frame_sink;
 
 local graph = g.pipeline([depos,
 //                          deposio,
-                          drifter, ductor, miscon, noise, digitizer,
+                          drifter, signal, miscon, noise, digitizer,
 //                          sim_frameio, magnifio,
                           nf,
 //                          nf_frameio,
