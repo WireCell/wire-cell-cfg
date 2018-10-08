@@ -57,27 +57,19 @@ local output = "wct-sim-ideal-sig.npz";
 local depos = sim.tracks(tracklist);
 
 
-local deposio = io.numpy.depos(output);
+//local deposio = io.numpy.depos(output);
 local drifter = sim.drifter;
 local bagger = sim.make_bagger();
 local signal = sim.signal;
 
-local magnifio = g.pnode({
-    type: "MagnifySink",
-    name: "origmag",
-    data: {
-        output_filename: "protodune-wct-sim-check.root",
-        //root_file_mode: "UPDATE",
-        frames: ["orig1"], // note that if tag set, each apa should have a tag set for FrameFanin
-        anode: wc.tn(tools.anodes[1]),
-    },
-}, nin=1, nout=1);
+local multimagnify = import "pgrapher/experiment/pdsp/multimagnify.jsonnet";
+local magoutput = "protodune-sim-check.root";
+local multi_magnify = multimagnify("orig", tools, magoutput);
 
-
-local frameio = io.numpy.frames(output);
+//local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, deposio, drifter, bagger, signal, magnifio, sink]);
+local graph = g.pipeline([depos, drifter, bagger, signal, multi_magnify, sink]);
 
 local app = {
     type: "Pgrapher",
