@@ -71,7 +71,6 @@ local wcls_simchannel_sink = g.pnode({
     type: 'wclsSimChannelSink',
     name: 'postdrift',
     data: {
-        artlabel: "drifted",    // where to save in art::Event
  	anode: wc.tn(anode), 
 	rng: wc.tn(rng),
 	tick: 0.5*wc.us,

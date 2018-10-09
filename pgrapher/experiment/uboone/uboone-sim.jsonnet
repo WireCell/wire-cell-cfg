@@ -26,6 +26,8 @@ local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 
 //local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
+local anode = tools.anodes[0];
+local rng = tools.random; // BR insert
     
 // This tags the output frame of the WCT simulation and is used in a
 // couple places so define it once.
@@ -59,7 +61,29 @@ local wcls_output = {
 };
 
 
-local anode = tools.anodes[0];
+// fill SimChannel
+local wcls_simchannel_sink = g.pnode({
+    type: 'wclsSimChannelSink',
+    name: 'postdrift',
+    data: {
+        anode: wc.tn(anode),
+        rng: wc.tn(rng),
+        tick: 0.5*wc.us,
+        start_time: -1.6*wc.ms, //0.0*wc.s,
+        readout_time: self.tick*9600,
+        nsigma: 3.0,
+        drift_speed: params.lar.drift_speed,
+        uboone_u_to_rp: 100*wc.mm,
+        uboone_v_to_rp: 100*wc.mm,
+        uboone_y_to_rp: 100*wc.mm,
+        u_time_offset: 0.0*wc.us,
+        v_time_offset: 0.0*wc.us,
+        y_time_offset: 0.0*wc.us,
+        use_energy: true,
+    },
+}, nin=1, nout=1, uses=[tools.anode]);
+
+
 local drifter = sim.drifter;
 
 // Signal simulation.
@@ -91,7 +115,9 @@ local chndb = chndb_maker(params, tools).wct(noise_epoch);
 local sink = sim.frame_sink;
 
 local graph = g.pipeline([wcls_input.depos,
-                          drifter, ductor, miscon, noise, digitizer,
+                          drifter, 
+                          wcls_simchannel_sink,
+                          ductor, miscon, noise, digitizer,
                           wcls_output.sim_digits,
                           sink]);
 
