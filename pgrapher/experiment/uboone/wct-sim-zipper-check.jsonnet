@@ -45,10 +45,20 @@ local stubby = {
 
 local tracklist = [
     {
+        time: -1.6*wc.ms,
+        charge: -5000,          // negative means per step
+        //ray: stubby,
+        ray: params.det.bounds,
+    },
+    {
         time: 0.0*wc.ms,
-        charge: -20000,          // negative means per step
-        ray: stubby,
-        //ray: params.det.bounds,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: 1.6*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
     },
 ];
 
@@ -97,7 +107,7 @@ local sim = sim_maker(params, tools);
 
 //local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
 //                             [sim.ar39(), sim.tracks(tracklist)]);
-local depos = sim.tracks(tracklist);
+local depos = sim.tracks(tracklist, step=0.2*wc.mm);
 
 
 local deposio = io.numpy.depos(output);
@@ -175,7 +185,8 @@ local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
 
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, drifter, bagger, transform, reframer, noise, digitizer, magnifio, sink]);
+//local graph = g.pipeline([depos, drifter, bagger, transform, reframer, noise, digitizer, magnifio, sink]);
+local graph = g.pipeline([depos, drifter, signal, miscon, noise, digitizer, magnifio, sink]);
 
 // local graph = g.pipeline([depos, drifter, ductor, digitizer, magnifio, sink]);
 // local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, magnifio, nf, magnifio2, sink]);
