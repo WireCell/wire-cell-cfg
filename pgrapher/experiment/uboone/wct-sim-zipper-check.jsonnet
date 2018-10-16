@@ -60,6 +60,56 @@ local tracklist = [
         charge: -5000,          // negative means per step
         ray: params.det.bounds,
     },
+    {
+        time: 0.2*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: -0.2*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: 0.4*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: -0.4*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: 0.6*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: -0.6*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: 0.8*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: -0.8*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: 1.0*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
+    {
+        time: -1.2*wc.ms,
+        charge: -5000,          // negative means per step
+        ray: params.det.bounds,
+    },
 ];
 
 local tracklist2 = [
