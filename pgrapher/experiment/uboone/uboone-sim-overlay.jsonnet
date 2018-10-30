@@ -9,7 +9,7 @@ local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 
 // overlay: no noise, misconfigure channels
-// Digitizer output: always positive.
+// Digitizer output: always positive + able to assign a tag to the frame
 // baselines have to be there, do we need to change, easy to subtract in overlays?
 local base = import "pgrapher/experiment/uboone/simparams.jsonnet";
 local params = base {
@@ -48,7 +48,7 @@ local sim_adc_frame_tag = "orig";
 // "name" matches what is used in the FHiCL that loads this file.
 // art_label (producer, e.g. plopper) and art_instance (e.g. bogus) may be needed
 local wcls_input = {
-    depos: wcls.input.depos(name=""/*, art_tag="ionization"*/),
+    depos: wcls.input.depos(name="", art_tag="ionization"),
 };
 
 // Collect all the wc/ls output converters for use below.  Note the
@@ -120,7 +120,7 @@ local magnifio = g.pnode({
     type: "MagnifySink",
     name: "origmag",
     data: {
-        output_filename: "sim-check.root",
+        output_filename: "sim-overlay-check.root",
         root_file_mode: "RECREATE",
         frames: ["orig"],
         anode: wc.tn(anode),
@@ -128,10 +128,10 @@ local magnifio = g.pnode({
 }, nin=1, nout=1);
 local graph = g.pipeline([wcls_input.depos,
                           drifter, 
-                          //wcls_simchannel_sink,
+                          wcls_simchannel_sink,
                           ductor, miscon, digitizer,
-                          //wcls_output.sim_digits,
-                          magnifio,
+                          wcls_output.sim_digits,
+                          //magnifio,
                           sink]);
 
 
