@@ -36,8 +36,10 @@ local sim_adc_frame_tag = "orig";
 // Collect the WC/LS input converters for use below.  Make sure the
 // "name" matches what is used in the FHiCL that loads this file.
 // art_label (producer, e.g. plopper) and art_instance (e.g. bogus) may be needed
+// fudge factor to account for MC/data gain e.g. 180/250=0.72
+local fudge = std.extVar("gain_fudge_factor");
 local wcls_input = {
-    depos: wcls.input.depos(name="", art_tag="ionization"),
+    depos: wcls.input.depos(name="", scale=-1.0*fudge, art_tag="ionization"),
 };
 
 // Collect all the wc/ls output converters for use below.  Note the
