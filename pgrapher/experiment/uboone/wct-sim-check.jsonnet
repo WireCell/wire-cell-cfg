@@ -38,7 +38,7 @@ local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
 local stubby = {
     tail: wc.point(1000, -1000, 5000.0, wc.mm),
-    head: wc.point(1500, -1000, 6000.0, wc.mm),
+    head: wc.point(1500, -1000, 10360.0, wc.mm),
 };
 
 local tracklist = [
@@ -110,7 +110,6 @@ local drifter = sim.drifter;
 //local ductor = sim.make_ductor("nominal", anode, tools.pirs[0]);
 local ductor = sim.signal;
 
-local miscon = sim.misconfigure(params);
 
 local noise_model = sim.make_noise_model(anode, sim.miscfg_csdb);
 //local noise_model = sim.make_noise_model(anode, sim.empty_csdb);
@@ -124,7 +123,7 @@ local magnifio = g.pnode({
     name: "origmag",
     data: {
         output_filename: magout,
-        root_file_mode: "UPDATE",
+        root_file_mode: "RECREATE",
         frames: ["orig"],
         anode: wc.tn(anode),
     },
@@ -175,6 +174,11 @@ local noise_epoch = "perfect";
 local chndb = chndb_maker(params, tools).wct(noise_epoch);
 local nf = nf_maker(params, tools, chndb);
 local nf_frameio = io.numpy.frames(output, "nfframeio", tags="raw");
+
+//misconfigured channels from database
+//local miscon = sim.misconfigure(params, chndb);
+
+local miscon = sim.misconfigure(params);
 
 local sp = sp_maker(params, tools);
 local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
