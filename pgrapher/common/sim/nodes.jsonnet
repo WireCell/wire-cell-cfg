@@ -217,20 +217,32 @@ function(params, tools)
 
     // This operates on all channels so needs a channel selector bypass.
     // Maybe fixme: there are tag-aware nodes inside.
-    misconfigure:: function(params) {
+    misconfigure:: function(params, chndbobj=null) {
 
         local split = g.pnode({
             type: "FrameSplitter",
             name: "misconsplit"
         }, nin=1, nout=2),
 
-        local chsel = g.pnode({
+        local chsel_static = g.pnode({
             type: "ChannelSelector",
-            name: "misconsel",
+            name: "misconsel_static",
             data: {
                 channels: params.nf.misconfigured.channels,
             }
         }, nin=1, nout=1),
+
+        local chsel_dynamic = g.pnode({
+            type: "DBChannelSelector",
+            name: "misconsel_dynamic",
+            data: {
+                channelDB: wc.tn(chndbobj), 
+            }
+        }, nin=1, nout=1, uses = [chndbobj]),
+
+        local chsel = if std.type(chndbobj)=='null'
+                        then chsel_static
+                        else chsel_dynamic,
 
         local miscon = g.pnode({
             type: "Misconfigure",
