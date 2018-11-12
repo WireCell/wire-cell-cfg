@@ -1,4 +1,18 @@
+#include "reco_uboone_data_mcc9_8.fcl"
+#include "services_microboone.fcl"
+
 process_name: wclsdatanfsp
+
+services: {
+    TFileService: {fileName: "TFileService.root"}
+    TimeTracker: {}
+    MemoryTracker: {}
+    RandomNumberGenerator: {}
+
+    @table::microboone_reco_data_services
+    message: @local::standard_info
+}
+
 
 source: {
    module_type: RootInput
@@ -24,7 +38,7 @@ physics :{
             inputers: ["wclsRawFrameSource"
                // To use wclsMultiChannelNoiseDB you must also put epoch:dynamic below
                // and you must have geo::Geometry service in your environment.
-               // ,"wclsMultiChannelNoiseDB"  
+                ,"wclsMultiChannelNoiseDB"  
             ]
 
             // or after the WCT app is run.  These names MUST be used identically in the Jsonnet
@@ -48,9 +62,9 @@ physics :{
                // if epoch is "dynamic" you MUST add
                // "wclsMultiChannelNoiseDB" to "inputers" and must NOT
                // add it if not "dynamic"
-               // epoch: "dynamic"
+                epoch: "dynamic"
                // epoch: "perfect"
-               epoch: "after"
+               // epoch: "after"
             }
          }
       }

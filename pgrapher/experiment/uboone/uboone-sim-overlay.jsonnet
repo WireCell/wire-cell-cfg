@@ -105,7 +105,6 @@ local drifter = sim.drifter;
 //local ductor = sim.multi_ductor_graph(anode, md_pipes, "mdg");
 local ductor = sim.signal;
 
-local miscon = sim.misconfigure(params);
 
 // Noise simulation adds to signal.
 //local noise_model = sim.make_noise_model(anode, sim.empty_csdb);
@@ -114,6 +113,11 @@ local miscon = sim.misconfigure(params);
 
 local digitizer = sim.digitizer(anode, tag="orig");
 
+local chcsdb = chndb_maker(params, tools).wclscs();
+local miscondb = std.extVar("miscfg");
+local miscon = if miscondb == "dynamic"
+                then sim.misconfigure(params, chcsdb)
+                else sim.misconfigure(params);
 
 local sink = sim.frame_sink;
 //local sink = sim.depo_sink;

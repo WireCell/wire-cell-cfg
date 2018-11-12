@@ -78,16 +78,23 @@ base {
             start_time: $.daq.start_time - $.elec.fields.drift_dt + $.trigger.time,
         },
 
+       
         // Additional e.g. 10 us time difference is due to the larger drift velocity 
         // in Garfield field response where the collection plane peak
         // at around 81 us instead of response_plane (10 cm to Y plane) /drift_speed.
         // Assuming a constant drift velocity, this correction is needed.
         // Interplane timeoffset still holds and will be intrinsically taken into account
         // in the 2D decon. 
+        // ATTENTION: when response variation (sys_status) turned on, an offset is needed.
+        // smearing function is centralized at t=0 instead of starting from t=0
         reframer: super.reframer{
-            tbin: 81*wc.us/($.daq.tick),
+            tbin: if $.sys_status == true 
+                    then (81*wc.us-($.sys_resp.start))/($.daq.tick)
+                    else (81*wc.us)/($.daq.tick),
             nticks: $.daq.nticks,
-            toffset: $.elec.fields.drift_dt - 81*wc.us,
+            toffset: if $.sys_status == true 
+                        then $.elec.fields.drift_dt - 81*wc.us + $.sys_resp.start
+                        else $.elec.fields.drift_dt - 81*wc.us,
         },
 
     },
@@ -140,5 +147,14 @@ base {
         postgain: 1.0,
     },
 
-
+    sys_status: false,
+    sys_resp: {
+        start: -8*wc.us, 
+        // BUG related to large start time, this is not a specific problem 
+        // for any response function or zipper/transform
+        // large "start" should corresponds to large overall_short_padding
+        // trying to fix this !!!!!!!!
+        magnitude: 1.0,
+        time_smear: 2.0*wc.us,
+    }
 }

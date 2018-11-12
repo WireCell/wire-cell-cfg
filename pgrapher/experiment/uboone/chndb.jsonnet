@@ -34,6 +34,14 @@ function(params, tools)
         uses: [tools.anode, tools.field],    // pnode extension
     },
 
+    wclscs: function(name="", type="misconfigured"){
+        type: "wclsChannelSelectorDB",
+        name: name,
+        data: {
+            type: type,
+        },
+    },
+
     wcls_multi: function(name="") {
         local bef = $.wcls("before"),
         local aft = $.wcls("after"),

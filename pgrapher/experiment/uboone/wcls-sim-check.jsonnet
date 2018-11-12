@@ -131,7 +131,7 @@ local sink = sim.frame_sink;
 local graph = g.pipeline([wcls_input.depos,
                           drifter, signal, miscon, noise, digitizer,
                           wcls_output.sim_digits,
-                          //magnifio,
+                          magnifio,
                           nf,
                           wcls_output.nf_digits,
                           //magnifio2,
