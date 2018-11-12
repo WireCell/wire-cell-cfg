@@ -74,6 +74,16 @@ function(params)
             width: 1.0*wc.ms,
         }
     },
+  
+
+    sys_resp : {
+        type: "ResponseSys",
+        data: sim_response_binning {
+            start: params.sys_resp.start,
+            magnitude: params.sys_resp.magnitude,
+            time_smear: params.sys_resp.time_smear,
+        }
+    },
 
     // there is one trio of PIRs (one per wire plane in a face) for
     // each field response.
@@ -85,12 +95,14 @@ function(params)
                 plane: plane,
                 field_response: wc.tn(fr),
                 // note twice we give rc so we have rc^2 in the final convolution
-                short_responses: [wc.tn($.elec_resp)],
+                short_responses: if params.sys_status == false
+                                    then [wc.tn($.elec_resp)]
+                                    else [wc.tn($.elec_resp), wc.tn($.sys_resp)],
 		overall_short_padding: 0.1*wc.ms,
 		long_responses: [wc.tn($.rc_resp), wc.tn($.rc_resp)],
 		long_padding: 1.5*wc.ms,
 	    },
-            uses: [fr, $.elec_resp, $.rc_resp],
+            uses: [fr, $.elec_resp, $.rc_resp, $.sys_resp],
         } for plane in [0,1,2]], $.fields),
 
     // One anode per detector "volume"
