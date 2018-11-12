@@ -149,12 +149,9 @@ base {
 
     sys_status: false,
     sys_resp: {
-        start: -8*wc.us, 
-        // BUG related to large start time, this is not a specific problem 
-        // for any response function or zipper/transform
-        // large "start" should corresponds to large overall_short_padding
-        // trying to fix this !!!!!!!!
+        // overall_short_padding should take into account this offset "start".
+        start: -10*wc.us, 
         magnitude: 1.0,
-        time_smear: 2.0*wc.us,
+        time_smear: 1.0*wc.us,
     }
 }

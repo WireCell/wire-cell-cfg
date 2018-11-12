@@ -98,7 +98,10 @@ function(params)
                 short_responses: if params.sys_status == false
                                     then [wc.tn($.elec_resp)]
                                     else [wc.tn($.elec_resp), wc.tn($.sys_resp)],
-		overall_short_padding: 0.1*wc.ms,
+		overall_short_padding: if params.sys_status == false
+                                    then 0.1*wc.ms
+                                    // cover the full time range of the convolved short responses
+                                    else 0.1*wc.ms - params.sys_resp.start, 
 		long_responses: [wc.tn($.rc_resp), wc.tn($.rc_resp)],
 		long_padding: 1.5*wc.ms,
 	    },
