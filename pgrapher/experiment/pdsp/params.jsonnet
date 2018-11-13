@@ -110,13 +110,13 @@ base {
 
     adc: super.adc {
         // per tdr, chapter 2
-        baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
+        baselines: [1003*wc.millivolt,1003*wc.millivolt,508*wc.millivolt],
 
         // check this.  The tdr says, "The ADC ASIC has an input
         // buffer with offset compensation to match the output of the
         // FE ASIC.  The input buffer first samples the input signal
         // (with a range of 0.2 V to 1.6 V)..."
-        fullscale: [0*wc.volt, 2.0*wc.volt],
+        fullscale: [0.2*wc.volt, 1.6*wc.volt],
     },
 
     elec: super.elec {
@@ -163,7 +163,7 @@ base {
         // fixme: this is for microboone and probably bogus for
         // protodune because (at least) the span of MB wire lengths do
         // not cover pdsp's.
-        noise: "microboone-noise-spectra-v2.json.bz2",
+        noise: "protodune-noise-spectra-v1.json.bz2",
 
 
         chresp: null,
