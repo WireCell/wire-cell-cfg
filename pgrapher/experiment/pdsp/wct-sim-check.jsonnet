@@ -105,7 +105,7 @@ local chndb = [{
 //local chndb_pipes = [chndb_maker(params, tools.anodes[n], tools.fields[n]).wct(noise_epoch)
 //                for n in std.range(0, std.length(tools.anodes)-1)];
 local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
-//local nf_pipes = [nf_maker(params, tools.anodes[n], chndb_pipes[n]) for n in std.range(0, std.length(tools.anodes)-1)];
+// local nf_pipes = [nf_maker(params, tools.anodes[n], chndb_pipes[n]) for n in std.range(0, std.length(tools.anodes)-1)];
 local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
 local sp_maker = import 'pgrapher/experiment/pdsp/sp.jsonnet';
@@ -120,8 +120,8 @@ local parallel_pipes = [
   g.pipeline([
                sn_pipes[n],
                magnify_pipes[n],
-               //nf_pipes[n],
-               //magnify_pipes2[n],
+               // nf_pipes[n],
+               // magnify_pipes2[n],
                sp_pipes[n],
                magnify_pipes3[n],
                magnify_pipes4[n],
