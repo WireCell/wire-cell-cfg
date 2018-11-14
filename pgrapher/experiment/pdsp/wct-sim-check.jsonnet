@@ -68,6 +68,10 @@ local sn_pipes = sim.splusn_pipelines;
 local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';
 local magoutput = 'protodune-sim-check.root';
 // please remove the root file before you generate a new one
+
+
+
+
 local multi_magnify = multimagnify('orig', tools, magoutput);
 local magnify_pipes = multi_magnify.magnify_pipelines;
 local multi_magnify2 = multimagnify('raw', tools, magoutput);

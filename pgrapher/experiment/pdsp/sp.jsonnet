@@ -26,11 +26,11 @@ function(params, tools) {
       field_response: wc.tn(tools.field),
       per_chan_resp: pc.name,
       fft_flag: 0,  // 1 is faster but higher memory, 0 is slightly slower but lower memory
-      //r_fake_signal_low_th: 750,  // default 500
-      //r_fake_signal_high_th: 1500,  // default 1000
-      //troi_ind_th_factor: 3.5,  // default 3
-      postgain: 1,  // default 1.2
-      ADC_mV: 4096 / (1400.0 * wc.mV),  // default 4096/2000
+      // r_fake_signal_low_th: 750,  // default 500
+      // r_fake_signal_high_th: 1500,  // default 1000
+      // troi_ind_th_factor: 3.5,  // default 3
+      //  postgain: 1,  // default 1.2 
+      // ADC_mV: 4096 / (1400.0 * wc.mV),  // default 4096/2000
       wiener_tag: 'wiener%d' % n,
       wiener_threshold_tag: 'threshold%d' % n,
       gauss_tag: 'gauss%d' % n,

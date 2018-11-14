@@ -17,8 +17,8 @@ local magout = "wct-jsondepo-sim-nf-sp.root";
 local anode = tools.anodes[0];
 local sim = sim_maker(params, tools);
 
-local depofile = "g4tuple-qsn-v1-fixed.json.bz2";
-//local depofile = "test.json.bz2";
+// local depofile = "g4tuple-qsn-v1-fixed.json.bz2";
+local depofile = "mcssim.json.bz2";
 
 local depos = sim.jsondepos(file=depofile);
 

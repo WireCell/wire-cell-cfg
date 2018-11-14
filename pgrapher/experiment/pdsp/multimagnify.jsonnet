@@ -15,12 +15,12 @@ function(tag, tools, outputfile) {
         name: "mag%s%d"%[tag,index],
         data: {
             output_filename: outputfile,
-            //root_file_mode: if index == 0 then "RECREATE" else "UPDATE",
-            root_file_mode: "UPDATE",
+            // root_file_mode: if index == 0 then "RECREATE" else "UPDATE",
+            root_file_mode: "RECREATE",
             frames: ["%s%d"%[tag,index]], // note that if tag set, each apa should have a tag set for FrameFanin
             anode: wc.tn(tools.anodes[index]),
         },
-    }, nin=1, nout=1),
+    }, nin=0, nout=0),
     
     //local multimagnify = [magnify(tag, n, tools) for n in std.range(0, nanodes-1)],
 
@@ -30,7 +30,7 @@ function(tag, tools, outputfile) {
             name: "mag%s%d"%[tag,n],
             data: {
                 output_filename: outputfile,
-                //root_file_mode: if (n == 0 && std.startsWith(tag,"orig")) then "RECREATE" else "UPDATE",
+                // root_file_mode: if (n == 0 && std.startsWith(tag,"orig")) then "RECREATE" else "UPDATE",
                 root_file_mode: "UPDATE",
                 frames: ["%s%d"%[tag,n]], // note that if tag set, each apa should have a tag set for FrameFanin
                 anode: wc.tn(tools.anodes[n]),

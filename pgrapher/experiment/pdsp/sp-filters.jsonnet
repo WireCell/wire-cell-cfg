@@ -39,8 +39,8 @@ local wf(name, data={}) = {
 // Zeus take my eyes! Magic numbers are everywhere!
 [
   lf('ROI_tight_lf', { tau: 0.02 * wc.megahertz }),  // 0.02 -> 0.027
-  lf('ROI_tighter_lf', { tau: 0.075 * wc.megahertz }),  // 0.1 -> 0.075
-  lf('ROI_loose_lf', { tau: 0.01 * wc.megahertz }),  // 0.0025 ->  0.004
+  lf('ROI_tighter_lf', { tau: 0.1 * wc.megahertz }),  // 0.1 -> 0.075
+  lf('ROI_loose_lf', { tau: 0.0025 * wc.megahertz }),  // 0.0025 ->  0.004
 
   hf('Gaus_tight'),
   hf('Gaus_wide', { sigma: 1.11408e-01 * wc.megahertz }),
@@ -48,12 +48,8 @@ local wf(name, data={}) = {
     sigma: 5.75416e+01 / 800.0 * 2 * wc.megahertz,
     power: 4.10358e+00,
   }),
-  hf('Wiener_tight_V', {
-    sigma: 5.75416e+01 / 800.0 * 2 * wc.megahertz,
-    power: 4.10358e+00,
-  }),
-  //hf("Wiener_tight_V", { sigma: 5.99306e+01/800.0*2 * wc.megahertz,
-  //	                   power: 4.20820e+00 }),
+  hf("Wiener_tight_V", { sigma: 5.99306e+01/800.0*2 * wc.megahertz,
+  	                   power: 4.20820e+00 }),
   hf('Wiener_tight_W', {
     sigma: 5.88802e+01 / 800.0 * 2 * wc.megahertz,
     power: 4.17455e+00,
@@ -62,12 +58,8 @@ local wf(name, data={}) = {
     sigma: 1.78695e+01 / 200.0 * 2 * wc.megahertz,
     power: 5.33129e+00,
   }),
-  hf('Wiener_wide_V', {
-    sigma: 1.78695e+01 / 200.0 * 2 * wc.megahertz,
-    power: 5.33129e+00,
-  }),
-  //hf("Wiener_wide_V", { sigma: 1.84666e+01/200.0*2 * wc.megahertz,
-  //	                  power: 5.60489e+00 }),
+  hf("Wiener_wide_V", { sigma: 1.84666e+01/200.0*2 * wc.megahertz,
+  	                  power: 5.60489e+00 }),
   hf('Wiener_wide_W', {
     sigma: 1.83044e+01 / 200.0 * 2 * wc.megahertz,
     power: 5.44945e+00,
