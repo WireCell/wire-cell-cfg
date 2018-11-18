@@ -76,14 +76,17 @@ function(params)
     },
   
 
-    sys_resp : {
-        type: "ResponseSys",
-        data: sim_response_binning {
-            start: params.sys_resp.start,
-            magnitude: params.sys_resp.magnitude,
-            time_smear: params.sys_resp.time_smear,
-        }
-    },
+    sys_resp : [ 
+        {
+            type: "ResponseSys",
+            name: "GaussSmearing%d" % n,
+            data: sim_response_binning {
+                start: params.sys_resp.start[n],
+                magnitude: params.sys_resp.magnitude[n],
+                time_smear: params.sys_resp.time_smear[n],
+            }
+        } for n in std.range(0, std.length($.fields)-1) 
+    ],
 
     // there is one trio of PIRs (one per wire plane in a face) for
     // each field response.
@@ -97,15 +100,15 @@ function(params)
                 // note twice we give rc so we have rc^2 in the final convolution
                 short_responses: if params.sys_status == false
                                     then [wc.tn($.elec_resp)]
-                                    else [wc.tn($.elec_resp), wc.tn($.sys_resp)],
+                                    else [wc.tn($.elec_resp), wc.tn($.sys_resp[n])],
 		overall_short_padding: if params.sys_status == false
                                     then 0.1*wc.ms
                                     // cover the full time range of the convolved short responses
-                                    else 0.1*wc.ms - params.sys_resp.start, 
+                                    else 0.1*wc.ms - params.sys_resp.start[n], 
 		long_responses: [wc.tn($.rc_resp), wc.tn($.rc_resp)],
 		long_padding: 1.5*wc.ms,
 	    },
-            uses: [fr, $.elec_resp, $.rc_resp, $.sys_resp],
+            uses: [fr, $.elec_resp, $.rc_resp, $.sys_resp[n]],
         } for plane in [0,1,2]], $.fields),
 
     // One anode per detector "volume"

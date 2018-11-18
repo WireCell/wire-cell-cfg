@@ -37,8 +37,8 @@ local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
 local stubby = {
-    tail: wc.point(1000, -1000, 5000.0, wc.mm),
-    head: wc.point(1500, -1000, 10360.0, wc.mm),
+    tail: wc.point(1000, 1000, 100.0, wc.mm),
+    head: wc.point(1000, 1000, 10360.0, wc.mm),
 };
 
 local tracklist = [
@@ -185,8 +185,8 @@ local sp_frameio = io.numpy.frames(output, "spframeio", tags="gauss");
 
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, drifter, ductor, miscon, noise, digitizer, magnifio, nf, magnifio2, sp, magnifio3, sink]);
-//local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, magnifio, nf, magnifio2, sink]);
+//local graph = g.pipeline([depos, drifter, ductor, miscon, noise, digitizer, magnifio, nf, magnifio2, sp, magnifio3, sink]);
+local graph = g.pipeline([depos, drifter, ductor, digitizer, magnifio, sink]);
 
 
 // break into subpgraph and insert a new node
@@ -194,14 +194,14 @@ local graph = g.pipeline([depos, drifter, ductor, miscon, noise, digitizer, magn
 // "cheat": type:name labels the pnode
 // g.edge_labels()
 // MagnifySink to dump "threshold" after normal SigProc
-local graph2 = g.insert_node(graph, g.edge_labels("OmnibusSigProc", "FrameSplitter:sigsplitter"), magnifio4, magnifio4, name="graph2");
+//local graph2 = g.insert_node(graph, g.edge_labels("OmnibusSigProc", "FrameSplitter:sigsplitter"), magnifio4, magnifio4, name="graph2");
 
 local app = {
     type: "Pgrapher",
     data: {
-        edges: g.edges(graph2),
+        edges: g.edges(graph),
     },
 };
 
 // Finally, the configuration sequence which is emitted.
-[cli.cmdline] + g.uses(graph2) + [app]
+[cli.cmdline] + g.uses(graph) + [app]

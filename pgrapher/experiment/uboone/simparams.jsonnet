@@ -89,11 +89,11 @@ base {
         // smearing function is centralized at t=0 instead of starting from t=0
         reframer: super.reframer{
             tbin: if $.sys_status == true 
-                    then (81*wc.us-($.sys_resp.start))/($.daq.tick)
+                    then (81*wc.us-($.sys_resp.start[0]))/($.daq.tick)
                     else (81*wc.us)/($.daq.tick),
             nticks: $.daq.nticks,
             toffset: if $.sys_status == true 
-                        then $.elec.fields.drift_dt - 81*wc.us + $.sys_resp.start
+                        then $.elec.fields.drift_dt - 81*wc.us + $.sys_resp.start[0]
                         else $.elec.fields.drift_dt - 81*wc.us,
         },
 
@@ -150,8 +150,12 @@ base {
     sys_status: false,
     sys_resp: {
         // overall_short_padding should take into account this offset "start".
-        start: -10*wc.us, 
-        magnitude: 1.0,
-        time_smear: 1.0*wc.us,
+        // currently all "start" should be the same cause we only have an overall time offset
+        // compensated in reframer
+        // These values correspond to files.fields[0, 1, 2]
+        // e.g. normal, shorted U, and shorted Y
+        start: [-10*wc.us, -10*wc.us, -10*wc.us], 
+        magnitude: [1.0, 1.0, 1.0],
+        time_smear: [0.0*wc.us, 0.0*wc.us, 0.0*wc.us],
     }
 }
