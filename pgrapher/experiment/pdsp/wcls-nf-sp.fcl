@@ -30,6 +30,7 @@ physics :{
             // or after the WCT app is run.  These names MUST be used identically in the Jsonnet
             // fixme: https://github.com/WireCell/larwirecell/issues/3
             //outputers: ["wclsFrameSaver:nfsaver", "wclsFrameSaver:spsaver"]
+            outputers: ["wclsFrameSaver:spsaver"]
 
             // This sets the "main" Jsonnet file which provides the 
             // configuration for the Wire-Cell Toolkit components.  It is

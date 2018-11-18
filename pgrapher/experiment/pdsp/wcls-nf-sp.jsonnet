@@ -23,7 +23,6 @@ local reality = std.extVar('reality');
 
 
 local wc = import 'wirecell.jsonnet';
-local f = import 'pgrapher/common/funcs.jsonnet';
 local g = import 'pgraph.jsonnet';
 
 local raw_input_label = std.extVar('raw_input_label');  // eg "daq"
@@ -100,20 +99,20 @@ local wcls_output = {
     data: {
       anode: wc.tn(tools.anode),
       digitize: false,  // true means save as RawDigit, else recob::Wire
-      frame_tags: ['gauss'],
+      frame_tags: ['gauss', 'wiener'],
       nticks: params.daq.nticks,
       chanmaskmaps: [],
     },
   }, nin=1, nout=1, uses=[tools.anode]),
 };
 
-//local nf = nf_maker(params, tools, chndb);
 
+//local nf = nf_maker(params, tools, chndb);
 local sp = sp_maker(params, tools);
 local sp_pipes = [sp.make_sigproc(tools.anodes[n], n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
 local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';
-local magoutput = 'protodune-sim-check.root';
+local magoutput = 'protodune-data-check.root';
 local multi_magnify = multimagnify('orig', tools, magoutput);
 local magnify_pipes = multi_magnify.magnify_pipelines;
 local multi_magnify2 = multimagnify('raw', tools, magoutput);
@@ -126,61 +125,80 @@ local multi_magnify5 = multimagnify('threshold', tools, magoutput);
 local magnify_pipes5 = multi_magnify5.magnifysummaries_pipelines;
 
 
-local parallel_pipes = [
+local nfsp_pipes = [
   g.pipeline([
-               //sn_pipes[n],
-               //magnify_pipes[n],
+               magnify_pipes[n],
                //nf_pipes[n],
                //magnify_pipes2[n],
                sp_pipes[n],
-               //magnify_pipes3[n],
-               //magnify_pipes4[n],
-               //magnify_pipes5[n],
+               magnify_pipes3[n],
+               magnify_pipes4[n],
+               magnify_pipes5[n],
              ],
-             'parallel_pipe_%d' % n)
+             'nfsp_pipe_%d' % n)
   for n in std.range(0, std.length(tools.anodes) - 1)
 ];
-local outtags = ['raw%d' % n for n in std.range(0, std.length(tools.anodes) - 1)];
-local parallel_graph = f.fanpipe('DepoSetFanout', parallel_pipes, 'FrameFanin', 'sn_mag_nf', outtags);
 
+//local f = import 'pgrapher/common/funcs.jsonnet';
+local f = import 'pgrapher/experiment/pdsp/funcs.jsonnet';
+//local outtags = ['gauss%d' % n for n in std.range(0, std.length(tools.anodes) - 1)];
+//local fanpipe = f.fanpipe('FrameFanout', nfsp_pipes, 'FrameFanin', 'sn_mag_nf', outtags);
+local fanpipe = f.fanpipe('FrameFanout', nfsp_pipes, 'FrameFanin', 'sn_mag_nf');
+
+local retagger = g.pnode({
+  type: 'Retagger',
+  data: {
+    // Note: retagger keeps tag_rules an array to be like frame fanin/fanout.
+    tag_rules: [{
+      // Retagger also handles "frame" and "trace" like fanin/fanout
+      // merge separately all traces like gaussN to gauss.
+      frame: {
+        '.*': 'retagger',
+      },
+      merge: {
+        'gauss\\d': 'gauss',
+        'wiener\\d': 'wiener',
+      },
+    }],
+  },
+}, nin=1, nout=1);
 
 local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
 
-///////////////
-// option 1) a single pipe line
-///////////////
-local graph = g.pipeline([
-  wcls_input.adc_digits,
-  //nf,
-  //wcls_output.nf_digits,
-  //sp,
-  //magnify_pipes[3],
-  sp_pipes[5],
-  //sp_pipes[1],
-  //sp_pipes[2],
-  //sp_pipes[3],
-  //sp_pipes[4],
-  //sp_pipes[5],
-  magnify_pipes3[5],
-  magnify_pipes4[5],
-  magnify_pipes5[5],
-  //wcls_output.sp_signals,
-  sink,
-]);
 
-//////////////
-// option 2) a fanpipe 1 vs. 6
-//////////////
-// local graph = g.pipeline([
-//   wcls_input.adc_digits,
-//   //nf,
-//   //wcls_output.nf_digits,
-//   //sp,
-//   parallel_graph,
-//   //wcls_output.sp_signals,
-//   sink,
-// ]);
+//local magnifio1 = g.pnode({
+//  type: 'MagnifySink',
+//  name: 'deconmag1',
+//  data: {
+//    output_filename: magoutput,
+//    root_file_mode: 'UPDATE',
+//    frames: [],
+//    anode: wc.tn(tools.anode),
+//  },
+//}, nin=1, nout=1);
+//local magnifio2 = g.pnode({
+//  type: 'MagnifySink',
+//  name: 'deconmag2',
+//  data: {
+//    output_filename: magoutput,
+//    root_file_mode: 'UPDATE',
+//    frames: [],
+//    anode: wc.tn(tools.anode),
+//  },
+//}, nin=1, nout=1);
+//local magnifio3 = g.pnode({
+//  type: 'MagnifySink',
+//  name: 'deconmag3',
+//  data: {
+//    output_filename: magoutput,
+//    root_file_mode: 'UPDATE',
+//    frames: [],
+//    anode: wc.tn(tools.anode),
+//  },
+//}, nin=1, nout=1);
 
+//local graph = g.pipeline([wcls_input.adc_digits, magnifio1, fanpipe, magnifio2, retagger, magnifio3, wcls_output.sp_signals, sink]);
+local graph = g.pipeline([wcls_input.adc_digits, fanpipe, retagger, wcls_output.sp_signals, sink]);
 
 local app = {
   type: 'Pgrapher',
