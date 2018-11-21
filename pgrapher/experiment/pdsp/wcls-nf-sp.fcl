@@ -4,7 +4,7 @@ source: {
    module_type: RootInput
    saveMemoryObjectThreshold: 10485760
 
-   inputCommands: ["drop *", "keep raw::RawDigits_*_*_*"]
+   #inputCommands: ["drop *", "keep raw::RawDigits_*_*_*"]
    #inputCommands: ["drop *", "keep *_*_*_Swizzler"]
 }
 
@@ -21,7 +21,7 @@ physics :{
 
             // The tool marshals the art::Event to these visitors before.
             // See notes below in params.
-            inputers: ["wclsRawFrameSource"
+            inputers: ["wclsCookedFrameSource"
                // To use wclsMultiChannelNoiseDB you must also put epoch:dynamic below
                // and you must have geo::Geometry service in your environment.
                // ,"wclsMultiChannelNoiseDB"  
@@ -40,7 +40,8 @@ physics :{
             // Set the "external variables" required by the Jsonnet.
             params : {
                // This locates the input raw::RawDigit collection in the art::Event 
-               raw_input_label: "tpcrawdecoder:daq"
+               //raw_input_label: "tpcrawdecoder:daq"
+               raw_input_label: "caldata"
 
                // Set "data" vs. "sim".  The epoch below probably should follow suit.
                reality: "data"

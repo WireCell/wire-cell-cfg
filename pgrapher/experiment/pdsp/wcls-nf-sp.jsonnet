@@ -57,7 +57,7 @@ local sp_maker = import 'pgrapher/experiment/pdsp/sp.jsonnet';
 // must be the emtpy string.
 local wcls_input = {
   adc_digits: g.pnode({
-    type: 'wclsRawFrameSource',
+    type: 'wclsCookedFrameSource',
     name: '',
     data: {
       art_tag: raw_input_label,
@@ -127,13 +127,13 @@ local magnify_pipes5 = multi_magnify5.magnifysummaries_pipelines;
 
 local nfsp_pipes = [
   g.pipeline([
-               magnify_pipes[n],
+               //magnify_pipes[n],
                //nf_pipes[n],
                //magnify_pipes2[n],
                sp_pipes[n],
-               magnify_pipes3[n],
-               magnify_pipes4[n],
-               magnify_pipes5[n],
+               //magnify_pipes3[n],
+               //magnify_pipes4[n],
+               //magnify_pipes5[n],
              ],
              'nfsp_pipe_%d' % n)
   for n in std.range(0, std.length(tools.anodes) - 1)
