@@ -58,7 +58,8 @@ local wcls_input = {
 // FHiCL that loads this file.
 local wcls_output = {
     // ADC output from simulation
-    sim_digits: wcls.output.digits(name="simdigits", tags=[sim_adc_frame_tag]),
+    // pedestal_mean = "native" to SetPedestals() for RawDigits based on a native calculation per channel
+    sim_digits: wcls.output.digits(name="simdigits", tags=[sim_adc_frame_tag], pedestal_mean="native"),
     
     // The noise filtered "ADC" values.  These are truncated for
     // art::Event but left as floats for the WCT SP.  Note, the tag
@@ -127,11 +128,23 @@ local chndb = chndb_maker(params, tools).wct(noise_epoch);
 
 local sink = sim.frame_sink;
 
+
+local magnifio = g.pnode({
+    type: "MagnifySink",
+    name: "origmag",
+    data: {
+        output_filename: "sim-check.root",
+        root_file_mode: "RECREATE",
+        frames: ["orig"],
+        anode: wc.tn(anode),
+    },
+}, nin=1, nout=1);
 local graph = g.pipeline([wcls_input.depos,
                           drifter, 
                           wcls_simchannel_sink,
                           ductor, miscon, noise, digitizer,
                           wcls_output.sim_digits,
+                          //magnifio,
                           sink]);
 
 

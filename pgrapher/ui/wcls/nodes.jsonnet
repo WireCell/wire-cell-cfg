@@ -41,7 +41,7 @@ function(params, tools)
     // converters for data which is output from WCT
     output : {
         // Save a frame to raw::RawDigits
-        digits : function(name="digitsaver", tags=["wct"], cmm=[]) g.pnode({
+        digits : function(name="digitsaver", tags=["wct"], cmm=[], pedestal_mean=null) g.pnode({
             type: "wclsFrameSaver",
             name: name, 
             data: {
@@ -50,6 +50,7 @@ function(params, tools)
                 frame_tags: tags,
                 nticks: params.daq.nticks,
                 chanmaskmaps: cmm,
+                pedestal_mean: pedestal_mean,
             },
         }, nin=1, nout=1, uses=[tools.anode]),
 

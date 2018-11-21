@@ -58,7 +58,8 @@ local wcls_input = {
 // FHiCL that loads this file.
 local wcls_output = {
     // ADC output from simulation
-    sim_digits: wcls.output.digits(name="simdigits", tags=[sim_adc_frame_tag]),
+    // pedestal_mean = "native" to SetPedestals() for RawDigits based on a native calculation per channel
+    sim_digits: wcls.output.digits(name="simdigits", tags=[sim_adc_frame_tag], pedestal_mean="native"),
     
     // The noise filtered "ADC" values.  These are truncated for
     // art::Event but left as floats for the WCT SP.  Note, the tag

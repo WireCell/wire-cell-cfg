@@ -26,7 +26,12 @@ base {
         gain: 1.2,
 
         // fixme: need double checking
-        baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
+        // These values are pre-amp (ASIC) pedestals. Two additional AC coupling
+        // would change the baseline and it also depends on the bias voltage from regulator.
+        // +/-10 ADC? variation is expected.
+        //baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
+        // Actuall MicroBooNE baselines are 2046 ADC for induction planes and 473 for collection.
+        baselines: [999.3*wc.millivolt,999.3*wc.millivolt,231.02*wc.millivolt],
 
         // fixme: need double checking
         fullscale: [0*wc.volt, 2.0*wc.volt],
