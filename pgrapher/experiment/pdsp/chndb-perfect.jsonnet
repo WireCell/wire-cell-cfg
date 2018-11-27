@@ -1,10 +1,10 @@
 // Perfect channel noise DB object configuration for microboone.
 
 
-local wc = import "wirecell.jsonnet";
+local wc = import 'wirecell.jsonnet';
 
-function(params, anode, field)
-{
+function(params, anode, field, n)
+  {
     anode: wc.tn(anode),
     field_response: wc.tn(field),
 
@@ -19,7 +19,9 @@ function(params, anode, field)
     // one group of channels which should be considered together for
     // coherent noise filtering.
     //groups: [std.range(g*48, (g+1)*48-1) for g in std.range(0,171)],
-    //groups: [std.range(g*48, (g+1)*48-1) for g in std.range(0,1)],
+    groups: [std.range(n * 2560 + u * 40, n * 2560 + (u + 1) * 40 - 1) for u in std.range(0, 19)]
+            + [std.range(n * 2560 + 800 + v * 40, n * 2560 + 800 + (v + 1) * 40 - 1) for v in std.range(0, 19)]
+            + [std.range(n * 2560 + 1600 + w * 48, n * 2560 + 1600 + (w + 1) * 48 - 1) for w in std.range(0, 19)],
 
     // Externally determined "bad" channels.
     //bad: [],
@@ -38,7 +40,7 @@ function(params, anode, field)
     // Overide defaults for specific channels.  If an info is
     // mentioned for a particular channel in multiple objects in this
     // list then last mention wins.
-    /*channel_info: [             
+    /*channel_info: [
 
         // First entry provides default channel info across ALL
         // channels.  Subsequent entries override a subset of channels
@@ -52,9 +54,9 @@ function(params, anode, field)
             response_offset: 0.0,      // ticks?
             pad_window_front: 10,     // ticks?
             pad_window_back: 10,      // ticks?
-	    decon_limit: 0.02,
-	    decon_limit1: 0.09,
-	    adc_limit: 15,
+     decon_limit: 0.02,
+     decon_limit1: 0.09,
+     adc_limit: 15,
             min_rms_cut: 1.0,
             max_rms_cut: 5.0,
 
@@ -67,7 +69,7 @@ function(params, anode, field)
             // list to make "noise" spectrum mask
             freqmasks: [],
 
-            // field response waveform to make "response" spectrum.  
+            // field response waveform to make "response" spectrum.
             response: {},
 
         },
@@ -75,24 +77,24 @@ function(params, anode, field)
         {
             channels: {wpid: wc.WirePlaneId(wc.Ulayer)},
             pad_window_front: 20,
-	    decon_limit: 0.02,
-	    decon_limit1: 0.09,
+     decon_limit: 0.02,
+     decon_limit1: 0.09,
         },
 
         {
             channels: {wpid: wc.WirePlaneId(wc.Vlayer)},
-	    decon_limit: 0.01,
-	    decon_limit1: 0.08,
-	    },
+     decon_limit: 0.01,
+     decon_limit1: 0.08,
+     },
 
         {
             channels: {wpid: wc.WirePlaneId(wc.Wlayer)},
             nominal_baseline: 400.0,
-	    decon_limit: 0.05,
-	    decon_limit1: 0.08,
+     decon_limit: 0.05,
+     decon_limit1: 0.08,
         },
 
-        {                       // these are before hardware fix 
+        {                       // these are before hardware fix
             channels: params.nf.misconfigured.channels,
             reconfig: {
                 from: {gain:  params.nf.misconfigured.gain,
@@ -102,5 +104,4 @@ function(params, anode, field)
             }
         },
     ],*/
-}
-    
+  }

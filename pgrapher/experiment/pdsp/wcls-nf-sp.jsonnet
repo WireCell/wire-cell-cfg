@@ -106,8 +106,17 @@ local wcls_output = {
   }, nin=1, nout=1, uses=[tools.anode]),
 };
 
+local perfect = import 'chndb-perfect.jsonnet';
+local chndb = [{
+  type: 'OmniChannelNoiseDB',
+  name: 'ocndbperfect%d' % n,
+  data: perfect(params, tools.anodes[n], tools.field, n),
+  uses: [tools.anodes[n], tools.field],  // pnode extension
+} for n in std.range(0, std.length(tools.anodes) - 1)];
 
-//local nf = nf_maker(params, tools, chndb);
+local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
+local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
+
 local sp = sp_maker(params, tools);
 local sp_pipes = [sp.make_sigproc(tools.anodes[n], n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
@@ -130,7 +139,7 @@ local chsel_pipes = [
     name: 'chsel%d' % n,
     data: {
       channels: std.range(2560 * n, 2560 * (n + 1) - 1),
-      //tags: [],
+      //tags: ['orig%d' % n], // traces tag
     },
   }, nin=1, nout=1)
   for n in std.range(0, std.length(tools.anodes) - 1)
@@ -139,13 +148,13 @@ local chsel_pipes = [
 local nfsp_pipes = [
   g.pipeline([
                chsel_pipes[n],
-               //magnify_pipes[n],
-               //nf_pipes[n],
-               //magnify_pipes2[n],
+               magnify_pipes[n],
+               nf_pipes[n],
+               magnify_pipes2[n],
                sp_pipes[n],
-               //magnify_pipes3[n],
-               //magnify_pipes4[n],
-               //magnify_pipes5[n],
+               magnify_pipes3[n],
+               magnify_pipes4[n],
+               magnify_pipes5[n],
              ],
              'nfsp_pipe_%d' % n)
   for n in std.range(0, std.length(tools.anodes) - 1)

@@ -20,7 +20,8 @@ local g = import 'pgraph.jsonnet';
             frame: {
               //'.*': 'number%d' % n,
               //'.*': 'gauss%d' % n,
-              '.*': 'framefanout%d ' % n,
+              //'.*': 'framefanout%d ' % n,
+              '.*': 'orig%d' % n,
             },
             trace: {
               // fake doing Nmult SP pipelines
