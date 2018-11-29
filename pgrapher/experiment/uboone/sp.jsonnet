@@ -27,7 +27,9 @@ local sigproc_uniform = g.pnode({
             field_response: wc.tn(tools.field),
             per_chan_resp: "",
             shaping: params.elec.shaping,
-	    fft_flag: 0,    // 1 is faster but higher memory, 0 is slightly slower but lower memory	
+	    fft_flag: 0,    // 1 is faster but higher memory, 0 is slightly slower but lower memory
+	    // r_fake_signal_low_th: 300,
+	    // r_fake_signal_high_th: 600,
         }
     }, nin=1,nout=1,uses=[tools.anode, tools.field] + import "sp-filters.jsonnet"),
 // ch-by-ch response correction in SP turn off by setting null input
@@ -89,7 +91,7 @@ local sigproc = if std.type(params.files.chresp)=='null'
             l1_resp_scale : 0.5,
             l1_col_scale : 1.15,
             l1_ind_scale : 0.5,
-            peak_threshold : 1000,
+	    peak_threshold : 1000,
             mean_threshold : 500,
             adctag: "raw",                             // trace tag of raw data
             sigtag: "gauss",                           // trace tag of input signal

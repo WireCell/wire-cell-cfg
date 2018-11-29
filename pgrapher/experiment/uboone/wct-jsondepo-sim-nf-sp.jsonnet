@@ -124,8 +124,8 @@ local sp = sp_maker(params, tools); // include l1sp
 
 local sink = sim.frame_sink;
 
-// local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, magnifio, nf, magnifio2, sp, magnifio3, sink]);
-local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, nf, sp, celltree2, sink]);
+local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, magnifio, nf, magnifio2, sp, magnifio3, celltree2, sink]);
+// local graph = g.pipeline([depos, drifter, ductor, noise, digitizer, nf, sp, celltree2, sink]);
 
 
 // break into subpgraph and insert a new node
