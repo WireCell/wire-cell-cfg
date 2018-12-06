@@ -106,11 +106,13 @@ local wcls_output = {
   }, nin=1, nout=1, uses=[tools.anode]),
 };
 
-local perfect = import 'chndb-perfect.jsonnet';
+// local perfect = import 'chndb-perfect.jsonnet';
+local base = import 'chndb-base.jsonnet';
 local chndb = [{
   type: 'OmniChannelNoiseDB',
   name: 'ocndbperfect%d' % n,
-  data: perfect(params, tools.anodes[n], tools.field, n),
+  // data: perfect(params, tools.anodes[n], tools.field, n),
+  data: base(params, tools.anodes[n], tools.field, n),
   uses: [tools.anodes[n], tools.field],  // pnode extension
 } for n in std.range(0, std.length(tools.anodes) - 1)];
 
