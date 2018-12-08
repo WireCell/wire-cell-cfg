@@ -150,13 +150,13 @@ local chsel_pipes = [
 local nfsp_pipes = [
   g.pipeline([
                chsel_pipes[n],
-               magnify_pipes[n],
-               nf_pipes[n],
-               magnify_pipes2[n],
+               //magnify_pipes[n],
+               //nf_pipes[n],
+               //magnify_pipes2[n],
                sp_pipes[n],
-               magnify_pipes3[n],
-               magnify_pipes4[n],
-               magnify_pipes5[n],
+               //magnify_pipes3[n],
+               //magnify_pipes4[n],
+               //magnify_pipes5[n],
              ],
              'nfsp_pipe_%d' % n)
   for n in std.range(0, std.length(tools.anodes) - 1)

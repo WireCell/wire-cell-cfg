@@ -28,8 +28,9 @@ function(params, tools) {
       fft_flag: 0,  // 1 is faster but higher memory, 0 is slightly slower but lower memory
       postgain: 1,  // default 1.2
       ADC_mV: 4096 / (1400.0 * wc.mV),  // default 4096/2000
-      r_fake_signal_low_th: 1000,  // default 500
-      r_fake_signal_high_th: 1800,  // default 1000
+      r_fake_signal_low_th: 400,  // default 500
+      r_fake_signal_high_th: 800,  // default 1000
+      r_fake_signal_th_ind_factor: 2.25,  // default 1
       troi_ind_th_factor: 3.5,  // default 3
       r_th_factor: 3.5,  // default 3
       wiener_tag: 'wiener%d' % n,
