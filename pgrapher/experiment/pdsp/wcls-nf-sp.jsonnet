@@ -124,6 +124,17 @@ local sp_pipes = [sp.make_sigproc(tools.anodes[n], n) for n in std.range(0, std.
 
 local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';
 local magoutput = 'protodune-data-check.root';
+
+local rootfile_creation_frames = g.pnode({
+    type: "RootfileCreation_frames",
+    name: "origmag",
+    data: {
+        output_filename: magoutput,
+        root_file_mode: 'RECREATE',
+    },
+}, nin=1, nout=1); 
+
+
 local multi_magnify = multimagnify('orig', tools, magoutput);
 local magnify_pipes = multi_magnify.magnify_pipelines;
 local multi_magnify2 = multimagnify('raw', tools, magoutput);
@@ -220,7 +231,7 @@ local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
 //  },
 //}, nin=1, nout=1);
 
-//local graph = g.pipeline([wcls_input.adc_digits, magnifio1, fanpipe, magnifio2, retagger, magnifio3, wcls_output.sp_signals, sink]);
+//local graph = g.pipeline([wcls_input.adc_digits,  rootfile_creation_frames, magnifio1, fanpipe, magnifio2, retagger, magnifio3, wcls_output.sp_signals, sink]);
 local graph = g.pipeline([wcls_input.adc_digits, fanpipe, retagger, wcls_output.sp_signals, sink]);
 
 local app = {
