@@ -67,8 +67,9 @@ function(params, anode, field, n, rms_cuts=[])
       },
 
       {
-        channels: { wpid: wc.WirePlaneId(wc.Ulayer) },
-        freqmasks: [
+        //channels: { wpid: wc.WirePlaneId(wc.Ulayer) },
+	channels: std.range(n * 2560, n * 2560 + 800- 1),
+	freqmasks: [
           { value: 1.0, lobin: 0, hibin: $.nsamples - 1 },
           { value: 0.0, lobin: 169, hibin: 173 },
           { value: 0.0, lobin: 513, hibin: 516 },
@@ -84,7 +85,8 @@ function(params, anode, field, n, rms_cuts=[])
       },
 
       {
-        channels: { wpid: wc.WirePlaneId(wc.Vlayer) },
+        //channels: { wpid: wc.WirePlaneId(wc.Vlayer) },
+	channels: std.range(n * 2560 + 800, n * 2560 + 1600- 1),
         freqmasks: [
           { value: 1.0, lobin: 0, hibin: $.nsamples - 1 },
           { value: 0.0, lobin: 169, hibin: 173 },
@@ -100,7 +102,8 @@ function(params, anode, field, n, rms_cuts=[])
       },
 
       {
-        channels: { wpid: wc.WirePlaneId(wc.Wlayer) },
+        //channels: { wpid: wc.WirePlaneId(wc.Wlayer) },
+	channels: std.range(n * 2560 + 1600, n * 2560 + 2560- 1),
         nominal_baseline: 400.0,
         decon_limit: 0.05,
         decon_limit1: 0.08,
