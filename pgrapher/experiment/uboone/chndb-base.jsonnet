@@ -45,6 +45,8 @@ function(params, anode, field, rms_cuts=[])
 	    decon_limit: 0.02,
 	    decon_limit1: 0.09,
 	    adc_limit: 15,
+	    protection_factor: 5,
+	    min_adc_limit: 50,
             min_rms_cut: 1.0,         // units???
             max_rms_cut: 5.0,         // units???
 
