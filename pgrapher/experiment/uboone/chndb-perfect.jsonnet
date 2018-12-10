@@ -53,6 +53,7 @@ function(params, anode, field)
             pad_window_front: 10,     // ticks?
             pad_window_back: 10,      // ticks?
 	    decon_limit: 0.02,
+	    decon_lf_cutoff: 0.08,
 	    decon_limit1: 0.09,
 	    adc_limit: 15,
 	    protection_factor: 5,
@@ -87,7 +88,8 @@ function(params, anode, field)
             channels: {wpid: wc.WirePlaneId(wc.Vlayer)},
 	    response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
             response_offset: 82,
-	    decon_limit: 0.01,
+	    decon_limit: 0.05,
+	    decon_lf_cutoff: 0.06,
 	    decon_limit1: 0.08,
 	    },
 
