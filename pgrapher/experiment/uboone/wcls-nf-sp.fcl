@@ -53,18 +53,18 @@ physics :{
             // Set the "external variables" required by the Jsonnet.
             params : {
                // This locates the input raw::RawDigit collection in the art::Event 
-               //raw_input_label: "daq"
-               raw_input_label: "driftWC:orig"
+               raw_input_label: "daq"
+               //raw_input_label: "driftWC:orig"
 
                // Set "data" vs. "sim".  The epoch below probably should follow suit.
-               //reality: "data"
-                reality: "sim"
+               reality: "data"
+               // reality: "sim"
 
                // if epoch is "dynamic" you MUST add
                // "wclsMultiChannelNoiseDB" to "inputers" and must NOT
                // add it if not "dynamic"
-               // epoch: "dynamic"
-                epoch: "perfect"
+                epoch: "dynamic"
+               // epoch: "perfect"
                // epoch: "after"
             }
          }
