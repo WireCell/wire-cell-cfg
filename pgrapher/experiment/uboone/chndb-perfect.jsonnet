@@ -87,7 +87,7 @@ function(params, anode, field)
         {
             channels: {wpid: wc.WirePlaneId(wc.Vlayer)},
 	    response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
-            response_offset: 82,
+	    response_offset: 82,
 	    decon_limit: 0.025,
 	    decon_lf_cutoff: 0.06, 
 	    decon_limit1: 0.08,
