@@ -37,8 +37,8 @@ local chndb_maker = import "pgrapher/experiment/uboone/chndb.jsonnet";
 local sp_maker = import "pgrapher/experiment/uboone/sp.jsonnet";
 
 local stubby = {
-    tail: wc.point(1000, 1000, 9000.0, wc.mm),
-    head: wc.point(1100, 1000, 10000.0, wc.mm),
+    tail: wc.point(1000, 700, 5000.0, wc.mm),
+    head: wc.point(1000, 0, 6000.0, wc.mm),
 };
 
 local tracklist = [

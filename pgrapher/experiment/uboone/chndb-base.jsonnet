@@ -94,7 +94,7 @@ function(params, anode, field, rms_cuts=[], static_miscfg="true")
             /// this uses hard-coded waveform.
             response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
             response_offset: 82,
-	    decon_limit: 0.05,
+	    decon_limit: 0.025,
 	    decon_lf_cutoff: 0.06,
 	    decon_limit1: 0.08,
 	},
