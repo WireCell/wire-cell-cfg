@@ -71,6 +71,13 @@ local wcls_input = {
 // Collect all the wc/ls output converters for use below.  Note the
 // "name" MUST match what is used in theh "outputers" parameter in the
 // FHiCL that loads this file.
+local mega_anode = {
+  type: 'MegaAnodePlane',
+  name: 'meganodes',
+  data: {
+    anodes_tn: [wc.tn(anode) for anode in tools.anodes],
+  },
+};
 local wcls_output = {
   // The noise filtered "ADC" values.  These are truncated for
   // art::Event but left as floats for the WCT SP.  Note, the tag
@@ -97,13 +104,14 @@ local wcls_output = {
     type: 'wclsFrameSaver',
     name: 'spsaver',
     data: {
-      anode: wc.tn(tools.anode),
+      // anode: wc.tn(tools.anode),
+      anode: wc.tn(mega_anode),
       digitize: false,  // true means save as RawDigit, else recob::Wire
       frame_tags: ['gauss', 'wiener'],
       nticks: params.daq.nticks,
       chanmaskmaps: [],
     },
-  }, nin=1, nout=1, uses=[tools.anode]),
+  }, nin=1, nout=1, uses=[mega_anode]),
 };
 
 // local perfect = import 'chndb-perfect.jsonnet';
@@ -126,13 +134,13 @@ local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';
 local magoutput = 'protodune-data-check.root';
 
 local rootfile_creation_frames = g.pnode({
-    type: "RootfileCreation_frames",
-    name: "origmag",
-    data: {
-        output_filename: magoutput,
-        root_file_mode: 'RECREATE',
-    },
-}, nin=1, nout=1); 
+  type: 'RootfileCreation_frames',
+  name: 'origmag',
+  data: {
+    output_filename: magoutput,
+    root_file_mode: 'RECREATE',
+  },
+}, nin=1, nout=1);
 
 
 local multi_magnify = multimagnify('orig', tools, magoutput);
