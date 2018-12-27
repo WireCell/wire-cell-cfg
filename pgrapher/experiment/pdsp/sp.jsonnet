@@ -8,7 +8,7 @@ local wc = import 'wirecell.jsonnet';
 // fix the import and 3) delete this comment.
 local spfilt = import 'pgrapher/experiment/pdsp/sp-filters.jsonnet';
 
-function(params, tools) {
+function(params, tools, override = {}) {
 
   local pc = tools.perchanresp_nameuses,
 
@@ -38,7 +38,7 @@ function(params, tools) {
       wiener_tag: 'wiener%d' % n,
       wiener_threshold_tag: 'threshold%d' % n,
       gauss_tag: 'gauss%d' % n,
-    },
+    } + override,
   }, nin=1, nout=1, uses=[anode, tools.field] + pc.uses + spfilt),
 
 }

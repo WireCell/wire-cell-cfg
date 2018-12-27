@@ -12,14 +12,17 @@
 // Manual testing, eg:
 //
 // jsonnet -V reality=data -V epoch=dynamic -V raw_input_label=daq \\
+//         -V signal_output_form=sparse \\
 //         -J cfg cfg/pgrapher/experiment/uboone/wcls-nf-sp.jsonnet
 //
 // jsonnet -V reality=sim -V epoch=perfect -V raw_input_label=daq \\
+//         -V signal_output_form=sparse \\
 //         -J cfg cfg/pgrapher/experiment/uboone/wcls-nf-sp.jsonnet
 
 
 local epoch = std.extVar('epoch');  // eg "dynamic", "after", "before", "perfect"
 local reality = std.extVar('reality');
+local sigoutform = std.extVar('signal_output_form');  // eg "sparse" or "dense"
 
 
 local wc = import 'wirecell.jsonnet';
@@ -127,7 +130,7 @@ local chndb = [{
 local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
 local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
-local sp = sp_maker(params, tools);
+local sp = sp_maker(params, tools, { sparse: sigoutform == "sparse"} );
 local sp_pipes = [sp.make_sigproc(tools.anodes[n], n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
 local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';

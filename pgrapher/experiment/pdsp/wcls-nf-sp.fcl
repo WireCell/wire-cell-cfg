@@ -53,6 +53,9 @@ physics :{
                // epoch: "dynamic"
                // epoch: "perfect"
                epoch: "after"
+
+               // Save output signal waveforms (recob::Wire) in "sparse" or "dense" form
+               signal_output_form: "sparse"
             }
          }
       }

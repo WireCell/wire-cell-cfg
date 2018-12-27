@@ -49,6 +49,7 @@ function(tag, tools, outputfile) {
         //root_file_mode: if (n == 0 && std.startsWith(tag,"orig")) then "RECREATE" else "UPDATE",
         root_file_mode: 'UPDATE',
         summaries: ['%s%d' % [tag, n]],  // note that if tag set, each apa should have a tag set for FrameFanin
+        summary_operator: { threshold: "set" },
         anode: wc.tn(tools.anodes[n]),
       },
     }, nin=1, nout=1)
