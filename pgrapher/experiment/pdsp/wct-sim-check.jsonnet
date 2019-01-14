@@ -39,23 +39,23 @@ local tracklist = [
   //     charge: -5000,
   //     ray: stubby,
   // },
-  //{
-  //  time: 0 * wc.ms,
-  //  charge: -5300,
-  //  ray: close0,
-  //},
   {
-    time: 0,
-    charge: -5300,
-    ray: params.det.bounds,
+    time: 0 * wc.ms,
+    charge: -530,
+    ray: close0,
   },
+  //{
+  //  time: 0,
+  //  charge: -5300,
+  //  ray: params.det.bounds,
+  //},
 ];
 local output = 'wct-sim-ideal-sig.npz';
 
 
 //local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
 //                             [sim.ar39(), sim.tracks(tracklist)]);
-local depos = sim.tracks(tracklist);
+local depos = sim.tracks(tracklist, step=0.1 * wc.mm);
 
 
 //local deposio = io.numpy.depos(output);
@@ -71,12 +71,12 @@ local magoutput = 'protodune-sim-check.root';
 
 
 local rootfile_creation_depos = g.pnode({
-    type: "RootfileCreation_depos",
-    name: "origmag",
-    data: {
-        output_filename: magoutput,
-        root_file_mode: "RECREATE",
-    },
+  type: 'RootfileCreation_depos',
+  name: 'origmag',
+  data: {
+    output_filename: magoutput,
+    root_file_mode: 'RECREATE',
+  },
 }, nin=1, nout=1);
 
 
@@ -91,11 +91,11 @@ local magnify_pipes4 = multi_magnify4.magnify_pipelines;
 local multi_magnify5 = multimagnify('threshold', tools, magoutput);
 local magnify_pipes5 = multi_magnify5.magnifysummaries_pipelines;
 
-local perfect = import 'chndb-perfect.jsonnet';
+local perfect = import 'pgrapher/experiment/pdsp/chndb-perfect.jsonnet';
 local chndb = [{
   type: 'OmniChannelNoiseDB',
   name: 'ocndbperfect%d' % n,
-  data: perfect(params, tools.anodes[n], tools.field),
+  data: perfect(params, tools.anodes[n], tools.field, n),
   uses: [tools.anodes[n], tools.field],  // pnode extension
 } for n in std.range(0, std.length(tools.anodes) - 1)];
 
@@ -120,8 +120,8 @@ local parallel_pipes = [
   g.pipeline([
                sn_pipes[n],
                magnify_pipes[n],
-               // nf_pipes[n],
-               // magnify_pipes2[n],
+               nf_pipes[n],
+               magnify_pipes2[n],
                sp_pipes[n],
                magnify_pipes3[n],
                magnify_pipes4[n],
