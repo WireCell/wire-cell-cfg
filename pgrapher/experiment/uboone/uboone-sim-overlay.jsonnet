@@ -9,7 +9,13 @@ local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 
 
-local params_base = import "pgrapher/experiment/uboone/simparams.jsonnet";
+local params_sim = import "pgrapher/experiment/uboone/simparams.jsonnet";
+local params_files = import "pgrapher/experiment/uboone/params.jsonnet";
+local params_base = params_sim {
+    files: super.files{
+        chresp: params_files.files.chresp,
+    }
+};
 local params = if std.extVar("sys_resp") == true
                 then params_base {
                     sys_status: true,
@@ -107,6 +113,21 @@ local drifter = sim.drifter;
 local ductor = sim.signal;
 
 
+// ch-by-ch variation simulation
+local perchanvar = g.pnode({
+    type: "PerChannelVariation",
+    name: "PerChannelVariation",
+    data: {
+        gain: params.elec.gain,
+        shaping: params.elec.shaping,
+        tick: params.daq.tick,
+        truncate: true,
+        per_chan_resp: wc.tn(tools.perchanresp),
+    },
+}, nin=1, nout=1, uses=[tools.perchanresp]);
+
+
+
 // Noise simulation adds to signal.
 //local noise_model = sim.make_noise_model(anode, sim.empty_csdb);
 //local noise_model = sim.make_noise_model(anode, sim.miscfg_csdb);
@@ -136,7 +157,7 @@ local magnifio = g.pnode({
 local graph = g.pipeline([wcls_input.depos,
                           drifter, 
                           wcls_simchannel_sink,
-                          ductor, miscon, digitizer,
+                          ductor, perchanvar, miscon, digitizer,
                           wcls_output.sim_digits,
                           //magnifio,
                           sink]);
