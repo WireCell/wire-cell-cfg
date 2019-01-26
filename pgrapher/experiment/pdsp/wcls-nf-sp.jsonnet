@@ -172,13 +172,13 @@ local chsel_pipes = [
 local nfsp_pipes = [
   g.pipeline([
                chsel_pipes[n],
-               //magnify_pipes[n],
-               //nf_pipes[n],
-               //magnify_pipes2[n],
+               magnify_pipes[n],
+               nf_pipes[n],
+               magnify_pipes2[n],
                sp_pipes[n],
-               //magnify_pipes3[n],
-               //magnify_pipes4[n],
-               //magnify_pipes5[n],
+               magnify_pipes3[n],
+               magnify_pipes4[n],
+               magnify_pipes5[n],
              ],
              'nfsp_pipe_%d' % n)
   for n in std.range(0, std.length(tools.anodes) - 1)
@@ -243,7 +243,7 @@ local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
 //}, nin=1, nout=1);
 
 //local graph = g.pipeline([wcls_input.adc_digits,  rootfile_creation_frames, magnifio1, fanpipe, magnifio2, retagger, magnifio3, wcls_output.sp_signals, sink]);
-local graph = g.pipeline([wcls_input.adc_digits, fanpipe, retagger, wcls_output.sp_signals, sink]);
+local graph = g.pipeline([wcls_input.adc_digits, rootfile_creation_frames, fanpipe, retagger, wcls_output.sp_signals, sink]);
 
 local app = {
   type: 'Pgrapher',
