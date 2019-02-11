@@ -60,7 +60,7 @@ local sp_maker = import 'pgrapher/experiment/pdsp/sp.jsonnet';
 // must be the emtpy string.
 local wcls_input = {
   adc_digits: g.pnode({
-    type: 'wclsCookedFrameSource',
+    type: 'wclsRawFrameSource',
     name: '',
     data: {
       art_tag: raw_input_label,

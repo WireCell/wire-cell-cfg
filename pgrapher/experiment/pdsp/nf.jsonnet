@@ -44,6 +44,14 @@ function(params, anode, chndbobj, n, name='')
         anode: wc.tn(anode),
       },
     },
+    local sticky = {
+      type: 'pdStickyCodeMitig',
+      name: name,
+      data: {
+        noisedb: wc.tn(chndbobj),
+        anode: wc.tn(anode),
+      },
+    },
 
     local obnf = g.pnode({
       type: 'OmnibusNoiseFilter',
@@ -56,10 +64,11 @@ function(params, anode, chndbobj, n, name='')
         //maskmap: { chirp: "bad", noisy: "bad" },
         channel_filters: [
           //wc.tn(bitshift),
-          //wc.tn(single)
+          //wc.tn(single),
+          wc.tn(sticky),
         ],
         grouped_filters: [
-          wc.tn(grouped),
+          //wc.tn(grouped),
         ],
         channel_status_filters: [
           //wc.tn(status),
@@ -70,7 +79,7 @@ function(params, anode, chndbobj, n, name='')
       },
       //}, uses=[chndbobj, anode, single, grouped, bitshift, status], nin=1, nout=1),
       //}, uses=[chndbobj, anode, single, grouped, status], nin=1, nout=1),
-    }, uses=[chndbobj, anode, grouped], nin=1, nout=1),
+    }, uses=[chndbobj, anode, grouped, sticky], nin=1, nout=1),
 
 
     /*
