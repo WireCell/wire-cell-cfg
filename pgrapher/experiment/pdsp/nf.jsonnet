@@ -52,6 +52,14 @@ function(params, anode, chndbobj, n, name='')
         anode: wc.tn(anode),
       },
     },
+    local femb = {
+      type: 'pdFembClockReSmp',
+      name: name,
+      data: {
+        noisedb: wc.tn(chndbobj),
+        anode: wc.tn(anode),
+      },
+    },
 
     local obnf = g.pnode({
       type: 'OmnibusNoiseFilter',
@@ -66,6 +74,7 @@ function(params, anode, chndbobj, n, name='')
           //wc.tn(bitshift),
           //wc.tn(single),
           wc.tn(sticky),
+          wc.tn(femb),
         ],
         grouped_filters: [
           //wc.tn(grouped),
@@ -79,7 +88,7 @@ function(params, anode, chndbobj, n, name='')
       },
       //}, uses=[chndbobj, anode, single, grouped, bitshift, status], nin=1, nout=1),
       //}, uses=[chndbobj, anode, single, grouped, status], nin=1, nout=1),
-    }, uses=[chndbobj, anode, grouped, sticky], nin=1, nout=1),
+    }, uses=[chndbobj, anode, grouped, sticky, femb], nin=1, nout=1),
 
 
     /*
