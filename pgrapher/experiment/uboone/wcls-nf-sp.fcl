@@ -18,7 +18,9 @@ source: {
    module_type: RootInput
    saveMemoryObjectThreshold: 10485760
 
-   inputCommands: ["drop *", "keep raw::RawDigits_*_*_*"]
+   inputCommands: ["drop *", "keep raw::RawDigits_*_*_*"
+   //, "keep *_ionization_*_*"
+   ]
    #inputCommands: ["drop *", "keep *_*_*_Swizzler"]
 }
 
@@ -48,7 +50,7 @@ physics :{
             // This sets the "main" Jsonnet file which provides the 
             // configuration for the Wire-Cell Toolkit components.  It is
             // take as relative to entries in WIRECELL_PATH.
-            configs: ["pgrapher/experiment/uboone/wcls-nf-sp-check.jsonnet"]
+            configs: ["pgrapher/experiment/uboone/wcls-nf-sp.jsonnet"]
 
             // Set the "external variables" required by the Jsonnet.
             params : {
@@ -87,7 +89,8 @@ outputs:{
 
       outputCommands :   [
          "keep *_*_*_*"
-         // "drop *_nfspl1_raw_*",
+         //"drop *_driftWC_orig_*",
+         //"drop *_nfspl1_raw_*",
          // "drop *_nfspl1_threshold_*",
          // "drop *_nfspl1_wiener_*",
          // "drop *_nfspl1_gauss_*",

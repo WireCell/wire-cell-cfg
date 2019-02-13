@@ -157,5 +157,11 @@ base {
         start: [-10*wc.us, -10*wc.us, -10*wc.us], 
         magnitude: [1.0, 1.0, 1.0],
         time_smear: [0.0*wc.us, 0.0*wc.us, 0.0*wc.us],
+    },
+
+    overlay: {
+        filenameMC: "",
+        histnames: [],
     }
+
 }

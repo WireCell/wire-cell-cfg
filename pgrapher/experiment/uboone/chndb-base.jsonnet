@@ -104,6 +104,7 @@ function(params, anode, field, rms_cuts=[], static_miscfg="true")
             nominal_baseline: 400.0,
 	    decon_limit: 0.05,
 	    decon_limit1: 0.08,
+        adc_limit: 0,
         },
 
         {                       // special channel

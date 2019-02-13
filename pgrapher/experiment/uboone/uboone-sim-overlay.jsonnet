@@ -14,6 +14,11 @@ local params_files = import "pgrapher/experiment/uboone/params.jsonnet";
 local params_base = params_sim {
     files: super.files{
         chresp: params_files.files.chresp,
+    },
+
+    overlay: super.overlay {
+        filenameMC: std.extVar("YZCorrfilenameMC"),
+        histnames: std.extVar("YZCorrhistnames"),
     }
 };
 local params = if std.extVar("sys_resp") == true
@@ -29,7 +34,7 @@ local params = if std.extVar("sys_resp") == true
 
 local tools_maker = import "pgrapher/common/tools.jsonnet";
 local tools = tools_maker(params);
-local sim_maker = import "pgrapher/experiment/uboone/sim.jsonnet";
+local sim_maker = import "pgrapher/experiment/uboone/sim_overlay.jsonnet";
 local sim = sim_maker(params, tools);
 
 local wcls_maker = import "pgrapher/ui/wcls/nodes.jsonnet";
@@ -104,7 +109,9 @@ local wcls_simchannel_sink = g.pnode({
 }, nin=1, nout=1, uses=[tools.anode]);
 
 
-local drifter = sim.drifter;
+//local drifter = sim.drifter;
+/// dynamic electron lifetime
+local drifter = sim.ubdrifter;
 
 // Signal simulation.
 //local ductors = sim.make_anode_ductors(anode);

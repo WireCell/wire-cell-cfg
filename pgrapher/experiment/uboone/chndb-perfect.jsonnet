@@ -88,6 +88,7 @@ function(params, anode, field)
             nominal_baseline: 400.0,
 	    decon_limit: 0.05,
 	    decon_limit1: 0.08,
+        adc_limit: 0,
         },
 
         {                       // these are before hardware fix 

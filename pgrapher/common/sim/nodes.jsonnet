@@ -28,6 +28,27 @@ function(params, tools)
         },
     }, nin=1, nout=1, uses=[tools.random]),
 
+    // subclass drifter implemented in uboonecode
+    ubdrifter: g.pnode({
+        local xregions = wc.unique_list(std.flattenArrays([v.faces for v in params.det.volumes])),
+
+        type: "wclsUbDrifter",
+        data: params.lar {
+            rng: wc.tn(tools.random),
+            xregions: xregions,
+            time_offset: params.sim.depo_toffset,
+
+            drift_speed: params.lar.drift_speed,
+            fluctuate: params.sim.fluctuate,
+
+            DL: params.lar.DL,
+            DT: params.lar.DT,
+            lifetime: params.lar.lifetime,
+
+        },
+    }, nin=1, nout=1, uses=[tools.random]),
+
+
     // Implement "fixed" depo mode like LArG4 uses
     make_bagger :: function(name="bagger") g.pnode({
         type:'DepoBagger',
@@ -78,6 +99,25 @@ function(params, tools)
             start_time: params.sim.ductor.start_time,
             tick: params.daq.tick,
             nsigma: 3,
+        },
+    }, nin=1, nout=1, uses=[anode] + pirs),
+
+    make_reweighteddepotransform :: function(name, anode, pirs) g.pnode({
+        type:'wclsReweightedDepoTransform',
+        name: name,
+        data: {
+            rng: wc.tn(tools.random),
+            anode: wc.tn(anode),
+            pirs: std.map(function(pir) wc.tn(pir), pirs),
+            fluctuate: params.sim.fluctuate,
+            drift_speed: params.lar.drift_speed,
+            first_frame_number: params.daq.first_frame_number,
+            readout_time: params.sim.ductor.readout_time,
+            start_time: params.sim.ductor.start_time,
+            tick: params.daq.tick,
+            nsigma: 3,
+            filenameMC: params.overlay.filenameMC,
+            histnames: params.overlay.histnames,
         },
     }, nin=1, nout=1, uses=[anode] + pirs),
 
