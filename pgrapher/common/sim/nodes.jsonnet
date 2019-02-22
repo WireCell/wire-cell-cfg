@@ -43,8 +43,8 @@ function(params, tools)
     // anodes and all PIR trios.  For one element of that product this
     // function is called.  The name should be unique across all
     // anodes X PIR trios.
-    make_ductor:: function(name, anode, pir_trio) g.pnode({
-        type: 'Ductor',
+    make_ductor:: function(name, anode, pir_trio, type='Ductor') g.pnode({
+        type: type,
         name: name,
         data: {
             rng: wc.tn(tools.random),
