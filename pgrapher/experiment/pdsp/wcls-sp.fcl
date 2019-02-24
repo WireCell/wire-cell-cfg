@@ -58,7 +58,7 @@ physics :{
                signal_output_form: "sparse"
 
                // Set the waveform sample length, eg, 6000, 15000, "auto"
-               nsample: 6000
+               // nsample: 6000
 
             }
          }
