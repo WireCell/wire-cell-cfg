@@ -29,7 +29,7 @@ function(params, anode, chndbobj, n, name='')
       },
     },
     local single = {
-      type: 'mbOneChannelNoise',
+      type: 'pdOneChannelNoise',
       name: name,
       data: {
         noisedb: wc.tn(chndbobj),
@@ -52,14 +52,6 @@ function(params, anode, chndbobj, n, name='')
         anode: wc.tn(anode),
       },
     },
-    local femb = {
-      type: 'pdFembClockReSmp',
-      name: name,
-      data: {
-        noisedb: wc.tn(chndbobj),
-        anode: wc.tn(anode),
-      },
-    },
 
     local obnf = g.pnode({
       type: 'OmnibusNoiseFilter',
@@ -72,9 +64,8 @@ function(params, anode, chndbobj, n, name='')
         //maskmap: { chirp: "bad", noisy: "bad" },
         channel_filters: [
           //wc.tn(bitshift),
-          //wc.tn(single),
           wc.tn(sticky),
-          wc.tn(femb),
+          wc.tn(single),
         ],
         grouped_filters: [
           //wc.tn(grouped),
@@ -88,7 +79,7 @@ function(params, anode, chndbobj, n, name='')
       },
       //}, uses=[chndbobj, anode, single, grouped, bitshift, status], nin=1, nout=1),
       //}, uses=[chndbobj, anode, single, grouped, status], nin=1, nout=1),
-    }, uses=[chndbobj, anode, grouped, sticky, femb], nin=1, nout=1),
+    }, uses=[chndbobj, anode, sticky, single], nin=1, nout=1),
 
 
     /*

@@ -90,13 +90,14 @@ local wcls_output = {
     type: 'wclsFrameSaver',
     name: 'nfsaver',
     data: {
-      anode: wc.tn(tools.anode),
+      // anode: wc.tn(tools.anode),
+      anode: wc.tn(mega_anode),
       digitize: true,  // true means save as RawDigit, else recob::Wire
       frame_tags: ['raw'],
       nticks: params.daq.nticks,
       chanmaskmaps: ['bad'],
     },
-  }, nin=1, nout=1, uses=[tools.anode]),
+  }, nin=1, nout=1, uses=[mega_anode]),
 
 
   // The output of signal processing.  Note, there are two signal
