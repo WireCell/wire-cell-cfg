@@ -48,6 +48,14 @@ function(params, anode, chndbobj, n, name='')
       type: 'pdStickyCodeMitig',
       name: name,
       data: {
+        extra_stky: [
+          {channel:   4, bits: [6]  },
+          {channel: 159, bits: [6]  },
+          {channel: 164, bits: [36] },
+          {channel: 168, bits: [7]  },
+          {channel: 323, bits: [24] },
+          {channel: 451, bits: [25] },
+        ],
         noisedb: wc.tn(chndbobj),
         anode: wc.tn(anode),
       },
@@ -62,6 +70,7 @@ function(params, anode, chndbobj, n, name='')
         nsamples: params.nf.nsamples,
 
         //maskmap: { chirp: "bad", noisy: "bad" },
+        maskmap: {sticky: "bad", ledge: "bad"},
         channel_filters: [
           //wc.tn(bitshift),
           wc.tn(sticky),
