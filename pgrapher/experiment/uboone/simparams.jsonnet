@@ -139,14 +139,6 @@ base {
         chresp: null,
     },
 
-    // This sets a relative gain at the input to the ADC.  Note, if
-    // you are looking to fix SimDepoSource, you are in the wrong
-    // place.  See the "scale" parameter of wcls.input.depos() defined
-    // in pgrapher/common/ui/wcls/nodes.jsonnet.
-    elec: super.elec{
-        postgain: 1.0,
-    },
-
     sys_status: false,
     sys_resp: {
         // overall_short_padding should take into account this offset "start".

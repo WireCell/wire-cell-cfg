@@ -23,7 +23,7 @@ base {
         // There are post-FE amplifiers.  Should this be
         // elec.postgain? (could be, but it's fine here.  There are 2
         // relative gains available).
-        gain: 1.2,
+        gain: 1.0,
 
         // fixme: need double checking
         baselines: [900*wc.millivolt,900*wc.millivolt,200*wc.millivolt],
@@ -35,7 +35,7 @@ base {
     elec : super.elec {   
         gain : 14.0*wc.mV/wc.fC,
         shaping : 2.2*wc.us,
-        postgain: 1.0,
+        postgain: 1.2,
 
     },
 
