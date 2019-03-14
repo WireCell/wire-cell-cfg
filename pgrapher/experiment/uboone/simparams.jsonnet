@@ -154,6 +154,7 @@ base {
     overlay: {
         filenameMC: "",
         histnames: [],
+        scale_perplane: [],
     }
 
 }

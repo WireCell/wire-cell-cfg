@@ -19,6 +19,7 @@ local params_base = params_sim {
     overlay: super.overlay {
         filenameMC: std.extVar("YZCorrfilenameMC"),
         histnames: std.extVar("YZCorrhistnames"),
+        scale_perplane: std.extVar("scale_perplane"),
     }
 };
 local params = if std.extVar("sys_resp") == true

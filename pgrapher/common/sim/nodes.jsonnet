@@ -118,6 +118,7 @@ function(params, tools)
             nsigma: 3,
             filenameMC: params.overlay.filenameMC,
             histnames: params.overlay.histnames,
+            scale_perplane: params.overlay.scale_perplane,
         },
     }, nin=1, nout=1, uses=[anode] + pirs),
 
