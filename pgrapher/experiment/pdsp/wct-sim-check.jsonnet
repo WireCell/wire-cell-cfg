@@ -32,6 +32,10 @@ local close0 = {
   head: wc.point(-3.000, 3.0, 2.000, wc.m),
 };
 
+local apa6 = {
+  tail: wc.point(0.5, 4, 2.4, wc.m),
+  head: wc.point(3.5, 2, 4.5, wc.m),
+};
 
 local tracklist = [
   // {
@@ -41,8 +45,8 @@ local tracklist = [
   // },
   {
     time: 0 * wc.ms,
-    charge: -530,
-    ray: close0,
+    charge: -3000,
+    ray: apa6,
   },
   //{
   //  time: 0,
@@ -55,7 +59,7 @@ local output = 'wct-sim-ideal-sig.npz';
 
 //local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
 //                             [sim.ar39(), sim.tracks(tracklist)]);
-local depos = sim.tracks(tracklist, step=0.1 * wc.mm);
+local depos = sim.tracks(tracklist, step=0.3 * wc.mm);
 
 
 //local deposio = io.numpy.depos(output);
@@ -120,8 +124,8 @@ local parallel_pipes = [
   g.pipeline([
                sn_pipes[n],
                magnify_pipes[n],
-               nf_pipes[n],
-               magnify_pipes2[n],
+               // nf_pipes[n],
+               // magnify_pipes2[n],
                sp_pipes[n],
                magnify_pipes3[n],
                magnify_pipes4[n],

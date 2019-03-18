@@ -70,7 +70,7 @@ function(params, anode, chndbobj, n, name='')
         nsamples: params.nf.nsamples,
 
         //maskmap: { chirp: "bad", noisy: "bad" },
-        maskmap: {sticky: "bad%d" %n, ledge: "bad%d" %n},
+        maskmap: {sticky: "bad", ledge: "bad"},
         channel_filters: [
           //wc.tn(bitshift),
           wc.tn(sticky),
@@ -88,7 +88,7 @@ function(params, anode, chndbobj, n, name='')
       },
       //}, uses=[chndbobj, anode, single, grouped, bitshift, status], nin=1, nout=1),
       //}, uses=[chndbobj, anode, single, grouped, status], nin=1, nout=1),
-    }, uses=[chndbobj, anode, sticky, single], nin=1, nout=1),
+    }, uses=[chndbobj, anode, sticky, single, grouped], nin=1, nout=1),
 
 
     /*
