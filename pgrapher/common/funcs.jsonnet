@@ -36,5 +36,29 @@ local g = import "pgraph.jsonnet";
                       name=name),
     }.ret,
 
+    // Build a fanout-[pipelines] graph where each pipe is self
+    // terminated.  pipelines is a list of pnode objects, one for each
+    // spine of the fan.
+    fansink :: function(fout, pipelines, name="fansink") {
+
+        local fanmult = std.length(pipelines),
+
+        local fanout = g.pnode({
+            type: fout,
+            name: name,
+            data: {
+                multiplicity: fanmult,
+            },
+        }, nin=1, nout=fanmult),
+
+
+        ret: g.intern(innodes=[fanout],
+                      outnodes=[],
+                      centernodes=pipelines,
+                      edges=
+                      [g.edge(fanout, pipelines[n], n, 0) for n in std.range(0, fanmult-1)],
+                      name=name),
+    }.ret,
+
 
 }
