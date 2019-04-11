@@ -125,7 +125,7 @@ function(params, tools)
     // an identifier unique to the PIR trio.
     make_detector_ductors:: function(pirname, anodes, pir_trio)
     std.mapWithIndex(function (n, anode)
-                     $.make_ductor('%s%s' % [pirname, anode.name],
+                     $.make_ductor(pirname + anode.name,
                                    anode, pir_trio), tools.anodes),
         
 

@@ -125,6 +125,8 @@ function(params)
         uses: [$.wires],
     } for vol in params.det.volumes],
 
-    // first anode is nominal
+    // Arbitrarily call out the first anode to make single-anode
+    // detector config slightly cleaner.
     anode: $.anodes[0],
+
 }

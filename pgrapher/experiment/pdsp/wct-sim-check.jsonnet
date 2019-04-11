@@ -114,8 +114,7 @@ local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n
 
 local sp_maker = import 'pgrapher/experiment/pdsp/sp.jsonnet';
 local sp = sp_maker(params, tools);
-//local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
-local sp_pipes = [sp.make_sigproc(tools.anodes[n], n) for n in std.range(0, std.length(tools.anodes) - 1)];
+local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
 
 //local parallel_pipes = [g.pipeline([sn_pipes[n], magnify_pipes[n],
 //                                nf_pipes[n], magnify_pipes2[n] ], "parallel_pipe_%d"%n)

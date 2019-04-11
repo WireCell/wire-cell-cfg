@@ -13,11 +13,11 @@ function(params, tools, override = {}) {
   local pc = tools.perchanresp_nameuses,
 
   // pDSP needs a per-anode sigproc
-  make_sigproc(anode, n, name=null):: g.pnode({
+  make_sigproc(anode, name=null):: g.pnode({
     type: 'OmnibusSigProc',
     name:
       if std.type(name) == 'null'
-      then anode.name + 'sigproc%d' % n
+      then anode.name + 'sigproc%d' % anode.data.ident
       else name,
 
     data: {
@@ -35,9 +35,9 @@ function(params, tools, override = {}) {
       troi_col_th_factor: 5.0,  // default 5
       troi_ind_th_factor: 3.5,  // default 3
       r_th_factor: 3.5,  // default 3
-      wiener_tag: 'wiener%d' % n,
-      wiener_threshold_tag: 'threshold%d' % n,
-      gauss_tag: 'gauss%d' % n,
+      wiener_tag: 'wiener%d' % anode.data.ident,
+      wiener_threshold_tag: 'threshold%d' % anode.data.ident,
+      gauss_tag: 'gauss%d' % anode.data.ident,
     } + override,
   }, nin=1, nout=1, uses=[anode, tools.field] + pc.uses + spfilt),
 

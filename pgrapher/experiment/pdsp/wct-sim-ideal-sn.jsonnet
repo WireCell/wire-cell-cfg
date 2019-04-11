@@ -13,7 +13,7 @@ local f = import "pgrapher/common/funcs.jsonnet";
 local cli = import "pgrapher/ui/cli/nodes.jsonnet";
 
 local io = import "pgrapher/common/fileio.jsonnet";
-local params = import "pgrapher/experiment/pdsp/params.jsonnet";
+local params = import "pgrapher/experiment/pdsp/simparams.jsonnet";
 local tools_maker = import "pgrapher/common/tools.jsonnet";
 
 local tools = tools_maker(params);

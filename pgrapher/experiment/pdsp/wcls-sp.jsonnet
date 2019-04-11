@@ -138,7 +138,7 @@ local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
 local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
 local sp = sp_maker(params, tools, { sparse: sigoutform == 'sparse' });
-local sp_pipes = [sp.make_sigproc(tools.anodes[n], n) for n in std.range(0, std.length(tools.anodes) - 1)];
+local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
 
 local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';
 local magoutput = 'protodune-data-check.root';
