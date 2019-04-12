@@ -38,16 +38,16 @@ local close0 = {
 
 
 local tracklist = [
-    // {
-    //     time: 1*wc.ms,
-    //     charge: -5000,         
-    //     ray: stubby,
-    // },
-    // {
-    //     time: 0*wc.ms,
-    //     charge: -5000,
-    //     ray: close0,
-    // },
+    {
+        time: 1*wc.ms,
+        charge: -5000,         
+        ray: stubby,
+    },
+    {
+        time: 0*wc.ms,
+        charge: -5000,
+        ray: close0,
+    },
    {
        time: 0,
        charge: -5000,         
