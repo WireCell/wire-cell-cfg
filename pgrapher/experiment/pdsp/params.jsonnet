@@ -159,6 +159,7 @@ base {
         fields: [
             // "garfield-1d-3planes-21wires-6impacts-dune-v1.json.bz2",
             "garfield-1d-boundary-path-rev-dune.json.bz2",
+            // "garfield-1d-boundary-path-rev-dune-no-grid.json.bz2",
         ],
 
         // fixme: this is for microboone and probably bogus for

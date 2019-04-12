@@ -70,14 +70,14 @@ function(params, anode, chndbobj, n, name='')
         nsamples: params.nf.nsamples,
 
         //maskmap: { chirp: "bad", noisy: "bad" },
-        maskmap: {sticky: "bad", ledge: "bad"},
+        maskmap: {sticky: "bad", ledge: "bad", noisy: "bad"},
         channel_filters: [
           //wc.tn(bitshift),
           wc.tn(sticky),
           wc.tn(single),
         ],
         grouped_filters: [
-          //wc.tn(grouped),
+          wc.tn(grouped),
         ],
         channel_status_filters: [
           //wc.tn(status),
