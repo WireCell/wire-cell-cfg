@@ -42,7 +42,11 @@ function(params, tools, override = {}) {
       r_fake_signal_high_th: 600,  // default 1000
       r_fake_signal_low_th_ind_factor: 1.0,  // default 1
       r_fake_signal_high_th_ind_factor: 1.0,  // default 1      
-      
+      r_th_peak: 3.0, // default 3.0
+      r_sep_peak: 6.0, // default 6.0
+      r_low_peak_sep_threshold_pre: 1200, // default 1200
+
+
       wiener_tag: 'wiener%d' % anode.data.ident,
       wiener_threshold_tag: 'threshold%d' % anode.data.ident,
       gauss_tag: 'gauss%d' % anode.data.ident,
