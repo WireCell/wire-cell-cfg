@@ -70,6 +70,9 @@ local bagger = sim.make_bagger();
 // fixme, make this called more like sp and img....
 local sn_pipes = sim.splusn_pipelines;
 
+// This makes a per-APA pipeline.  To avoid unneeded merge/split it
+// conseptually spans both simulation parts and sigproc+imaging.  To
+// "glue" this into data we need something a bit different.
 local make_a_pipe = function(ind) {
     local anode = tools.anodes[ind],
     local aname = anode.name,
