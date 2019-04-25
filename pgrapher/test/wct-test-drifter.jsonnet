@@ -4,8 +4,6 @@
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 
-local cli = import "pgrapher/ui/cli/nodes.jsonnet";
-
 local io = import "pgrapher/common/fileio.jsonnet";
 
 local params = import "pgrapher/experiment/uboone/simparams.jsonnet";
@@ -60,4 +58,13 @@ local app = {
     },
 };
 
-[cli.cmdline] + g.uses(graph) + [app]
+local cmdline = {
+    type: "wire-cell",
+    data: {
+        plugins: ["WireCellGen", "WireCellPgraph", "WireCellSigProc", "WireCellImg"],
+        apps: ["Pgrapher"]
+    },
+};
+
+
+[cmdline] + g.uses(graph) + [app]

@@ -42,9 +42,6 @@ local tools = tools_maker(params);
 local wcls_maker = import 'pgrapher/ui/wcls/nodes.jsonnet';
 local wcls = wcls_maker(params, tools);
 
-// for dumping numpy array for debugging
-//local io = import "pgrapher/common/fileio.jsonnet";
-
 //local nf_maker = import "pgrapher/experiment/pdsp/nf.jsonnet";
 //local chndb_maker = import "pgrapher/experiment/pdsp/chndb.jsonnet";
 

@@ -13,8 +13,6 @@
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 
-local cli = import "pgrapher/ui/cli/nodes.jsonnet";
-
 local io = import "pgrapher/common/fileio.jsonnet";
 
 local params = import "pgrapher/experiment/uboone/simparams.jsonnet";
@@ -203,5 +201,14 @@ local app = {
     },
 };
 
+local cmdline = {
+    type: "wire-cell",
+    data: {
+        plugins: ["WireCellGen", "WireCellPgraph", "WireCellSio", "WireCellSigProc", "WireCellRoot"],
+        apps: ["Pgrapher"]
+    }
+};
+
+
 // Finally, the configuration sequence which is emitted.
-[cli.cmdline] + g.uses(graph2) + [app]
+[cmdline] + g.uses(graph2) + [app]

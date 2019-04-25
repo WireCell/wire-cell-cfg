@@ -12,8 +12,6 @@ local multiductor = std.extVar("multiductor");
 local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 
-local cli = import "pgrapher/ui/cli/nodes.jsonnet";
-
 local io = import "pgrapher/common/fileio.jsonnet";
 local params = import "pgrapher/experiment/uboone/simparams.jsonnet";
 local tools_maker = import "pgrapher/common/tools.jsonnet";
@@ -41,7 +39,6 @@ local tracklist = [
     },
 ];
 local output = "wct-sim-ideal-sn-nf-sp.npz";
-local magout = "wct-sim-ideal-sn-nf-sp.root";
     
 local anode = tools.anodes[0];
 
@@ -82,5 +79,14 @@ local app = {
     },
 };
 
+local cmdline = {
+    type: "wire-cell",
+    data: {
+        plugins: ["WireCellGen", "WireCellPgraph", "WireCellSio", "WireCellSigProc", "WireCellImg"],
+        apps: ["Pgrapher"]
+    },
+};
+
+
 // Finally, the configuration sequence which is emitted.
-[cli.cmdline] + g.uses(graph) + [app]
+[cmdline] + g.uses(graph) + [app]

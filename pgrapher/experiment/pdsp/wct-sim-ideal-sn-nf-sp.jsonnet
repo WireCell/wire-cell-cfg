@@ -11,13 +11,10 @@ local wc = import "wirecell.jsonnet";
 local g = import "pgraph.jsonnet";
 local f = import "pgrapher/common/funcs.jsonnet";
 
-local cli = import "pgrapher/ui/cli/nodes.jsonnet";
-
 local io = import "pgrapher/common/fileio.jsonnet";
 local params = import "pgrapher/experiment/pdsp/simparams.jsonnet";
 local tools_maker = import "pgrapher/common/tools.jsonnet";
 local sim_maker = import "pgrapher/experiment/pdsp/sim.jsonnet";
-local img = import "pgrapher/experiment/pdsp/img.jsonnet";
 
 local sp_maker = import "pgrapher/experiment/pdsp/sp.jsonnet";
 
@@ -73,12 +70,9 @@ local bagger = sim.make_bagger();
 // signal plus noise pipelines
 local sn_pipes = sim.splusn_pipelines;
 local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
-local img_pipes = [g.pipeline
+local sn_sp = [g.pipeline([sn_pipes[n], sp_pipes[n]], "sn_sp_pipe_%d" % n)
+               for n in std.range(0, std.length(tools.anodes)-1)];
 
-img.pipeline(a) for a in tools.anodes];
-
-local all_pipes = [g.pipeline([sn_pipes[ianode], sp_pipes[ianode]], "sn_sp_pipe_%d" % tools.anodes[ianode].data.ident)
-               for ianode in std.range(0, std.length(tools.anodes)-1)];
 local snsp_graph = f.fanpipe('DepoSetFanout', sn_sp, 'FrameFanin', "snsp");
 
 local frameio = io.numpy.frames(output);
@@ -96,6 +90,13 @@ local app = {
 
 // Finally, the configuration sequence which is emitted.
 
+local cmdline = {
+    type: "wire-cell",
+    data: {
+        plugins: ["WireCellGen", "WireCellPgraph", "WireCellSio", "WireCellSigProc"],
+        apps: ["Pgrapher"]
+    }
+};
 
-[cli.cmdline] + g.uses(graph) + [app]
+[cmdline] + g.uses(graph) + [app]
 
