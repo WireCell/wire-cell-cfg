@@ -131,8 +131,32 @@ local chndb = [{
   uses: [tools.anodes[n], tools.field],  // pnode extension
 } for n in std.range(0, std.length(tools.anodes) - 1)];
 
-local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
-local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
+// local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
+// local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
+
+// an empty omnibus noise filter
+// for suppressing bad channels stored in the noise db
+local obnf = [
+g.pnode({
+  type: 'OmnibusNoiseFilter',
+  name: 'nf%d' %n,
+  data: {
+
+    // This is the number of bins in various filters
+    // nsamples: params.nf.nsamples,
+
+    channel_filters: [],
+    grouped_filters: [],
+    channel_status_filters: [],
+    noisedb: wc.tn(chndb[n]),
+    intraces: 'orig%d' % n,  // frame tag get all traces
+    outtraces: 'raw%d' % n,
+  },
+}, uses=[chndb[n], tools.anodes[n]], nin=1, nout=1
+)
+for n in std.range(0, std.length(tools.anodes) - 1)
+];
+local nf_pipes = [g.pipeline([obnf[n]], name='nf%d'%n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
 local sp = sp_maker(params, tools, { sparse: sigoutform == 'sparse' });
 local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
