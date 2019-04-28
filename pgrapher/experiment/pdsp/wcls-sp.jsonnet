@@ -201,7 +201,7 @@ local nfsp_pipes = [
   g.pipeline([
                chsel_pipes[n],
                //magnify_pipes[n],
-               //nf_pipes[n],
+               nf_pipes[n],
                //magnify_pipes2[n],
                sp_pipes[n],
                //magnify_pipes3[n],
@@ -240,38 +240,7 @@ local retagger = g.pnode({
 local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
 
 
-//local magnifio1 = g.pnode({
-//  type: 'MagnifySink',
-//  name: 'deconmag1',
-//  data: {
-//    output_filename: magoutput,
-//    root_file_mode: 'UPDATE',
-//    frames: [],
-//    anode: wc.tn(tools.anode),
-//  },
-//}, nin=1, nout=1);
-//local magnifio2 = g.pnode({
-//  type: 'MagnifySink',
-//  name: 'deconmag2',
-//  data: {
-//    output_filename: magoutput,
-//    root_file_mode: 'UPDATE',
-//    frames: [],
-//    anode: wc.tn(tools.anode),
-//  },
-//}, nin=1, nout=1);
-//local magnifio3 = g.pnode({
-//  type: 'MagnifySink',
-//  name: 'deconmag3',
-//  data: {
-//    output_filename: magoutput,
-//    root_file_mode: 'UPDATE',
-//    frames: [],
-//    anode: wc.tn(tools.anode),
-//  },
-//}, nin=1, nout=1);
-
-//local graph = g.pipeline([wcls_input.adc_digits,  rootfile_creation_frames, magnifio1, fanpipe, magnifio2, retagger, magnifio3, wcls_output.sp_signals, sink]);
+//local graph = g.pipeline([wcls_input.adc_digits, rootfile_creation_frames, fanpipe, retagger, wcls_output.sp_signals, sink]);
 local graph = g.pipeline([wcls_input.adc_digits, fanpipe, retagger, wcls_output.sp_signals, sink]);
 
 local app = {
