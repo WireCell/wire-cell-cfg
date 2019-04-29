@@ -50,7 +50,7 @@ function(params, anode, field, n, rms_cuts=[])
         decon_limit1: 0.09,
         adc_limit: 15,
         min_rms_cut: 1.0,  // units???
-        max_rms_cut: 5.0,  // units???
+        max_rms_cut: 30.0,  // units???
 
         // parameter used to make "rcrc" spectrum
         rcrc: 1.1 * wc.millisecond, // 1.1 for collection, 3.3 for induction
