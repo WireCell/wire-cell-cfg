@@ -16,6 +16,9 @@ physics :{
             tool_type: WCLS
             apps: ["Pgrapher"]
 
+            logsinks: ["stdout"]
+            loglevels: ["debug", "pgraph:info"]
+
             // Libraries in which to look for WCT components
             plugins: ["WireCellGen", "WireCellSigProc", "WireCellRoot", "WireCellPgraph", "WireCellLarsoft"]
 
