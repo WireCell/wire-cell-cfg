@@ -34,6 +34,11 @@ function(params, anode, chndbobj, n, name='')
       data: {
         noisedb: wc.tn(chndbobj),
         anode: wc.tn(anode),
+        resmp: [
+          {channels: std.range(2128, 2175), sample_from: 5996},
+          {channels: std.range(1520, 1559), sample_from: 5996},
+          {channels: std.range( 440,  479), sample_from: 5996},
+        ],
       },
     },
     local grouped = {
