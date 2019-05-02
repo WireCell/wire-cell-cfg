@@ -1,0 +1,4 @@
+lar -n1 -c gen_protoDune_pion_7p0GeV_mono.fcl # gen
+lar -n1 -c protoDUNE_g4_3ms.fcl gen_protoDune_pion_7p0GeV_mono.root # g4
+lar -n1 -c protoDUNE_g4_wirecell.fcl # save SimEnergyDeposit
+lar -n1 -c pgrapher/experiment/pdsp/wcls-sim/wcls-sim-check.fcl gen_protoDune_pion_7p0GeV_mono_g4.root
