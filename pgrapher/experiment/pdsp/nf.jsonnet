@@ -81,8 +81,8 @@ function(params, anode, chndbobj, n, name='')
       name: name,
       data: {
 
-        // This is the number of bins in various filters
-        nsamples: params.nf.nsamples,
+        // Nonzero forces the number of ticks in the waveform
+        nticks: 0,
 
         //maskmap: { chirp: "bad", noisy: "bad" },
         maskmap: {sticky: "bad", ledge: "bad", noisy: "bad"},

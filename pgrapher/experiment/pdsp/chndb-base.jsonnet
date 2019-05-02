@@ -13,8 +13,8 @@ function(params, anode, field, n, rms_cuts=[])
     tick: params.daq.tick,
 
     // This sets the number of frequency-domain bins used in the noise
-    // filtering.  It is expected that time-domain waveforms have the
-    // same number of samples.
+    // filtering.  It is not necessarily true that the time-domain
+    // waveforms have the same number of ticks.  This must be non-zero.
     nsamples: params.nf.nsamples,
 
     // For MicroBooNE, channel groups is a 2D list.  Each element is
