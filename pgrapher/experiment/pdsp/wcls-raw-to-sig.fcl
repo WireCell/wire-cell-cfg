@@ -36,7 +36,7 @@ physics :{
             tool_type: WCLS
             apps: ["Pgrapher"]
 
-            logsinks: ["wcls-raw-to-sig.log"]
+            logsinks: ["stderr", "wcls-raw-to-sig.log"]
             loglevels: ["debug", "pgraph:info"]
 
             // Libraries in which to look for WCT components
@@ -44,7 +44,7 @@ physics :{
 
             // The tool marshals the art::Event to these visitors before.
             // See notes below in params.
-            inputers: ["wclsRawFrameSource:adcs"
+            inputers: ["wclsLazyFrameSource:adcs"
                // To use wclsMultiChannelNoiseDB you must also put epoch:dynamic below
                // and you must have geo::Geometry service in your environment.
                // ,"wclsMultiChannelNoiseDB"  

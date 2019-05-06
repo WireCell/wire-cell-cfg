@@ -23,7 +23,7 @@ local sp_maker = import 'pgrapher/experiment/pdsp/sp.jsonnet';
 // must be the emtpy string.
 local wcls_input = {
   adc_digits: g.pnode({
-    type: 'wclsRawFrameSource',
+    type: 'wclsLazyFrameSource',
     name: 'adcs',
     data: {
       art_tag: raw_input_label,
@@ -78,6 +78,9 @@ local wcls_output = {
   }, nin=1, nout=1, uses=[mega_anode]),
 };
 
+local nanodes = std.length(tools.anodes);
+local anode_iota = std.range(0, nanodes-1);
+
 // local perfect = import 'chndb-perfect.jsonnet';
 local base = import 'chndb-base.jsonnet';
 local chndb = [{
@@ -86,58 +89,67 @@ local chndb = [{
   // data: perfect(params, tools.anodes[n], tools.field, n),
   data: base(params, tools.anodes[n], tools.field, n),
   uses: [tools.anodes[n], tools.field],  // pnode extension
-} for n in std.range(0, std.length(tools.anodes) - 1)];
+} for n in anode_iota];
 
 local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
-local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
+local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in anode_iota];
 
 local sp = sp_maker(params, tools, { sparse: true} );
 local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
 
-local chsel_pipes = [
-  g.pnode({
-    type: 'ChannelSelector',
-    name: 'chsel%d' % n,
+local fansel = g.pnode({
+    type: "ChannelSplitter",
+    name: "peranode",
     data: {
-      channels: std.range(2560 * n, 2560 * (n + 1) - 1),
-      //channels: if n==0 then std.range(2560*n,2560*(n+1)-1) else [],
-      //tags: ['orig%d' % n], // traces tag
+        anodes: [wc.tn(a) for a in tools.anodes],
+        tag_rules: [{
+            frame: {
+                '.*': 'orig%d'%ind,
+            },
+        } for ind in anode_iota],
     },
-  }, nin=1, nout=1)
-  for n in std.range(0, std.length(tools.anodes) - 1)
-];
+}, nin=1, nout=nanodes, uses=tools.anodes);
 
-local nfsp_pipes = [
+local pipelines = [
   g.pipeline([
-               chsel_pipes[n],
                nf_pipes[n],
                sp_pipes[n],
              ],
              'nfsp_pipe_%d' % n)
-  for n in std.range(0, std.length(tools.anodes) - 1)
+  for n in anode_iota
 ];
 
+local fanin = g.pnode({
+    type: 'FrameFanin',
+    name: 'sigmerge',
+    data: {
+        multiplicity: nanodes,
+        tags: [],
+    },
+}, nin=nanodes, nout=1);
 
-local f = import 'pgrapher/experiment/pdsp/funcs.jsonnet';
-
-local fanpipe = f.fanpipe('FrameFanout', nfsp_pipes, 'FrameFanin', 'raw2sig');
+local fanpipe = g.intern(innodes=[fansel],
+                         outnodes=[fanin],
+                         centernodes=pipelines,
+                         edges=
+                         [g.edge(fansel, pipelines[n], n, 0) for n in anode_iota] +
+                         [g.edge(pipelines[n], fanin, 0, n) for n in anode_iota],
+                         name="fanpipe");
 
 local retagger = g.pnode({
-  type: 'Retagger',
-  data: {
-    // Note: retagger keeps tag_rules an array to be like frame fanin/fanout.
-    tag_rules: [{
-      // Retagger also handles "frame" and "trace" like fanin/fanout
-      // merge separately all traces like gaussN to gauss.
-      frame: {
-        '.*': 'retagger',
-      },
-      merge: {
-        'gauss\\d': 'gauss',
-        'wiener\\d': 'wiener',
-      },
-    }],
-  },
+    type: 'Retagger',
+    data: {
+
+        tag_rules: [{
+            frame: {
+                '.*': 'retagger',
+            },
+            merge: {
+                'gauss\\d': 'gauss',
+                'wiener\\d': 'wiener',
+            },
+        }],
+    },
 }, nin=1, nout=1);
 
 local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
