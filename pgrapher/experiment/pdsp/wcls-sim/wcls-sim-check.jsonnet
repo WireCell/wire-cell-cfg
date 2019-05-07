@@ -69,9 +69,28 @@ local wcls_input = {
 // Collect all the wc/ls output converters for use below.  Note the
 // "name" MUST match what is used in theh "outputers" parameter in the
 // FHiCL that loads this file.
+local mega_anode = {
+  type: 'MegaAnodePlane',
+  name: 'meganodes',
+  data: {
+    anodes_tn: [wc.tn(anode) for anode in tools.anodes],
+  },
+};
 local wcls_output = {
     // ADC output from simulation
-    sim_digits: wcls.output.digits(name="simdigits", tags=["orig"]),
+    // sim_digits: wcls.output.digits(name="simdigits", tags=["orig"]),
+    sim_digits: g.pnode({
+      type: 'wclsFrameSaver',
+      name: 'simdigits',
+      data: {
+        // anode: wc.tn(tools.anode),
+        anode: wc.tn(mega_anode),
+        digitize: true,  // true means save as RawDigit, else recob::Wire
+        frame_tags: ['orig'],
+        // nticks: params.daq.nticks,
+        // chanmaskmaps: ['bad'],
+      },
+    }, nin=1, nout=1, uses=[mega_anode]),
 
     // The noise filtered "ADC" values.  These are truncated for
     // art::Event but left as floats for the WCT SP.  Note, the tag
@@ -148,26 +167,42 @@ local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
 local parallel_pipes = [
   g.pipeline([
                sn_pipes[n],
-               magnify_pipes[n],
+               // magnify_pipes[n],
                // nf_pipes[n],
                // magnify_pipes2[n],
-               sp_pipes[n],
-               magnify_pipes3[n],
-               magnify_pipes4[n],
-               magnify_pipes5[n],
+               // sp_pipes[n],
+               // magnify_pipes3[n],
+               // magnify_pipes4[n],
+               // magnify_pipes5[n],
              ],
              'parallel_pipe_%d' % n)
   for n in std.range(0, std.length(tools.anodes) - 1)
 ];
-local outtags = ['raw%d' % n for n in std.range(0, std.length(tools.anodes) - 1)];
+local outtags = ['orig%d' % n for n in std.range(0, std.length(tools.anodes) - 1)];
 local parallel_graph = f.fanpipe('DepoSetFanout', parallel_pipes, 'FrameFanin', 'sn_mag_nf', outtags);
 
+local retagger = g.pnode({
+  type: 'Retagger',
+  data: {
+    // Note: retagger keeps tag_rules an array to be like frame fanin/fanout.
+    tag_rules: [{
+      // Retagger also handles "frame" and "trace" like fanin/fanout
+      // merge separately all traces like gaussN to gauss.
+      frame: {
+        '.*': 'orig',
+      },
+      merge: {
+        'orig\\d': 'orig',
+      },
+    }],
+  },
+}, nin=1, nout=1);
 
 //local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([wcls_input.depos, rootfile_creation_depos, drifter, bagger, parallel_graph, sink]);
-
+// local graph = g.pipeline([wcls_input.depos, rootfile_creation_depos, drifter, bagger, parallel_graph, sink]);
+local graph = g.pipeline([wcls_input.depos, drifter, bagger, parallel_graph, retagger, wcls_output.sim_digits, sink]);
 
 local app = {
   type: 'Pgrapher',
@@ -176,15 +211,7 @@ local app = {
   },
 };
 
-local cmdline = {
-  type: 'wire-cell',
-  data: {
-    plugins: ['WireCellGen', 'WireCellPgraph', 'WireCellSio', 'WireCellSigProc', 'WireCellRoot'],
-    apps: ['Pgrapher'],
-  },
-};
-
 
 // Finally, the configuration sequence which is emitted.
 
-[cmdline] + g.uses(graph) + [app]
+g.uses(graph) + [app]
