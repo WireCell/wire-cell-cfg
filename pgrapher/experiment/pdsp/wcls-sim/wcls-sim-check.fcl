@@ -13,20 +13,20 @@ physics :{
             plugins: ["WireCellPgraph", "WireCellGen","WireCellSio","WireCellLarsoft"]
 
             // needs to be found via your WIRECELL_PATH 
-            configs: ["pgrapher/experiment/pdsp/blopper/wcls-sim-check.jsonnet"]
+            configs: ["pgrapher/experiment/pdsp/wcls-sim/wcls-sim-check.jsonnet"]
 
 
             // Contract note: these exact "type:name" must be used to identify
             // the configuration data structures for these components in the Jsonnet.
 
             inputers: ["wclsSimDepoSource"]
-            //outputers: [
+            outputers: [
             //   "wclsSimChannelSink:postdrift",
-            //   "wclsFrameSaver:simdigits",
-            //   "wclsFrameSaver:nfdigits",
+               "wclsFrameSaver:simdigits"
+            //   ,"wclsFrameSaver:nfdigits",
             //   "wclsFrameSaver:spsignals",
             //   "wclsFrameSaver:spthresholds"
-            //]
+            ]
 
             // Make available parameters via Jsonnet's std.extVar()
             params: {
