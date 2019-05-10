@@ -330,6 +330,29 @@
     // Round a floating point to nearest integer.  It's a bit weird to
     // go through a format/parse.  Maybe there's a better way?
     roundToInt(x):: std.parseInt("%d" % (x+0.5)),
+
+    freqbinner :: function(tick, nsamples) {
+        nyquist : 0.5 / tick,
+        hz_perbin : 1.0/(tick/$.second * nsamples),
+
+        // A function to return the frequency bin holding the given
+        // frequency.  The frequency is specified in the system of
+        // units.
+        bin :: function(frequency) std.floor((frequency/$.hertz) / self.hz_perbin),
+
+        // Return a frequency bin range holding meanfreq +/- deltafreq,
+        // both freqencies in system of units.
+        bin_range :: function(meanfreq, deltafreq)  [
+            self.bin(std.max(0, meanfreq-deltafreq)),
+            self.bin(std.min(self.nyquist, meanfreq+deltafreq))
+        ],
+    
+        test : [[self.bin(0), self.bin(0.99999*$.megahertz), self.bin(2*$.megahertz)]]+
+            [self.bin_range (f*$.kilohertz, 2*$.kilohertz)
+             for f in [51.5, 102.8, 154.2, 205.5, 256.8, 308.2, 359.2, 410.5, 461.8, 513.2, 564.5, 615.8]],
+        
+    },
+
 }
 
 
