@@ -347,9 +347,21 @@
             self.bin(std.min(self.nyquist, meanfreq+deltafreq))
         ],
     
-        test : [[self.bin(0), self.bin(0.99999*$.megahertz), self.bin(2*$.megahertz)]]+
-            [self.bin_range (f*$.kilohertz, 2*$.kilohertz)
-             for f in [51.5, 102.8, 154.2, 205.5, 256.8, 308.2, 359.2, 410.5, 461.8, 513.2, 564.5, 615.8]],
+        
+        // Return something suitable to set to chndb's
+        // channel_info[].freqmasks.  The "meanfreqs" should be a list
+        // of frequencies in the sytem of units and delta is a common
+        // detla.  See bin_range.
+        local _br = self.bin_range,
+        freqmasks :: function(meanfreqs, delta) [
+            { value: 1.0, lobin: 0, hibin: nsamples-1 }
+        ] + [ {
+            local br = _br(mf, delta),
+            value: 0.0, lobin: br[0], hibin: br[1],
+        } for mf in meanfreqs],
+
+        testfreqs :: [f*$.kilohertz for f in [51.5, 102.8, 154.2, 205.5, 256.8, 308.2, 359.2, 410.5, 461.8, 513.2, 564.5, 615.8]],
+        testmasks : self.freqmasks(self.testfreqs, 2*$.kilohertz),
         
     },
 
