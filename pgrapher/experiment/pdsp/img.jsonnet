@@ -52,6 +52,15 @@ local wc = import 'wirecell.jsonnet';
             name='tiling-' + aname),
     }.ret,
 
+    // Just clustering
+    clustering :: function(anode, aname, spans=1.0) {
+        ret : g.pnode({
+            type: "BlobClustering",
+            name: "blobclustering-" + aname,
+            data:  { spans : spans }
+        }, nin=1, nout=1),
+    }.ret, 
+
     // this bundles clustering, grouping and solving.  Other patterns
     // should be explored.  Note, anode isn't really needed, we just
     // use it for its ident and to keep similar calling pattern to

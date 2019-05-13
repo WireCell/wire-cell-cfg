@@ -12,15 +12,30 @@ local img = import "pgrapher/experiment/pdsp/img.jsonnet";
 local nanodes = std.length(tools.anodes);
 local anode_iota = std.range(0, nanodes-1);
 
+// tag placed on the signal frame.
+local signal_frame_tags = ["sig"];
+
 // must match name used in fcl
-local input = g.pnode({
+local wcls_input = g.pnode({
     type: 'wclsCookedFrameSource',
     name: 'sigs',
     data: {
         art_tag: sig_input_label,
-        frame_tags: [],
+        frame_tags: signal_frame_tags,
     },
 }, nin=0, nout=1);
+
+local frameio = g.pnode({
+    type: "NumpyFrameSaver",
+    name: 'signal',
+    data: {
+        filename: "wcls-sig-to-img.npz",
+        frame_tags: signal_frame_tags
+    }
+}, nin=1, nout=1);
+local input = g.intern(innodes=[wcls_input], centernodes=[], outnodes=[frameio],
+                       edges=[g.edge(wcls_input, frameio)]);
+
 
 local fansel = g.pnode({
     type: "ChannelSplitter",
@@ -39,7 +54,8 @@ local perapa_pipelines = [
     g.pipeline([
         img.slicing(anode, anode.name),
         img.tiling(anode, anode.name),
-        img.solving(anode, anode.name),
+        //img.solving(anode, anode.name),
+        img.clustering(anode, anode.name),
         img.dump(anode, anode.name, params.lar.drift_speed),
     ], "img-" + anode.name) for anode in tools.anodes];
 

@@ -18,10 +18,10 @@ physics :{
             tool_type: WCLS
             apps: ["Pgrapher"]
 
-            logsinks: ["stderr", "wcls-sig-to-img.log"]
-            loglevels: ["debug", "pgraph:info"]
+            logsinks: ["stderr:info", "wcls-sig-to-img.log:trace"]
+            loglevels: ["trace", "raygrid:trace", "pgraph:info"]
 
-            plugins: ["WireCellGen", "WireCellImg", "WireCellPgraph", "WireCellLarsoft"]
+            plugins: ["WireCellGen", "WireCellImg", "WireCellPgraph", "WireCellSio", "WireCellLarsoft"]
 
             inputers: ["wclsCookedFrameSource:sigs" ]
 
