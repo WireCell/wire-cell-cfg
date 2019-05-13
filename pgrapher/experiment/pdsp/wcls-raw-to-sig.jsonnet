@@ -22,14 +22,14 @@ local sp_maker = import 'pgrapher/experiment/pdsp/sp.jsonnet';
 // file.  In particular if there is no ":" in the inputer then name
 // must be the emtpy string.
 local wcls_input = {
-  adc_digits: g.pnode({
-    type: 'wclsLazyFrameSource',
-    name: 'adcs',
-    data: {
-      art_tag: raw_input_label,
-      frame_tags: ['orig'],  // this is a WCT designator
-    },
-  }, nin=0, nout=1),
+    adc_digits: g.pnode({
+        type: 'wclsLazyFrameSource',
+        name: 'adcs',
+        data: {
+            art_tag: raw_input_label,
+            frame_tags: ['orig'],  // this is a WCT designator
+        },
+    }, nin=0, nout=1),
 
 };
 
@@ -37,45 +37,46 @@ local wcls_input = {
 // "name" MUST match what is used in theh "outputers" parameter in the
 // FHiCL that loads this file.
 local mega_anode = {
-  type: 'MegaAnodePlane',
-  name: 'meganodes',
-  data: {
-    anodes_tn: [wc.tn(anode) for anode in tools.anodes],
-  },
+    type: 'MegaAnodePlane',
+    name: 'meganodes',
+    data: {
+        anodes_tn: [wc.tn(anode) for anode in tools.anodes],
+    },
 };
 local wcls_output = {
-  // The noise filtered "ADC" values.  These are truncated for
-  // art::Event but left as floats for the WCT SP.  Note, the tag
-  // "raw" is somewhat historical as the output is not equivalent to
-  // "raw data".
-  nf_digits: g.pnode({
-    type: 'wclsFrameSaver',
-    name: 'nfsaver',
-    data: {
-      // anode: wc.tn(tools.anode),
-      anode: wc.tn(mega_anode),
-      digitize: true,  // true means save as RawDigit, else recob::Wire
-      frame_tags: ['raw'],
-      chanmaskmaps: ['bad'],
-    },
-  }, nin=1, nout=1, uses=[mega_anode]),
+    // The noise filtered "ADC" values.  These are truncated for
+    // art::Event but left as floats for the WCT SP.  Note, the tag
+    // "raw" is somewhat historical as the output is not equivalent to
+    // "raw data".
+    nf_digits: g.pnode({
+        type: 'wclsFrameSaver',
+        name: 'nfsaver',
+        data: {
+            // anode: wc.tn(tools.anode),
+            anode: wc.tn(mega_anode),
+            digitize: true,  // true means save as RawDigit, else recob::Wire
+            frame_tags: ['raw'],
+            chanmaskmaps: ['bad'],
+        },
+    }, nin=1, nout=1, uses=[mega_anode]),
 
 
-  // The output of signal processing.  Note, there are two signal
-  // sets each created with its own filter.  The "gauss" one is best
-  // for charge reconstruction, the "wiener" is best for S/N
-  // separation.  Both are used in downstream WC code.
-  sp_signals: g.pnode({
-    type: 'wclsFrameSaver',
-    name: 'spsaver',
-    data: {
-      // anode: wc.tn(tools.anode),
-      anode: wc.tn(mega_anode),
-      digitize: false,  // true means save as RawDigit, else recob::Wire
-      frame_tags: ['gauss', 'wiener'],
-      chanmaskmaps: [],
-    },
-  }, nin=1, nout=1, uses=[mega_anode]),
+    // The output of signal processing.  Note, there are two signal
+    // sets each created with its own filter.  The "gauss" one is best
+    // for charge reconstruction, the "wiener" is best for S/N
+    // separation.  Both are used in downstream WC code.
+    sp_signals: g.pnode({
+        type: 'wclsFrameSaver',
+        name: 'spsaver',
+        data: {
+            // anode: wc.tn(tools.anode),
+            anode: wc.tn(mega_anode),
+            digitize: false,  // true means save as RawDigit, else recob::Wire
+            frame_tags: ['gauss', 'wiener'],
+            chanmaskmaps: [],
+            nticks: -1,         // -1 means use LS det prop svc
+        },
+    }, nin=1, nout=1, uses=[mega_anode]),
 };
 
 local nanodes = std.length(tools.anodes);
@@ -84,11 +85,11 @@ local anode_iota = std.range(0, nanodes-1);
 // local perfect = import 'chndb-perfect.jsonnet';
 local base = import 'chndb-base.jsonnet';
 local chndb = [{
-  type: 'OmniChannelNoiseDB',
-  name: 'ocndbperfect%d' % n,
-  // data: perfect(params, tools.anodes[n], tools.field, n),
-  data: base(params, tools.anodes[n], tools.field, n),
-  uses: [tools.anodes[n], tools.field],  // pnode extension
+    type: 'OmniChannelNoiseDB',
+    name: 'ocndbperfect%d' % n,
+    // data: perfect(params, tools.anodes[n], tools.field, n),
+    data: base(params, tools.anodes[n], tools.field, n),
+    uses: [tools.anodes[n], tools.field],  // pnode extension
 } for n in anode_iota];
 
 local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
@@ -111,13 +112,13 @@ local fansel = g.pnode({
 }, nin=1, nout=nanodes, uses=tools.anodes);
 
 local pipelines = [
-  g.pipeline([
-               nf_pipes[n],
-               sp_pipes[n],
-             ],
-             'nfsp_pipe_%d' % n)
-  for n in anode_iota
-];
+    g.pipeline([
+        nf_pipes[n],
+        sp_pipes[n],
+    ],
+               'nfsp_pipe_%d' % n)
+    for n in anode_iota
+    ];
 
 local fanin = g.pnode({
     type: 'FrameFanin',
@@ -157,10 +158,10 @@ local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
 local graph = g.pipeline([wcls_input.adc_digits, fanpipe, retagger, wcls_output.sp_signals, sink]);
 
 local app = {
-  type: 'Pgrapher',
-  data: {
-    edges: g.edges(graph),
-  },
+    type: 'Pgrapher',
+    data: {
+        edges: g.edges(graph),
+    },
 };
 
 // Finally, the configuration sequence
