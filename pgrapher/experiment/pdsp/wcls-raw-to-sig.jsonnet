@@ -126,22 +126,25 @@ local fanin = g.pnode({
     data: {
         multiplicity: nanodes,
         tags: [],
+        tag_rules: [{
+            trace: {
+                ['gauss%d'%ind]:'gauss%d'%ind,
+                ['wiener%d'%ind]:'wiener%d'%ind,
+                ['threshold%d'%ind]:'threshold%d'%ind,
+            },
+        } for ind in anode_iota],
     },
 }, nin=nanodes, nout=1);
-
-local fanpipe = g.intern(innodes=[fansel],
-                         outnodes=[fanin],
-                         centernodes=pipelines,
-                         edges=
-                         [g.edge(fansel, pipelines[n], n, 0) for n in anode_iota] +
-                         [g.edge(pipelines[n], fanin, 0, n) for n in anode_iota],
-                         name="fanpipe");
 
 local retagger = g.pnode({
     type: 'Retagger',
     data: {
-
+        // Note: retagger keeps tag_rules in an array to be like frame
+        // fanin/fanout but only uses first element.
         tag_rules: [{
+            // Retagger also handles "frame" and "trace" like
+            // fanin/fanout and also "merge" separately all traces
+            // like gaussN to gauss.
             frame: {
                 '.*': 'retagger',
             },
@@ -152,6 +155,16 @@ local retagger = g.pnode({
         }],
     },
 }, nin=1, nout=1);
+
+
+local fanpipe = g.intern(innodes=[fansel],
+                         outnodes=[fanin],
+                         centernodes=pipelines,
+                         edges=
+                         [g.edge(fansel, pipelines[n], n, 0) for n in anode_iota] +
+                         [g.edge(pipelines[n], fanin, 0, n) for n in anode_iota],
+                         name="fanpipe");
+
 
 local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
 
