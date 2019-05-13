@@ -330,6 +330,41 @@
     // Round a floating point to nearest integer.  It's a bit weird to
     // go through a format/parse.  Maybe there's a better way?
     roundToInt(x):: std.parseInt("%d" % (x+0.5)),
+
+    freqbinner :: function(tick, nsamples) {
+        nyquist : 0.5 / tick,
+        hz_perbin : 1.0/(tick/$.second * nsamples),
+
+        // A function to return the frequency bin holding the given
+        // frequency.  The frequency is specified in the system of
+        // units.
+        bin :: function(frequency) std.floor((frequency/$.hertz) / self.hz_perbin),
+
+        // Return a frequency bin range holding meanfreq +/- deltafreq,
+        // both freqencies in system of units.
+        bin_range :: function(meanfreq, deltafreq)  [
+            self.bin(std.max(0, meanfreq-deltafreq)),
+            self.bin(std.min(self.nyquist, meanfreq+deltafreq))
+        ],
+    
+        
+        // Return something suitable to set to chndb's
+        // channel_info[].freqmasks.  The "meanfreqs" should be a list
+        // of frequencies in the sytem of units and delta is a common
+        // detla.  See bin_range.
+        local _br = self.bin_range,
+        freqmasks :: function(meanfreqs, delta) [
+            { value: 1.0, lobin: 0, hibin: nsamples-1 }
+        ] + [ {
+            local br = _br(mf, delta),
+            value: 0.0, lobin: br[0], hibin: br[1],
+        } for mf in meanfreqs],
+
+        testfreqs :: [f*$.kilohertz for f in [51.5, 102.8, 154.2, 205.5, 256.8, 308.2, 359.2, 410.5, 461.8, 513.2, 564.5, 615.8]],
+        testmasks : self.freqmasks(self.testfreqs, 2*$.kilohertz),
+        
+    },
+
 }
 
 
