@@ -1,4 +1,21 @@
+#include "protoDUNE_reco_data_Dec2018.fcl"
+
 process_name: wclsdatanfsp
+
+services:
+{
+  #message:              @local::dune_message_services_prod_debug
+  TimeTracker:       {}
+  RandomNumberGenerator: {}
+  @table::protodune_rawdecoding_services
+  TFileService: { 
+   closeFileFast: true  # default
+   fileName:  "%ifb_raw_anal.root"
+   tmpDir: "<parent-path-of-filename>"  # default
+  }
+  IFBeam:            {}
+}
+
 
 source: {
    module_type: RootInput

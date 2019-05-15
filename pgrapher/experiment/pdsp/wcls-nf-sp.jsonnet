@@ -111,6 +111,7 @@ local wcls_output = {
       frame_tags: ['gauss', 'wiener'],
       // nticks: params.daq.nticks,
       chanmaskmaps: [],
+      nticks: -1,
     },
   }, nin=1, nout=1, uses=[mega_anode]),
 };
@@ -128,7 +129,7 @@ local chndb = [{
 local nf_maker = import 'pgrapher/experiment/pdsp/nf.jsonnet';
 local nf_pipes = [nf_maker(params, tools.anodes[n], chndb[n], n, name='nf%d' % n) for n in std.range(0, std.length(tools.anodes) - 1)];
 
-local sp = sp_maker(params, tools, { sparse: sigoutform == "sparse"} );
+local sp = sp_maker(params, tools, { sparse: sigoutform == 'sparse' });
 local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
 
 local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';
