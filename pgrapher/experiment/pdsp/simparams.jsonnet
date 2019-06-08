@@ -155,4 +155,9 @@ base {
     magnitude: 1.0,
     time_smear: 1.0 * wc.us,
   },
+
+  rc_resp: {
+    width: 1.1*wc.ms,
+    rc_layers: 1,
+  }
 }
