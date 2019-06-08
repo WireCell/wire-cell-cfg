@@ -71,7 +71,9 @@ function(params)
     rc_resp : {
         type: "RCResponse",
         data: sim_response_binning {
-            width: 1.0*wc.ms,
+            // width: 1.0*wc.ms,
+            width: if std.objectHas(params, 'rc_resp')
+            then params.rc_resp.width else 1.0*wc.ms,
         }
     },
   
@@ -102,7 +104,10 @@ function(params)
                                     then 0.1*wc.ms
                                     // cover the full time range of the convolved short responses
                                     else 0.1*wc.ms - params.sys_resp.start, 
-		long_responses: [wc.tn($.rc_resp), wc.tn($.rc_resp)],
+		// long_responses: [wc.tn($.rc_resp), wc.tn($.rc_resp)],
+        long_responses: if std.objectHas(params, 'rc_resp')
+        then std.makeArray(params.rc_resp.rc_layers, function(x) wc.tn($.rc_resp))
+        else [wc.tn($.rc_resp), wc.tn($.rc_resp)],
 		long_padding: 1.5*wc.ms,
 	    },
             uses: [fr, $.elec_resp, $.rc_resp, $.sys_resp],
