@@ -35,29 +35,26 @@ local apa6 = {
   head: wc.point(3.5, 2, 4.5, wc.m),
 };
 
+local cathpier = {
+  tail: wc.point(-113, 585, 409, wc.cm),
+  head: wc.point( 118,  24, 269, wc.cm),
+};
+
 local tracklist = [
-  // {
-  //     time: 1*wc.ms,
-  //     charge: -5000,
-  //     ray: stubby,
-  // },
+
   {
-    time: 0 * wc.ms,
-    charge: -3000,
-    ray: apa6,
+    time: -950 * wc.us, // 250-us pretrig window
+    charge: -5000,
+    ray: cathpier,
   },
-  //{
-  //  time: 0,
-  //  charge: -5300,
-  //  ray: params.det.bounds,
-  //},
+
 ];
 local output = 'wct-sim-ideal-sig.npz';
 
 
 //local depos = g.join_sources(g.pnode({type:"DepoMerger", name:"BlipTrackJoiner"}, nin=2, nout=1),
 //                             [sim.ar39(), sim.tracks(tracklist)]);
-local depos = sim.tracks(tracklist, step=0.3 * wc.mm);
+local depos = sim.tracks(tracklist, step=0.5 * wc.mm);
 
 
 //local deposio = io.numpy.depos(output);
@@ -93,7 +90,7 @@ local magnify_pipes4 = multi_magnify4.magnify_pipelines;
 local multi_magnify5 = multimagnify('threshold', tools, magoutput);
 local magnify_pipes5 = multi_magnify5.magnifysummaries_pipelines;
 
-local perfect = import 'pgrapher/experiment/pdsp/chndb-perfect.jsonnet';
+local perfect = import 'pgrapher/experiment/pdsp/chndb-base.jsonnet';
 local chndb = [{
   type: 'OmniChannelNoiseDB',
   name: 'ocndbperfect%d' % n,
@@ -121,8 +118,8 @@ local parallel_pipes = [
   g.pipeline([
                sn_pipes[n],
                magnify_pipes[n],
-               // nf_pipes[n],
-               // magnify_pipes2[n],
+               nf_pipes[n],
+               magnify_pipes2[n],
                sp_pipes[n],
                magnify_pipes3[n],
                magnify_pipes4[n],
