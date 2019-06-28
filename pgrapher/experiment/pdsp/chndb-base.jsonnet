@@ -102,12 +102,16 @@ function(params, anode, field, n, rms_cuts=[])
         decon_limit1: 0.08,
       },
 
+      local freqbinner = wc.freqbinner(params.daq.tick, params.nf.nsamples);
+      local harmonic_freqs = [f*wc.kilohertz for f in
+        [51.5, 102.8, 154.2, 205.5, 256.8, 308.2, 359.2, 410.5, 461.8, 513.2, 564.5, 615.8]];
       {
         //channels: { wpid: wc.WirePlaneId(wc.Wlayer) },
 	channels: std.range(n * 2560 + 1600, n * 2560 + 2560- 1),
         nominal_baseline: 400.0,
         decon_limit: 0.05,
         decon_limit1: 0.08,
+        freqmasks: freqbinner.freqmasks(harmonic_freqs, 2*wc.kilohertz),
       },
 
       // {                       // special channel
