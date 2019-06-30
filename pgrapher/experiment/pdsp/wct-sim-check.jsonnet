@@ -30,6 +30,11 @@ local close0 = {
   head: wc.point(-3.000, 3.0, 2.000, wc.m),
 };
 
+local parallel = {
+  tail: wc.point(-1.000, 3.0, 1.000, wc.m),
+  head: wc.point(-1.000, 3.0, 2.000, wc.m),
+};
+
 local apa6 = {
   tail: wc.point(0.5, 4, 2.4, wc.m),
   head: wc.point(3.5, 2, 4.5, wc.m),
@@ -43,8 +48,8 @@ local cathpier = {
 local tracklist = [
 
   {
-    time: -950 * wc.us, // 250-us pretrig window
-    charge: -5000,
+    time: 0 * wc.us, // 250-us pretrig window
+    charge: -2500, // 5000 e/mm
     ray: cathpier,
   },
 

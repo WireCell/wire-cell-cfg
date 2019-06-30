@@ -88,10 +88,10 @@ function(params, anode, chndbobj, n, name='')
         // Nonzero forces the number of ticks in the waveform
         nticks: 0,
 
-        //maskmap: { chirp: "bad", noisy: "bad" },
+        // channel bin ranges are ignored
+        // only when the channelmask is merged to `bad`
         maskmap: {sticky: "bad", ledge: "bad", noisy: "bad"},
         channel_filters: [
-          //wc.tn(bitshift),
           wc.tn(sticky),
           wc.tn(single),
           wc.tn(gaincalib),
@@ -100,7 +100,6 @@ function(params, anode, chndbobj, n, name='')
           wc.tn(grouped),
         ],
         channel_status_filters: [
-          //wc.tn(status),
         ],
         noisedb: wc.tn(chndbobj),
         intraces: 'orig%d' % n,  // frame tag get all traces
