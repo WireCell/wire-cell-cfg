@@ -1,0 +1,102 @@
+#include "protoDUNE_reco_data_Dec2018.fcl"
+
+process_name: wclsraw2sig
+
+services:
+{
+  #message:              @local::dune_message_services_prod_debug
+  TimeTracker:       {}
+  RandomNumberGenerator: {}
+  @table::protodune_rawdecoding_services
+  TFileService: { 
+   closeFileFast: true  # default
+   fileName:  "%ifb_raw_anal.root"
+   tmpDir: "<parent-path-of-filename>"  # default
+  }
+  IFBeam:            {}
+}
+
+
+
+source: {
+   module_type: RootInput
+   saveMemoryObjectThreshold: 10485760
+
+   #inputCommands: ["drop *", "keep raw::RawDigits_*_*_*"]
+   #inputCommands: ["drop *", "keep *_*_*_Swizzler"]
+}
+
+physics :{
+   producers: {
+      @table::protoDUNE_rawdecoding_producers
+
+      raw2sig : {
+         module_type : WireCellToolkit
+         wcls_main: {
+            tool_type: WCLS
+            apps: ["Pgrapher"]
+
+            logsinks: ["stderr", "wcls-raw-to-sig.log"]
+            loglevels: ["debug", "pgraph:info"]
+
+            // Libraries in which to look for WCT components
+            plugins: ["WireCellGen", "WireCellSigProc", "WireCellRoot", "WireCellPgraph", "WireCellLarsoft"]
+
+            // The tool marshals the art::Event to these visitors before.
+            // See notes below in params.
+            inputers: ["wclsLazyFrameSource:adcs"
+               // To use wclsMultiChannelNoiseDB you must also put epoch:dynamic below
+               // and you must have geo::Geometry service in your environment.
+               // ,"wclsMultiChannelNoiseDB"  
+            ]
+
+            // or after the WCT app is run.  These names MUST be used identically in the Jsonnet
+            // fixme: https://github.com/WireCell/larwirecell/issues/3
+            //outputers: ["wclsFrameSaver:nfsaver", "wclsFrameSaver:spsaver"]
+            outputers: ["wclsFrameSaver:spsaver"]
+
+            // This sets the "main" Jsonnet file which provides the 
+            // configuration for the Wire-Cell Toolkit components.  It is
+            // take as relative to entries in WIRECELL_PATH.
+            configs: ["pgrapher/experiment/pdsp/Quickstart/raw-to-sig.jsonnet"]
+
+            // Set the "external variables" required by the Jsonnet.
+            params : {
+               // This locates the input raw::RawDigit collection in the art::Event 
+               raw_input_label: "tpcrawdecoder:daq"
+               //raw_input_label: "caldata"
+
+               // Set "data" vs. "sim".
+               reality: "data"
+            }
+         }
+      }
+   }
+
+   p1 : [ @sequence::protoDUNE_rawdecoding , raw2sig ]
+   trigger_paths : [ p1 ]
+   
+   o1 : [ out1 ]
+   end_paths: [ o1 ]
+}
+
+outputs:{
+   out1: {
+      module_type: RootOutput
+      fileName: "output.root"
+      #SelectEvents: [p1]
+      saveMemoryObjectThreshold: 10485760 
+
+      outputCommands :   [
+         "drop *", "keep recob::Wires_*_*_*"
+         // "keep *_*_*_*"
+         // "drop *_nfspl1_raw_*",
+         // "drop *_nfspl1_threshold_*",
+         // "drop *_nfspl1_wiener_*",
+         // "drop *_nfspl1_gauss_*",
+         // "drop *_wcNoiseFilter_*_*",
+         // "drop *_daq_*_*"
+      ]
+
+   }
+}
