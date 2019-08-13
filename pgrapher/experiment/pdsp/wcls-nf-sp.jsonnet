@@ -135,14 +135,14 @@ local sp_pipes = [sp.make_sigproc(a) for a in tools.anodes];
 local multimagnify = import 'pgrapher/experiment/pdsp/multimagnify.jsonnet';
 local magoutput = 'protodune-data-check.root';
 
-local rootfile_creation_frames = g.pnode({
-  type: 'RootfileCreation_frames',
-  name: 'origmag',
-  data: {
-    output_filename: magoutput,
-    root_file_mode: 'RECREATE',
-  },
-}, nin=1, nout=1);
+// local rootfile_creation_frames = g.pnode({
+//   type: 'RootfileCreation_frames',
+//   name: 'origmag',
+//   data: {
+//     output_filename: magoutput,
+//     root_file_mode: 'RECREATE',
+//   },
+// }, nin=1, nout=1);
 
 
 local multi_magnify = multimagnify('orig', tools, magoutput);
@@ -211,8 +211,8 @@ local retagger = g.pnode({
 local sink = g.pnode({ type: 'DumpFrames' }, nin=1, nout=0);
 
 
-local graph = g.pipeline([wcls_input.adc_digits, rootfile_creation_frames, fanpipe, retagger, wcls_output.sp_signals, sink]);
-// local graph = g.pipeline([wcls_input.adc_digits, fanpipe, retagger, wcls_output.sp_signals, sink]);
+// local graph = g.pipeline([wcls_input.adc_digits, rootfile_creation_frames, fanpipe, retagger, wcls_output.sp_signals, sink]);
+local graph = g.pipeline([wcls_input.adc_digits, fanpipe, retagger, wcls_output.sp_signals, sink]);
 
 local app = {
   type: 'Pgrapher',

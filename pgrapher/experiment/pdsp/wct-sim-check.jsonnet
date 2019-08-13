@@ -48,7 +48,13 @@ local cathpier = {
 local tracklist = [
 
   {
-    time: 0 * wc.us, // 250-us pretrig window
+    time: 0 * wc.us, 
+    charge: -2500, // 5000 e/mm
+    ray: parallel,
+  },
+
+  {
+    time: 0 * wc.us,
     charge: -2500, // 5000 e/mm
     ray: cathpier,
   },
@@ -74,14 +80,14 @@ local magoutput = 'protodune-sim-check.root';
 // please remove the root file before you generate a new one
 
 
-local rootfile_creation_depos = g.pnode({
-  type: 'RootfileCreation_depos',
-  name: 'origmag',
-  data: {
-    output_filename: magoutput,
-    root_file_mode: 'RECREATE',
-  },
-}, nin=1, nout=1);
+// local rootfile_creation_depos = g.pnode({
+//   type: 'RootfileCreation_depos',
+//   name: 'origmag',
+//   data: {
+//     output_filename: magoutput,
+//     root_file_mode: 'RECREATE',
+//   },
+// }, nin=1, nout=1);
 
 
 local multi_magnify = multimagnify('orig', tools, magoutput);
@@ -140,8 +146,8 @@ local parallel_graph = f.fanpipe('DepoSetFanout', parallel_pipes, 'FrameFanin', 
 //local frameio = io.numpy.frames(output);
 local sink = sim.frame_sink;
 
-local graph = g.pipeline([depos, rootfile_creation_depos, drifter, bagger, parallel_graph, sink]);
-//local graph = g.pipeline([depos, drifter, bagger, sim.splusn, multi_magnify.magnify_pipeline, sink]);
+// local graph = g.pipeline([depos, rootfile_creation_depos, drifter, bagger, parallel_graph, sink]);
+local graph = g.pipeline([depos, drifter, bagger, parallel_graph, sink]);
 
 local app = {
   type: 'Pgrapher',
