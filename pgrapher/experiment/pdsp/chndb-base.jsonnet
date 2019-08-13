@@ -27,7 +27,7 @@ function(params, anode, field, n, rms_cuts=[])
 
 
     // Externally determined "bad" channels.
-    bad: [4411, 4412, 9990, 11842, 1, 400, 401, 800, 801, 876, 1200, 2961, 5321, 5363, 6132, 7058, 7295, 7681, 8080, 8328, 8480, 9282, 9283, 9736, 9854, 10800, 11024, 11457, 11459, 11463, 11469, 11517, 11669, 11679, 12756, 12801, 13001, 13081, 4410, 1719, 5125, 7551, 7190, 7194, 7918, 2, 7680, 5361, 4, 1632, 2169, 3541, 3543, 3661, 3663, 4061, 4063, 4141, 4143, 4377, 4379, 4381, 4383, 4385, 4387, 4521, 4523, 4525, 4527, 4529, 4531, 4652, 4654, 4656, 4658, 4660, 4658, 4748, 4750, 4752, 4754, 4756, 4758, 8501, 8503, 8821, 8823, 9261, 9263, 9305, 9307, 9309, 9311, 9313, 9315, 9689, 9691, 9693, 9695, 9697, 9699, 9772, 9774, 9776, 9778, 9780, 9782, 10102, 10189, 10697, 10907, 11203, 11270, 11902, 12324, 12333, 12744, 13363, 200, 202, 204, 206, 208, 991, 993, 995, 997, 999, 1829, 1831, 1833, 1835, 1837, 1839],
+    bad: [1, 2, 4, 200, 202, 204, 206, 208, 400, 401, 800, 801, 876, 991, 993, 995, 997, 999, 1200, 1632, 1719, 1829, 1831, 1833, 1835, 1837, 1839, 2169, 2961, 3541, 3543, 3661, 3663, 4061, 4063, 4141, 4143, 4377, 4379, 4381, 4383, 4385, 4387, 4410, 4411, 4412, 4521, 4523, 4525, 4527, 4529, 4531, 4652, 4654, 4656, 4658, 4658, 4660, 4748, 4750, 4752, 4754, 4756, 4758, 5125, 5321, 5361, 5363, 6132, 7058, 7190, 7194, 7295, 7551, 7680, 7681, 7918, 8080, 8328, 8480, 8501, 8503, 8821, 8823, 9261, 9263, 9282, 9283, 9305, 9307, 9309, 9311, 9313, 9315, 9689, 9691, 9693, 9695, 9697, 9699, 9736, 9772, 9774, 9776, 9778, 9780, 9782, 9854, 9990, 10102, 10189, 10697, 10800, 10907, 11024, 11203, 11270, 11457, 11459, 11463, 11469, 11517, 11669, 11679, 11842, 11902, 12324, 12333, 12744, 12756, 12801, 13001, 13081, 13363],
 
     // Overide defaults for specific channels.  If an info is
     // mentioned for a particular channel in multiple objects in this
@@ -49,6 +49,7 @@ function(params, anode, field, n, rms_cuts=[])
         decon_limit: 0.02,
         decon_limit1: 0.09,
         adc_limit: 15,
+        roi_min_max_ratio: 0.8, // default 0.8
         min_rms_cut: 1.0,  // units???
         max_rms_cut: 30.0,  // units???
 
@@ -79,7 +80,7 @@ function(params, anode, field, n, rms_cuts=[])
         // response: { wpid: wc.WirePlaneId(wc.Ulayer) },
         /// this uses hard-coded waveform.
         response: { waveform: handmade.u_resp, waveformid: wc.Ulayer },
-        response_offset: 149,
+        response_offset: 120, // offset of the negative peak
         pad_window_front: 20,
         decon_limit: 0.02,
         decon_limit1: 0.09,
@@ -97,7 +98,7 @@ function(params, anode, field, n, rms_cuts=[])
         // response: { wpid: wc.WirePlaneId(wc.Vlayer) },
         /// this uses hard-coded waveform.
         response: { waveform: handmade.v_resp, waveformid: wc.Vlayer },
-        response_offset: 155,
+        response_offset: 124,
         decon_limit: 0.01,
         decon_limit1: 0.08,
       },
@@ -117,24 +118,5 @@ function(params, anode, field, n, rms_cuts=[])
         freqmasks: freqbinner.freqmasks(harmonic_freqs, 5.0*wc.kilohertz),
       },
 
-      // {                       // special channel
-      //     channels: 2240,
-      //     freqmasks: [
-      //         { value: 1.0, lobin: 0, hibin: $.nsamples-1 },
-      //         { value: 0.0, lobin: 169, hibin: 173 },
-      //         { value: 0.0, lobin: 513, hibin: 516 },
-      //         { value: 0.0, lobin:  17, hibin:  19 },
-      //     ],
-      // },
-
-      // {                       // these are before hardware fix
-      //     channels: params.nf.misconfigured.channels,
-      //     reconfig: {
-      //         from: {gain:  params.nf.misconfigured.gain,
-      //                shaping: params.nf.misconfigured.shaping},
-      //         to:   {gain: params.elec.gain,
-      //                shaping: params.elec.shaping},
-      //     }
-      // },
     ] + rms_cuts,
   }
