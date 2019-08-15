@@ -83,7 +83,8 @@ function(params, anode, field, n, rms_cuts=[])
         response_offset: 120, // offset of the negative peak
         pad_window_front: 20,
         decon_limit: 0.02,
-        decon_limit1: 0.09,
+        decon_limit1: 0.07,
+        roi_min_max_ratio: 3.0,
       },
 
       {
@@ -101,6 +102,7 @@ function(params, anode, field, n, rms_cuts=[])
         response_offset: 124,
         decon_limit: 0.01,
         decon_limit1: 0.08,
+        roi_min_max_ratio: 1.5,
       },
 
       local freqbinner = wc.freqbinner(params.daq.tick, params.nf.nsamples);
